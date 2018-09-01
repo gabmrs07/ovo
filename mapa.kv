@@ -1,0 +1,1125 @@
+
+<Menu>:
+	GridLayout
+		cols: 1
+		rows: 5
+		Label:
+			text: 'Mapa'
+		Button:
+			text: 'Entrada'
+			on_press: root.CHECKER()
+		Button:
+			text: 'Lista'
+			on_press: root.manager.current='output'
+		Button:
+			text: 'Settings'
+			on_press: root.manager.current='set'
+		Button:
+			text: 'Exit'
+			on_press: exit()
+
+<Rota>
+	BoxLayout:
+		orientation: 'vertical'
+		Label:
+			text: 'Escolha a rota:'
+		Button:
+			id: t
+			text: 'Terça'
+			on_press: root.RS_T()
+		Button:
+			id: qua
+			text: 'Quarta'
+			on_press: root.RS_QUA()
+		Button:
+			id: qui
+			text: 'Quinta'
+			on_press: root.RS_QUI()
+
+<Entry>:
+	BoxLayout:
+		orientation: 'horizontal'
+		size_hint: 1, 0.15
+		pos_hint:{'top':1}
+		Label:
+			text: 'CLIENTE:'
+		Spinner:
+			id: spinner
+			values: 'OUTRO'
+		Button:
+			text: 'OK'
+			background_color: 0, 0.8, 0, 1
+			on_press: root.NOME_TEXT()
+	BoxLayout:
+		size_hint: 0.20, 0.14
+		pos_hint: {'right':1}
+		Button:
+			text: '<<'
+			on_press: root.BACKSPACE()
+	BoxLayout:
+		orientation: 'vertical'
+		size_hint: 1, 0.85
+		pos_hint: {'top':0.85}
+		Label:
+			size_hint: 1, 1
+			id: inpt0
+			text: ''
+		GridLayout:
+			cols: 10
+			rows: 3
+			Button:
+				text: 'Q'
+				on_press: root.KEY(self.text)
+			Button:
+				text: 'W'
+				on_press: root.KEY(self.text)
+			Button:
+				text: 'E'
+				on_press: root.KEY(self.text)
+			Button:
+				text: 'R'
+				on_press: root.KEY(self.text)
+			Button:
+				text: 'T'
+				on_press: root.KEY(self.text)
+			Button:
+				text: 'Y'
+				on_press: root.KEY(self.text)
+			Button:
+				text: 'U'
+				on_press: root.KEY(self.text)
+			Button:
+				text: 'I'
+				on_press: root.KEY(self.text)
+			Button:
+				text: 'O'
+				on_press: root.KEY(self.text)
+			Button:
+				text: 'P'
+				on_press: root.KEY(self.text)
+			Button:
+				text: 'A'
+				on_press: root.KEY(self.text)
+			Button:
+				text: 'S'
+				on_press: root.KEY(self.text)
+			Button:
+				text: 'D'
+				on_press: root.KEY(self.text)
+			Button:
+				text: 'F'
+				on_press: root.KEY(self.text)
+			Button:
+				text: 'G'
+				on_press: root.KEY(self.text)
+			Button:
+				text: 'H'
+				on_press: root.KEY(self.text)
+			Button:
+				text: 'J'
+				on_press: root.KEY(self.text)
+			Button:
+				text: 'K'
+				on_press: root.KEY(self.text)
+			Button:
+				text: 'L'
+				on_press: root.KEY(self.text)
+			Button:
+				text: 'Ç'
+				on_press: root.KEY(self.text)
+			Button:
+				text: '_'
+				on_press: root.KEY(self.text)
+			Button:
+				text: 'Z'
+				on_press: root.KEY(self.text)
+			Button:
+				text: 'X'
+				on_press: root.KEY(self.text)
+			Button:
+				text: 'C'
+				on_press: root.KEY(self.text)
+			Button:
+				text: 'V'
+				on_press: root.KEY(self.text)
+			Button:
+				text: 'B'
+				on_press: root.KEY(self.text)
+			Button:
+				text: 'N'
+				on_press: root.KEY(self.text)
+			Button:
+				text: 'M'
+				on_press: root.KEY(self.text)
+
+<Catcher>
+	Label:
+		id: NC
+		text: ''
+		size_hint: 1, 0.05
+		pos_hint: {'top':1}
+	GridLayout:
+		cols: 2
+		rows: 4
+		size_hint: 1, 0.45
+		pos_hint: {'top':0.95}
+		BoxLayout:
+			orientation: 'vertical'
+			BoxLayout:
+				size_hint: 1, 0.8
+				Button:
+					text: 'BRT1'
+					size_hint: 0.5, 1
+					on_press: root.FOCUS('inpt1')
+				Button:
+					text: 'DZ'
+					size_hint: 0.5, 1
+					on_press: root.FOCUS('inp1')
+			BoxLayout:
+				orientation: 'horizontal'
+				Label:
+					id: inpt1
+				Label:
+					id: inp1
+					text: '4.0'
+
+		BoxLayout:
+			orientation: 'vertical'
+			BoxLayout:
+				size_hint: 1, 0.8
+				Button:
+					text: 'VRT1'
+					size_hint: 0.5, 1
+					on_press: root.FOCUS('inpt2')
+				Button:
+					text: 'DZ'
+					size_hint: 0.5, 1
+					on_press: root.FOCUS('inp2')
+			BoxLayout:
+				orientation: 'horizontal'
+				Label:
+					id: inpt2
+				Label:
+					id: inp2
+					text: '4.4'
+
+		BoxLayout:
+			orientation: 'vertical'
+			BoxLayout:
+				size_hint: 1, 0.8
+				Button:
+					text: 'BRT2'
+					size_hint: 0.5, 1
+					on_press: root.FOCUS('inpt3')
+				Button:
+					text: 'DZ'
+					size_hint: 0.5, 1
+					on_press: root.FOCUS('inp3')
+			BoxLayout:
+				orientation: 'horizontal'
+				Label:
+					id: inpt3
+				Label:
+					id: inp3
+					text: '3.6'
+
+		BoxLayout:
+			orientation: 'vertical'
+			BoxLayout:
+				size_hint: 1, 0.8
+				Button:
+					text: 'BRT3'
+					size_hint: 0.5, 1
+					on_press: root.FOCUS('inpt4')
+				Button:
+					text: 'DZ'
+					size_hint: 0.5, 1
+					on_press: root.FOCUS('inp4')
+			BoxLayout:
+				orientation: 'horizontal'
+				Label:
+					id: inpt4
+				Label:
+					id: inp4
+					text: '3.2'
+
+		BoxLayout:
+			orientation: 'vertical'
+			BoxLayout:
+				size_hint: 1, 0.8
+				Button:
+					text: 'BRDZ'
+					size_hint: 0.5, 1
+					on_press: root.FOCUS('inpt5')
+				Button:
+					text: 'DZ'
+					size_hint: 0.5, 1
+					on_press: root.FOCUS('inp5')
+			BoxLayout:
+				orientation: 'horizontal'
+				Label:
+					id: inpt5
+				Label:
+					id: inp5
+					text: '4.0'
+
+		BoxLayout:
+			orientation: 'vertical'
+			BoxLayout:
+				size_hint: 1, 0.8
+				Button:
+					text: 'VRDZ'
+					size_hint: 0.5, 1
+					on_press: root.FOCUS('inpt6')
+				Button:
+					text: 'DZ'
+					size_hint: 0.5, 1
+					on_press: root.FOCUS('inp6')
+			BoxLayout:
+				orientation: 'horizontal'
+				Label:
+					id: inpt6
+				Label:
+					id: inp6
+					text: '4.4'
+
+		BoxLayout:
+			orientation: 'vertical'
+			BoxLayout:
+				size_hint: 1, 0.8
+				Button:
+					text: 'BRMDZ'
+					size_hint: 0.5, 1
+					on_press: root.FOCUS('inpt7')
+				Button:
+					text: 'DZ'
+					size_hint: 0.5, 1
+					on_press: root.FOCUS('inp7')
+			BoxLayout:
+				orientation: 'horizontal'
+				Label:
+					id: inpt7
+				Label:
+					id: inp7
+					text: '2.0'
+
+		BoxLayout:
+			orientation: 'vertical'
+			BoxLayout:
+				size_hint: 1, 0.8
+				Button:
+					text: 'VRMDZ'
+					size_hint: 0.5, 1
+					on_press: root.FOCUS('inpt8')
+				Button:
+					text: 'DZ'
+					size_hint: 0.5, 1
+					on_press: root.FOCUS('inp8')
+			BoxLayout:
+				orientation: 'horizontal'
+				Label:
+					id: inpt8
+				Label:
+					id: inp8
+					text: '2.2'
+	BoxLayout
+		orientation: 'vertical'
+		size_hint:0.2, 0.5
+		pos_hint:{'right':1}
+		Button:
+			size_hint: 1, 0.33
+			pos_hint: {'top':1}
+			text: '<<'
+			on_press: root.BACKSPACE()
+		Button:
+			text: 'OK'
+			background_color: 0, 0.8, 0, 1
+			on_press: root.OK()
+	BoxLayout
+		size_hint: 0.8, 0.5
+		GridLayout
+			cols: 3
+			rows: 4
+			Button:
+				text: '1'
+				on_press: root.KEY(self.text)
+			Button:
+				text: '2'
+				on_press: root.KEY(self.text)
+			Button:
+				text: '3'
+				on_press: root.KEY(self.text)
+			Button:
+				text: '4'
+				on_press: root.KEY(self.text)
+			Button:
+				text: '5'
+				on_press: root.KEY(self.text)
+			Button:
+				text: '6'
+				on_press: root.KEY(self.text)
+			Button:
+				text: '7'
+				on_press: root.KEY(self.text)
+			Button:
+				text: '8'
+				on_press: root.KEY(self.text)
+			Button:
+				text: '9'
+				on_press: root.KEY(self.text)
+			Button:
+				text: '.'
+				on_press: root.KEY(self.text)
+			Button:
+				text: '0'
+				on_press: root.KEY(self.text)
+			Button:
+				text: '2.5'
+				on_press: root.MEIA()
+
+<Output>
+	GridLayout:
+		cols: 3
+		rows: 1
+		orientation: 'horizontal'
+		size_hint: 1, 0.1
+		pos_hint:{'top':1}
+		Button:
+			size_hint: 0.3, 1
+			text: '<'
+			on_press: root.manager.current='menu'
+		Spinner:
+			id: outspin
+			values: ''
+		Button:
+			id: SEL
+			text: 'Selecionar'
+			background_color: 0, 0.8, 0, 1
+			on_press: root.SELECT()
+	GridLayout:
+		rows: 10
+		cols: 4
+		spacing: 1, 1
+		size_hint: 1, 0.9
+		canvas.before:
+			Color:
+				rgba: 1, 1, 1, 1
+			Rectangle:
+				pos: self.pos
+				size: self.size
+		Label:
+			id: DIA
+			canvas.before:
+				Color:
+					rgba: 0, 0, 0, 1
+				Rectangle:
+					pos: self.pos
+					size: self.size
+		Label:
+			text: 'Dúzia'
+			canvas.before:
+				Color:
+					rgba: 0, 0, 0, 1
+				Rectangle:
+					pos: self.pos
+					size: self.size
+		Label:
+			text: 'Preço'
+			canvas.before:
+				Color:
+					rgba: 0, 0, 0, 1
+				Rectangle:
+					pos: self.pos
+					size: self.size
+		Label:
+			text: 'Total'
+			canvas.before:
+				Color:
+					rgba: 0, 0, 0, 1
+				Rectangle:
+					pos: self.pos
+					size: self.size
+		Label:
+			canvas.before:
+				Color:
+					rgba: 0, 0, 0, 1
+				Rectangle:
+					pos: self.pos
+					size: self.size
+			text: 'BRT1'
+		Label:
+			canvas.before:
+				Color:
+					rgba: 0, 0, 0, 1
+				Rectangle:
+					pos: self.pos
+					size: self.size
+			id: BRT1
+		Label:
+			canvas.before:
+				Color:
+					rgba: 0, 0, 0, 1
+				Rectangle:
+					pos: self.pos
+					size: self.size
+			id: BRT1_DZ
+		Label:
+			canvas.before:
+				Color:
+					rgba: 0, 0, 0, 1
+				Rectangle:
+					pos: self.pos
+					size: self.size
+			id: BRT1_VLR
+		Label:
+			canvas.before:
+				Color:
+					rgba: 0, 0, 0, 1
+				Rectangle:
+					pos: self.pos
+					size: self.size
+			text: 'BRT2'
+		Label:
+			canvas.before:
+				Color:
+					rgba: 0, 0, 0, 1
+				Rectangle:
+					pos: self.pos
+					size: self.size
+			id: BRT2
+		Label:
+			canvas.before:
+				Color:
+					rgba: 0, 0, 0, 1
+				Rectangle:
+					pos: self.pos
+					size: self.size
+			id: BRT2_DZ
+		Label:
+			canvas.before:
+				Color:
+					rgba: 0, 0, 0, 1
+				Rectangle:
+					pos: self.pos
+					size: self.size
+			id: BRT2_VLR
+		Label:
+			canvas.before:
+				Color:
+					rgba: 0, 0, 0, 1
+				Rectangle:
+					pos: self.pos
+					size: self.size
+			text: 'BRT3'
+		Label:
+			canvas.before:
+				Color:
+					rgba: 0, 0, 0, 1
+				Rectangle:
+					pos: self.pos
+					size: self.size
+			id: BRT3
+		Label:
+			canvas.before:
+				Color:
+					rgba: 0, 0, 0, 1
+				Rectangle:
+					pos: self.pos
+					size: self.size
+			id: BRT3_DZ
+		Label:
+			canvas.before:
+				Color:
+					rgba: 0, 0, 0, 1
+				Rectangle:
+					pos: self.pos
+					size: self.size
+			id: BRT3_VLR
+		Label:
+			canvas.before:
+				Color:
+					rgba: 0, 0, 0, 1
+				Rectangle:
+					pos: self.pos
+					size: self.size
+			text: 'VRT1'
+		Label:
+			canvas.before:
+				Color:
+					rgba: 0, 0, 0, 1
+				Rectangle:
+					pos: self.pos
+					size: self.size
+			id: VRT1
+		Label:
+			canvas.before:
+				Color:
+					rgba: 0, 0, 0, 1
+				Rectangle:
+					pos: self.pos
+					size: self.size
+			id: VRT1_DZ
+		Label:
+			canvas.before:
+				Color:
+					rgba: 0, 0, 0, 1
+				Rectangle:
+					pos: self.pos
+					size: self.size
+			id: VRT1_VLR
+		Label:
+			canvas.before:
+				Color:
+					rgba: 0, 0, 0, 1
+				Rectangle:
+					pos: self.pos
+					size: self.size
+			text: 'BRDZ'
+		Label:
+			canvas.before:
+				Color:
+					rgba: 0, 0, 0, 1
+				Rectangle:
+					pos: self.pos
+					size: self.size
+			id: BRDZ
+		Label:
+			canvas.before:
+				Color:
+					rgba: 0, 0, 0, 1
+				Rectangle:
+					pos: self.pos
+					size: self.size
+			id: BRDZ_DZ
+		Label:
+			canvas.before:
+				Color:
+					rgba: 0, 0, 0, 1
+				Rectangle:
+					pos: self.pos
+					size: self.size
+			id: BRDZ_VLR
+		Label:
+			canvas.before:
+				Color:
+					rgba: 0, 0, 0, 1
+				Rectangle:
+					pos: self.pos
+					size: self.size
+			text: 'VRDZ'
+		Label:
+			canvas.before:
+				Color:
+					rgba: 0, 0, 0, 1
+				Rectangle:
+					pos: self.pos
+					size: self.size
+			id: VRDZ
+		Label:
+			canvas.before:
+				Color:
+					rgba: 0, 0, 0, 1
+				Rectangle:
+					pos: self.pos
+					size: self.size
+			id: VRDZ_DZ
+		Label:
+			canvas.before:
+				Color:
+					rgba: 0, 0, 0, 1
+				Rectangle:
+					pos: self.pos
+					size: self.size
+			id: VRDZ_VLR
+		Label:
+			canvas.before:
+				Color:
+					rgba: 0, 0, 0, 1
+				Rectangle:
+					pos: self.pos
+					size: self.size
+			text: 'BRMDZ'
+		Label:
+			canvas.before:
+				Color:
+					rgba: 0, 0, 0, 1
+				Rectangle:
+					pos: self.pos
+					size: self.size
+			id: BRMDZ
+		Label:
+			canvas.before:
+				Color:
+					rgba: 0, 0, 0, 1
+				Rectangle:
+					pos: self.pos
+					size: self.size
+			id: BRMDZ_DZ
+		Label:
+			canvas.before:
+				Color:
+					rgba: 0, 0, 0, 1
+				Rectangle:
+					pos: self.pos
+					size: self.size
+			id: BRMDZ_VLR
+		Label:
+			canvas.before:
+				Color:
+					rgba: 0, 0, 0, 1
+				Rectangle:
+					pos: self.pos
+					size: self.size
+			text: 'VRMDZ'
+		Label:
+			canvas.before:
+				Color:
+					rgba: 0, 0, 0, 1
+				Rectangle:
+					pos: self.pos
+					size: self.size
+			id: VRMDZ
+		Label:
+			canvas.before:
+				Color:
+					rgba: 0, 0, 0, 1
+				Rectangle:
+					pos: self.pos
+					size: self.size
+			id: VRMDZ_DZ
+		Label:
+			canvas.before:
+				Color:
+					rgba: 0, 0, 0, 1
+				Rectangle:
+					pos: self.pos
+					size: self.size
+			id: VRMDZ_VLR
+		Label:
+			canvas.before:
+				Color:
+					rgba: 0, 0, 0, 1
+				Rectangle:
+					pos: self.pos
+					size: self.size
+		Label:
+			canvas.before:
+				Color:
+					rgba: 0, 0, 0, 1
+				Rectangle:
+					pos: self.pos
+					size: self.size
+		Label:
+			canvas.before:
+				Color:
+					rgba: 0, 0, 0, 1
+				Rectangle:
+					pos: self.pos
+					size: self.size
+		Label:
+			canvas.before:
+				Color:
+					rgba: 0, 0, 0, 1
+				Rectangle:
+					pos: self.pos
+					size: self.size
+			id: TOTAL
+			color: 1, 0, 0, 1
+	Button:
+		id: EDIT
+		size_hint: 0.75, 0.088
+		background_color: 0, 0, 0, 1
+		on_press: root.EDITING()
+
+<Editar>
+	Label:
+		id: NCL
+		text: ''
+		size_hint: 1, 0.05
+		pos_hint: {'top':1}
+	GridLayout:
+		cols: 2
+		rows: 4
+		size_hint: 1, 0.45
+		pos_hint: {'top':0.95}
+		BoxLayout:
+			orientation: 'vertical'
+			BoxLayout:
+				size_hint: 1, 0.8
+				Button:
+					text: 'BRT1'
+					size_hint: 0.5, 1
+					on_press: root.FOCUS('t1')
+				Button:
+					text: 'DZ'
+					size_hint: 0.5, 1
+					on_press: root.FOCUS('p1')
+			BoxLayout:
+				orientation: 'horizontal'
+				Label:
+					id: t1
+				Label:
+					id: p1
+					text: '4.0'
+
+		BoxLayout:
+			orientation: 'vertical'
+			BoxLayout:
+				size_hint: 1, 0.8
+				Button:
+					text: 'VRT1'
+					size_hint: 0.5, 1
+					on_press: root.FOCUS('t2')
+				Button:
+					text: 'DZ'
+					size_hint: 0.5, 1
+					on_press: root.FOCUS('p2')
+			BoxLayout:
+				orientation: 'horizontal'
+				Label:
+					id: t2
+				Label:
+					id: p2
+					text: '4.4'
+
+		BoxLayout:
+			orientation: 'vertical'
+			BoxLayout:
+				size_hint: 1, 0.8
+				Button:
+					text: 'BRT2'
+					size_hint: 0.5, 1
+					on_press: root.FOCUS('t3')
+				Button:
+					text: 'DZ'
+					size_hint: 0.5, 1
+					on_press: root.FOCUS('p3')
+			BoxLayout:
+				orientation: 'horizontal'
+				Label:
+					id: t3
+				Label:
+					id: p3
+					text: '3.6'
+
+		BoxLayout:
+			orientation: 'vertical'
+			BoxLayout:
+				size_hint: 1, 0.8
+				Button:
+					text: 'BRT3'
+					size_hint: 0.5, 1
+					on_press: root.FOCUS('t4')
+				Button:
+					text: 'DZ'
+					size_hint: 0.5, 1
+					on_press: root.FOCUS('p4')
+			BoxLayout:
+				orientation: 'horizontal'
+				Label:
+					id: t4
+				Label:
+					id: p4
+					text: '3.2'
+
+		BoxLayout:
+			orientation: 'vertical'
+			BoxLayout:
+				size_hint: 1, 0.8
+				Button:
+					text: 'BRDZ'
+					size_hint: 0.5, 1
+					on_press: root.FOCUS('t5')
+				Button:
+					text: 'DZ'
+					size_hint: 0.5, 1
+					on_press: root.FOCUS('p5')
+			BoxLayout:
+				orientation: 'horizontal'
+				Label:
+					id: t5
+				Label:
+					id: p5
+					text: '4.0'
+
+		BoxLayout:
+			orientation: 'vertical'
+			BoxLayout:
+				size_hint: 1, 0.8
+				Button:
+					text: 'VRDZ'
+					size_hint: 0.5, 1
+					on_press: root.FOCUS('t6')
+				Button:
+					text: 'DZ'
+					size_hint: 0.5, 1
+					on_press: root.FOCUS('p6')
+			BoxLayout:
+				orientation: 'horizontal'
+				Label:
+					id: t6
+				Label:
+					id: p6
+					text: '4.4'
+
+		BoxLayout:
+			orientation: 'vertical'
+			BoxLayout:
+				size_hint: 1, 0.8
+				Button:
+					text: 'BRMDZ'
+					size_hint: 0.5, 1
+					on_press: root.FOCUS('t7')
+				Button:
+					text: 'DZ'
+					size_hint: 0.5, 1
+					on_press: root.FOCUS('p7')
+			BoxLayout:
+				orientation: 'horizontal'
+				Label:
+					id: t7
+				Label:
+					id: p7
+					text: '2.0'
+
+		BoxLayout:
+			orientation: 'vertical'
+			BoxLayout:
+				size_hint: 1, 0.8
+				Button:
+					text: 'VRMDZ'
+					size_hint: 0.5, 1
+					on_press: root.FOCUS('t8')
+				Button:
+					text: 'DZ'
+					size_hint: 0.5, 1
+					on_press: root.FOCUS('p8')
+			BoxLayout:
+				orientation: 'horizontal'
+				Label:
+					id: t8
+				Label:
+					id: p8
+					text: '2.2'
+	BoxLayout
+		orientation: 'vertical'
+		size_hint:0.2, 0.5
+		pos_hint:{'right':1}
+		Button:
+			size_hint: 1, 0.33
+			pos_hint: {'top':1}
+			text: '<<'
+			on_press: root.BACKSPACE()
+		Button:
+			text: 'OK'
+			background_color: 0, 0.8, 0, 1
+			on_press: root.OK()
+	BoxLayout
+		size_hint: 0.8, 0.5
+		GridLayout
+			cols: 3
+			rows: 4
+			Button:
+				text: '1'
+				on_press: root.KEY(self.text)
+			Button:
+				text: '2'
+				on_press: root.KEY(self.text)
+			Button:
+				text: '3'
+				on_press: root.KEY(self.text)
+			Button:
+				text: '4'
+				on_press: root.KEY(self.text)
+			Button:
+				text: '5'
+				on_press: root.KEY(self.text)
+			Button:
+				text: '6'
+				on_press: root.KEY(self.text)
+			Button:
+				text: '7'
+				on_press: root.KEY(self.text)
+			Button:
+				text: '8'
+				on_press: root.KEY(self.text)
+			Button:
+				text: '9'
+				on_press: root.KEY(self.text)
+			Button:
+				text: '.'
+				on_press: root.KEY(self.text)
+			Button:
+				text: '0'
+				on_press: root.KEY(self.text)
+			Button:
+				text: '2.5'
+				on_press: root.MEIA()
+
+<Settings>
+	BoxLayout:
+		size_hint: 1, 0.1
+		pos_hint: {'top':1}
+		Button:
+			text: '<'
+			on_press: root.manager.current='menu'
+			size_hint: 0.2, 1
+		Label:
+			text: 'SETTINGS'
+	GridLayout:
+		cols: 1
+		rows: 2
+		size_hint: 1, 0.9
+		pos_hint: {'top':0.9}
+		Button:
+			text: 'Alterar preços'
+			on_press: root.manager.current='valor'
+		Button:
+			text: 'Alterar rotas'
+
+<Setv>
+	BoxLayout:
+		Label:
+			text: 'ALTERAÇÃO DOS VALORES PADRÕES'
+			size_hint: 1, 0.05
+			pos_hint: {'top':1}
+	GridLayout:
+		cols: 2
+		rows: 4
+		size_hint: 1, 0.45
+		pos_hint: {'top':0.95}
+
+		BoxLayout:
+			orientation: 'vertical'
+			Button:
+				size_hint: 1, 0.4
+				text: 'BRT1'
+				on_press: root.FOCUS('V1')
+			Label:
+				id: V1
+				text: '4.0'
+
+		BoxLayout:
+			orientation: 'vertical'
+			Button:
+				size_hint: 1, 0.4
+				text: 'VRT1'
+				on_press: root.FOCUS('V2')
+			Label:
+				id: V2
+				text: '4.4'
+
+		BoxLayout:
+			orientation: 'vertical'
+			Button:
+				size_hint: 1, 0.4
+				text: 'BRT2'
+				on_press: root.FOCUS('V3')
+			Label:
+				id: V3
+				text: '3.6'
+
+		BoxLayout:
+			orientation: 'vertical'
+			Button:
+				size_hint: 1, 0.4
+				text: 'BRT3'
+				on_press: root.FOCUS('V4')
+			Label:
+				id: V4
+				text: '3.2'
+
+		BoxLayout:
+			orientation: 'vertical'
+			Button:
+				size_hint: 1, 0.4
+				text: 'BRDZ'
+				on_press: root.FOCUS('V5')
+			Label:
+				id: V5
+				text: '4.0'
+
+		BoxLayout:
+			orientation: 'vertical'
+			Button:
+				size_hint: 1, 0.4
+				text: 'VRDZ'
+				on_press: root.FOCUS('V6')
+			Label:
+				id: V6
+				text: '4.4'
+
+		BoxLayout:
+			orientation: 'vertical'
+			Button:
+				size_hint: 1, 0.4
+				text: 'BRMDZ'
+				on_press: root.FOCUS('V7')
+			Label:
+				id: V7
+				text: '2.0'
+
+		BoxLayout:
+			orientation: 'vertical'
+			Button:
+				size_hint: 1, 0.4
+				text: 'VRMDZ'
+				on_press: root.FOCUS('V8')
+			Label:
+				id: V8
+				text: '2.2'
+	BoxLayout
+		orientation: 'vertical'
+		size_hint:0.25, 0.5
+		pos_hint:{'right':1}
+		Button:
+			size_hint: 1, 0.33
+			pos_hint: {'top':1}
+			text: '<<'
+			on_press: root.BACKSPACE()
+		Button:
+			text: 'OK'
+			background_color: 0, 0.8, 0, 1
+			on_press: root.OK()
+
+	BoxLayout
+		size_hint: 0.75, 0.5
+		GridLayout
+			cols: 3
+			rows: 4
+			Button:
+				text: '1'
+				on_press: root.KEY(self.text)
+			Button:
+				text: '2'
+				on_press: root.KEY(self.text)
+			Button:
+				text: '3'
+				on_press: root.KEY(self.text)
+			Button:
+				text: '4'
+				on_press: root.KEY(self.text)
+			Button:
+				text: '5'
+				on_press: root.KEY(self.text)
+			Button:
+				text: '6'
+				on_press: root.KEY(self.text)
+			Button:
+				text: '7'
+				on_press: root.KEY(self.text)
+			Button:
+				text: '8'
+				on_press: root.KEY(self.text)
+			Button:
+				text: '9'
+				on_press: root.KEY(self.text)
+			Button:
+				text: '.'
+				on_press: root.KEY(self.text)
+			Button:
+				text: '0'
+				on_press: root.KEY(self.text)
+			Button:
+				text: '2.5'
+				on_press: root.MEIA()
