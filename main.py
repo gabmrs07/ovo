@@ -12,7 +12,7 @@ from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.uix.behaviors import FocusBehavior
 from kivy.base import runTouchApp
 
-#from importlib import reload
+from importlib import reload
 
 DIA=time.strftime('%d/%m/%y')
 CWD=os.getcwd()
@@ -20,8 +20,6 @@ PLAN='PLANILHA.py'
 _PL_LIST=['BRT1', 'BRT1_DZ', 'BRT1_VLR', 'BRT2', 'BRT2_DZ', 'BRT2_VLR', 'BRT3', 'BRT3_DZ', 'BRT3_VLR',\
 		'VRT1', 'VRT1_DZ', 'VRT1_VLR', 'BRDZ', 'BRDZ_DZ', 'BRDZ_VLR', 'VRDZ', 'VRDZ_DZ', 'VRDZ_VLR',\
 		'BRMDZ', 'BRMDZ_DZ', 'BRMDZ_VLR', 'VRMDZ', 'VRMDZ_DZ', 'VRMDZ_VLR','TOTAL']
-
-FocusBehavior.keyboard_mode='managed'
 
 class Menu(Screen):
 
@@ -77,7 +75,6 @@ class Entry(Screen):
 			global PLANILHA
 			import PLANILHA
 			reload(PLANILHA)
-			reload(DATA)
 		global SP
 		self.ids.inpt0.text=''
 		SP=self.ids.spinner
@@ -179,14 +176,14 @@ class Catcher(Screen):
 
 	TEXTFOCUS=None
 	INSERT=None
-	BRT1=None
-	BRT2=None
-	BRT3=None
-	VRT1=None
-	BRDZ=None
-	VRDZ=None
-	BRMDZ=None
-	VRMDZ=None
+	BRT1=''
+	BRT2=''
+	BRT3=''
+	VRT1=''
+	BRDZ=''
+	VRDZ=''
+	BRMDZ=''
+	VRMDZ=''
 	BRT1_VALOR=DATA._V['V1']
 	BRT2_VALOR=DATA._V['V3']
 	BRT3_VALOR=DATA._V['V4']
@@ -239,14 +236,14 @@ class Catcher(Screen):
 		Catcher.VRT1=self.ids.inpt2.text
 		Catcher.BRT2=self.ids.inpt3.text
 		Catcher.BRT3=self.ids.inpt4.text
-		Catcher.BRT1_VALOR=self.ids.inp1.text
-		Catcher.VRT1_VALOR=self.ids.inp2.text
-		Catcher.BRT2_VALOR=self.ids.inp3.text
-		Catcher.BRT3_VALOR=self.ids.inp4.text
 		Catcher.BRDZ=self.ids.inpt5.text
 		Catcher.VRDZ=self.ids.inpt6.text
 		Catcher.BRMDZ=self.ids.inpt7.text
 		Catcher.VRMDZ=self.ids.inpt8.text
+		Catcher.BRT1_VALOR=self.ids.inp1.text
+		Catcher.VRT1_VALOR=self.ids.inp2.text
+		Catcher.BRT2_VALOR=self.ids.inp3.text
+		Catcher.BRT3_VALOR=self.ids.inp4.text
 		Catcher.BRDZ_VALOR=self.ids.inp5.text
 		Catcher.VRDZ_VALOR=self.ids.inp6.text
 		Catcher.BRMDZ_VALOR=self.ids.inp7.text
@@ -260,6 +257,8 @@ class Output(Screen):
 		if os.path.isfile(CWD+'/'+PLAN):
 			global SO
 			global SO_LIST
+			global BTN0
+			BTN0=self.ids.EDIT
 			SO=self.ids.outspin
 			SO_LIST=list()
 			LEN_C=len(PLANILHA._C)
@@ -278,10 +277,7 @@ class Output(Screen):
 			self.manager.current='menu'
 
 	def SELECT(self):
-		global BTN0
-		BTN0=None
 		S=getattr(PLANILHA, SO.text)
-		BTN0=self.ids.EDIT
 		self.ids.DIA.text=PLANILHA._DIA
 		BTN0.text='EDITAR'
 		BTN0.background_color=(0.8, 0, 0, 1)
@@ -358,14 +354,14 @@ class Editar(Screen):
 		Catcher.VRT1=self.ids.t2.text
 		Catcher.BRT2=self.ids.t3.text
 		Catcher.BRT3=self.ids.t4.text
-		Catcher.BRT1_VALOR=self.ids.p1.text
-		Catcher.VRT1_VALOR=self.ids.p2.text
-		Catcher.BRT2_VALOR=self.ids.p3.text
-		Catcher.BRT3_VALOR=self.ids.p4.text
 		Catcher.BRDZ=self.ids.t5.text
 		Catcher.VRDZ=self.ids.t6.text
 		Catcher.BRMDZ=self.ids.t7.text
 		Catcher.VRMDZ=self.ids.t8.text
+		Catcher.BRT1_VALOR=self.ids.p1.text
+		Catcher.VRT1_VALOR=self.ids.p2.text
+		Catcher.BRT2_VALOR=self.ids.p3.text
+		Catcher.BRT3_VALOR=self.ids.p4.text
 		Catcher.BRDZ_VALOR=self.ids.p5.text
 		Catcher.VRDZ_VALOR=self.ids.p6.text
 		Catcher.BRMDZ_VALOR=self.ids.p7.text
