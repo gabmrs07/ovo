@@ -12,9 +12,7 @@ from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.uix.behaviors import FocusBehavior
 from kivy.base import runTouchApp
 
-from importlib import reload
-
-## ADICIONAR RESET DE VALORES EM WRITER()
+#from importlib import reload
 
 DIA=time.strftime('%d/%m/%y')
 CWD=os.getcwd()
@@ -281,6 +279,7 @@ class Output(Screen):
 
 	def SELECT(self):
 		global BTN0
+		BTN0=None
 		S=getattr(PLANILHA, SO.text)
 		BTN0=self.ids.EDIT
 		self.ids.DIA.text=PLANILHA._DIA
@@ -381,6 +380,12 @@ class Setv(Screen):
 
 	TEXTFOCUS=None
 	INSERT=None
+
+	def on_pre_enter(self, *args):
+		def FILL(X):
+			self.ids[X].text=DATA._V[X]
+		for x in range(1,9):
+			FILL('V'+str(x))
 
 	def FOCUS(self, IDS='t1'):
 		Setv.TEXTFOCUS=IDS
