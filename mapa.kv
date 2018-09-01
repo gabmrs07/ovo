@@ -21,8 +21,13 @@
 <Rota>
 	BoxLayout:
 		orientation: 'vertical'
-		Label:
-			text: 'Escolha a rota:'
+		BoxLayout:
+			Button:
+				size_hint: 0.3, 1
+				text: '<'
+				on_press: root.manager.current='menu'
+			Label:
+				text: 'Escolha a rota:'
 		Button:
 			id: t
 			text: 'Terça'
@@ -41,7 +46,17 @@
 		orientation: 'horizontal'
 		size_hint: 1, 0.15
 		pos_hint:{'top':1}
+		Button:
+			size_hint: 0.3, 1
+			text: '<'
+			on_press: root.manager.current='menu'
 		Label:
+			canvas.before:
+				Color:
+					rgba: 0.3, 0.3, 0.3, 1
+				Rectangle:
+					pos: self.pos
+					size: self.size
 			text: 'CLIENTE:'
 		Spinner:
 			id: spinner
