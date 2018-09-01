@@ -190,9 +190,9 @@ class Catcher(Screen):
 	BRMDZ=None
 	VRMDZ=None
 	BRT1_VALOR=DATA._V['V1']
-	BRT2_VALOR=DATA._V['V2']
-	BRT3_VALOR=DATA._V['V3']
-	VRT1_VALOR=DATA._V['V4']
+	BRT2_VALOR=DATA._V['V3']
+	BRT3_VALOR=DATA._V['V4']
+	VRT1_VALOR=DATA._V['V2']
 	BRDZ_VALOR=DATA._V['V5']
 	VRDZ_VALOR=DATA._V['V6']
 	BRMDZ_VALOR=DATA._V['V7']
@@ -208,9 +208,9 @@ class Catcher(Screen):
 		self.ids['inpt7'].text=''
 		self.ids['inpt8'].text=''
 		self.ids['inp1'].text=DATA._V['V1']
-		self.ids['inp2'].text=DATA._V['V4']
-		self.ids['inp3'].text=DATA._V['V2']
-		self.ids['inp4'].text=DATA._V['V3']
+		self.ids['inp2'].text=DATA._V['V2']
+		self.ids['inp3'].text=DATA._V['V3']
+		self.ids['inp4'].text=DATA._V['V4']
 		self.ids['inp5'].text=DATA._V['V5']
 		self.ids['inp6'].text=DATA._V['V6']
 		self.ids['inp7'].text=DATA._V['V7']
@@ -306,22 +306,33 @@ class Editar(Screen):
 	INSERT=None
 
 	def on_pre_enter(self, *args):
-		self.ids['t1'].text=''
-		self.ids['t2'].text=''
-		self.ids['t3'].text=''
-		self.ids['t4'].text=''
-		self.ids['t5'].text=''
-		self.ids['t6'].text=''
-		self.ids['t7'].text=''
-		self.ids['t8'].text=''
-		self.ids['p1'].text='4.0'
-		self.ids['p2'].text='4.4'
-		self.ids['p3'].text='3.6'
-		self.ids['p4'].text='3.2'
-		self.ids['p5'].text='4.0'
-		self.ids['p6'].text='4.4'
-		self.ids['p7'].text='2.0'
-		self.ids['p8'].text='2.2'
+		Ed=getattr(PLANILHA, Entry.NOME)
+		def FILL(X, Y):
+			if Y in Ed:
+				self.ids[X].text=str(Ed[Y])
+			else:
+				self.ids[X].text=''
+		def FILLPILAS(X, Y, Z):
+			if Y in Ed:
+				self.ids[X].text=str(Ed[Y])
+			else:
+				self.ids[X].text=DATA._V[Z]
+		FILL('t1', 'BRT1')
+		FILL('t2', 'VRT1')
+		FILL('t3', 'BRT2')
+		FILL('t4', 'BRT3')
+		FILL('t5', 'BRDZ')
+		FILL('t6', 'VRDZ')
+		FILL('t7', 'VRMDZ')
+		FILL('t8', 'BRMDZ')
+		FILLPILAS('p1', 'BRT1_DZ', 'V1')
+		FILLPILAS('p2', 'VRT1_DZ', 'V2')
+		FILLPILAS('p3', 'BRT2_DZ', 'V3')
+		FILLPILAS('p4', 'BRT3_DZ', 'V4')
+		FILLPILAS('p5', 'BRDZ_DZ', 'V5')
+		FILLPILAS('p6', 'VRDZ_DZ', 'V6')
+		FILLPILAS('p7', 'VRMDZ_DZ', 'V7')
+		FILLPILAS('p8', 'BRMDZ_DZ', 'V8')
 		self.ids['NCL'].text='CLIENTE: {}'.format(SO.text)
 		Editar.TEXTFOCUS='t1'
 

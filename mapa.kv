@@ -43,28 +43,33 @@
 
 <Entry>:
 	BoxLayout:
-		orientation: 'horizontal'
-		size_hint: 1, 0.15
+		orientation: 'vertical'
+		size_hint: 1, 0.2
 		pos_hint:{'top':1}
-		Button:
-			size_hint: 0.3, 1
-			text: '<'
-			on_press: root.manager.current='menu'
-		Label:
-			canvas.before:
-				Color:
-					rgba: 0.3, 0.3, 0.3, 1
-				Rectangle:
-					pos: self.pos
-					size: self.size
-			text: 'CLIENTE:'
-		Spinner:
-			id: spinner
-			values: 'OUTRO'
-		Button:
-			text: 'OK'
-			background_color: 0, 0.8, 0, 1
-			on_press: root.NOME_TEXT()
+		BoxLayout:
+			size_hint: 1, 0.5
+			pos_hint:{'top':1}
+			Button:
+				size_hint: 0.3, 1
+				text: '<'
+				on_press: root.manager.current='menu'
+			Label:
+				canvas.before:
+					Color:
+						rgba: 0.3, 0.3, 0.3, 1
+					Rectangle:
+						pos: self.pos
+						size: self.size
+				text: 'Selecione o cliente:'
+		BoxLayout:
+			size_hint: 1, 0.5
+			Spinner:
+				id: spinner
+				values: 'OUTRO'
+			Button:
+				text: 'OK'
+				background_color: 0, 0.8, 0, 1
+				on_press: root.NOME_TEXT()
 	BoxLayout:
 		size_hint: 0.20, 0.14
 		pos_hint: {'right':1}
@@ -339,7 +344,7 @@
 					text: '2.2'
 	BoxLayout
 		orientation: 'vertical'
-		size_hint:0.2, 0.5
+		size_hint:0.25, 0.5
 		pos_hint:{'right':1}
 		Button:
 			size_hint: 1, 0.33
@@ -351,7 +356,7 @@
 			background_color: 0, 0.8, 0, 1
 			on_press: root.OK()
 	BoxLayout
-		size_hint: 0.8, 0.5
+		size_hint: 0.75, 0.5
 		GridLayout
 			cols: 3
 			rows: 4
@@ -918,7 +923,7 @@
 					text: '2.2'
 	BoxLayout
 		orientation: 'vertical'
-		size_hint:0.2, 0.5
+		size_hint:0.25, 0.5
 		pos_hint:{'right':1}
 		Button:
 			size_hint: 1, 0.33
@@ -930,7 +935,7 @@
 			background_color: 0, 0.8, 0, 1
 			on_press: root.OK()
 	BoxLayout
-		size_hint: 0.8, 0.5
+		size_hint: 0.75, 0.5
 		GridLayout
 			cols: 3
 			rows: 4
