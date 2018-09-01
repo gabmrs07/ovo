@@ -9,10 +9,9 @@ from kivy.uix.button import Button
 from kivy.uix.label import Label
 from kivy.uix.popup import Popup
 from kivy.uix.screenmanager import ScreenManager, Screen
-from kivy.uix.behaviors import FocusBehavior
 from kivy.base import runTouchApp
 
-from importlib import reload
+#from importlib import reload
 
 DIA=time.strftime('%d/%m/%y')
 CWD=os.getcwd()
@@ -248,7 +247,23 @@ class Catcher(Screen):
 		Catcher.VRDZ_VALOR=self.ids.inp6.text
 		Catcher.BRMDZ_VALOR=self.ids.inp7.text
 		Catcher.VRMDZ_VALOR=self.ids.inp8.text
-		START()
+		if Catcher.BRT1!='':
+			BRT1(Catcher.BRT1)
+		if Catcher.BRT2!='':
+			BRT2(Catcher.BRT2)
+		if Catcher.BRT3!='':
+			BRT3(Catcher.BRT3)
+		if Catcher.VRT1!='':
+			VRT1(Catcher.VRT1)
+		if Catcher.BRDZ!='':
+			BRDZ(Catcher.BRDZ)
+		if Catcher.VRDZ!='':
+			VRDZ(Catcher.VRDZ)
+		if Catcher.BRMDZ!='':
+			BRMDZ(Catcher.BRMDZ)
+		if Catcher.VRMDZ!='':
+			VRMDZ(Catcher.VRMDZ)
+		WRITER()
 		self.manager.current='menu'
 
 class Output(Screen):
@@ -366,7 +381,23 @@ class Editar(Screen):
 		Catcher.VRDZ_VALOR=self.ids.p6.text
 		Catcher.BRMDZ_VALOR=self.ids.p7.text
 		Catcher.VRMDZ_VALOR=self.ids.p8.text
-		START()
+		if Catcher.BRT1!='':
+			BRT1(Catcher.BRT1)
+		if Catcher.BRT2!='':
+			BRT2(Catcher.BRT2)
+		if Catcher.BRT3!='':
+			BRT3(Catcher.BRT3)
+		if Catcher.VRT1!='':
+			VRT1(Catcher.VRT1)
+		if Catcher.BRDZ!='':
+			BRDZ(Catcher.BRDZ)
+		if Catcher.VRDZ!='':
+			VRDZ(Catcher.VRDZ)
+		if Catcher.BRMDZ!='':
+			BRMDZ(Catcher.BRMDZ)
+		if Catcher.VRMDZ!='':
+			VRMDZ(Catcher.VRMDZ)
+		WRITER()
 		self.manager.current='menu'
 
 class Settings(Screen):
@@ -539,26 +570,6 @@ class VRMDZ(OVO):
 		OVO.E['VRMDZ']=self.dz
 		OVO.E_DZ['VRMDZ_DZ']=self.valor
 		OVO.E_VLR['VRMDZ_VLR']=self.soma
-
-def START():
-	if Catcher.BRT1!='':
-		BRT1(Catcher.BRT1)
-	if Catcher.BRT2!='':
-		BRT2(Catcher.BRT2)
-	if Catcher.BRT3!='':
-		BRT3(Catcher.BRT3)
-	if Catcher.VRT1!='':
-		VRT1(Catcher.VRT1)
-	if Catcher.BRDZ!='':
-		BRDZ(Catcher.BRDZ)
-	if Catcher.VRDZ!='':
-		VRDZ(Catcher.VRDZ)
-	if Catcher.BRMDZ!='':
-		BRMDZ(Catcher.BRMDZ)
-	if Catcher.VRMDZ!='':
-		VRMDZ(Catcher.VRMDZ)
-
-	WRITER()
 
 def WRITER(SOMA=0.0):
 
