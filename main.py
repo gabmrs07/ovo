@@ -11,7 +11,7 @@ from kivy.uix.popup import Popup
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.base import runTouchApp
 
-#from importlib import reload
+from importlib import reload
 
 DIA=time.strftime('%d/%m/%y')
 CWD=os.getcwd()
@@ -76,6 +76,7 @@ class Entry(Screen):
 			reload(PLANILHA)
 		global SP
 		self.ids.inpt0.text=''
+		Entry.OUTRO=None
 		SP=self.ids.spinner
 		SP.text='OUTRO'
 		LEN_C=len(PLANILHA._C)
@@ -247,6 +248,9 @@ class Catcher(Screen):
 		Catcher.VRDZ_VALOR=self.ids.inp6.text
 		Catcher.BRMDZ_VALOR=self.ids.inp7.text
 		Catcher.VRMDZ_VALOR=self.ids.inp8.text
+
+		SOMA=0.0
+
 		if Catcher.BRT1!='':
 			BRT1(Catcher.BRT1)
 		if Catcher.BRT2!='':
@@ -263,7 +267,39 @@ class Catcher(Screen):
 			BRMDZ(Catcher.BRMDZ)
 		if Catcher.VRMDZ!='':
 			VRMDZ(Catcher.VRMDZ)
-		WRITER()
+
+		DICT=dict()
+		for x in ['BRT1','BRT2','BRT3','VRT1','BRDZ','VRDZ','BRMDZ','VRMDZ']:
+			if 0.0!=OVO.E[x]:
+				SOMA+=OVO.E_VLR[x+'_VLR']
+				DICT[x]=OVO.E[x]
+				DICT[x+'_DZ']=OVO.E_DZ[x+'_DZ']
+				DICT[x+'_VLR']=OVO.E_VLR[x+'_VLR']
+		DICT['TOTAL']=(SOMA)
+
+		W=open(PLAN, 'a')
+		W.write('{}={}\n\n'.format(Entry.NOME, DICT))
+		W.close()
+		if Entry.OUTRO==0:
+			P0=open(PLAN)
+			PR=P0.read()
+			PSUB=re.sub('\'_END\'', '\'{}=0\',\n\'_END\''.format(Entry.NOME), PR)
+			P1=open(PLAN, 'w')
+			P1.write(PSUB)
+			P1.close()
+			P0.close()
+		else:
+			P0=open(PLAN)
+			PR=P0.read()
+			PSUB=re.sub('{}=1'.format(Entry.NOME), '{}=0'.format(Entry.NOME), PR)
+			P1=open(PLAN, 'w')
+			P1.write(PSUB)
+			P1.close()
+			P0.close()
+
+		for x in ['BRT1','BRT2','BRT3','VRT1','BRDZ','VRDZ','BRMDZ','VRMDZ']:
+				OVO.E[x]=0.0
+
 		self.manager.current='menu'
 
 class Output(Screen):
@@ -311,7 +347,6 @@ class Output(Screen):
 
 class Editar(Screen):
 
-	MODO=None
 	TEXTFOCUS=None
 	INSERT=None
 
@@ -364,7 +399,6 @@ class Editar(Screen):
 			self.ids[Editar.TEXTFOCUS].text += '2.5'
 
 	def OK(self):
-		Editar.MODO=0
 		Catcher.BRT1=self.ids.t1.text
 		Catcher.VRT1=self.ids.t2.text
 		Catcher.BRT2=self.ids.t3.text
@@ -381,6 +415,9 @@ class Editar(Screen):
 		Catcher.VRDZ_VALOR=self.ids.p6.text
 		Catcher.BRMDZ_VALOR=self.ids.p7.text
 		Catcher.VRMDZ_VALOR=self.ids.p8.text
+
+		SOMA=0.0
+
 		if Catcher.BRT1!='':
 			BRT1(Catcher.BRT1)
 		if Catcher.BRT2!='':
@@ -397,7 +434,27 @@ class Editar(Screen):
 			BRMDZ(Catcher.BRMDZ)
 		if Catcher.VRMDZ!='':
 			VRMDZ(Catcher.VRMDZ)
-		WRITER()
+
+		DICT=dict()
+		for x in ['BRT1','BRT2','BRT3','VRT1','BRDZ','VRDZ','BRMDZ','VRMDZ']:
+			if 0.0!=OVO.E[x]:
+				SOMA+=OVO.E_VLR[x+'_VLR']
+				DICT[x]=OVO.E[x]
+				DICT[x+'_DZ']=OVO.E_DZ[x+'_DZ']
+				DICT[x+'_VLR']=OVO.E_VLR[x+'_VLR']
+		DICT['TOTAL']=(SOMA)
+
+		P0=open(PLAN)
+		PR=P0.read()
+		PSUB=re.sub('{}={}'.format(Entry.NOME, '{.*}'), '{}={}'.format(Entry.NOME, DICT), PR)
+		P1=open(PLAN, 'w')
+		P1.write(PSUB)
+		P1.close()
+		P0.close()
+
+		for x in ['BRT1','BRT2','BRT3','VRT1','BRDZ','VRDZ','BRMDZ','VRMDZ']:
+				OVO.E[x]=0.0
+
 		self.manager.current='menu'
 
 class Settings(Screen):
@@ -571,52 +628,6 @@ class VRMDZ(OVO):
 		OVO.E_DZ['VRMDZ_DZ']=self.valor
 		OVO.E_VLR['VRMDZ_VLR']=self.soma
 
-def WRITER(SOMA=0.0):
-
-	DICT=dict()
-	for x in ['BRT1','BRT2','BRT3','VRT1','BRDZ','VRDZ','BRMDZ','VRMDZ']:
-		if 0.0!=OVO.E[x]:
-			SOMA+=OVO.E_VLR[x+'_VLR']
-			DICT[x]=OVO.E[x]
-			DICT[x+'_DZ']=OVO.E_DZ[x+'_DZ']
-			DICT[x+'_VLR']=OVO.E_VLR[x+'_VLR']
-	DICT['TOTAL']=(SOMA)
-
-	if Editar.MODO==0:
-		P0=open(PLAN)
-		PR=P0.read()
-		PSUB=re.sub('{}={}'.format(Entry.NOME, '{.*}'), '{}={}'.format(Entry.NOME, DICT), PR)
-		P1=open(PLAN, 'w')
-		P1.write(PSUB)
-		P1.close()
-		P0.close()
-	else:
-		W=open(PLAN, 'a')
-		W.write('{}={}\n\n'.format(Entry.NOME, DICT))
-		W.close()
-		WRITEVALUE()
-
-	for x in ['BRT1','BRT2','BRT3','VRT1','BRDZ','VRDZ','BRMDZ','VRMDZ']:
-		OVO.E[x]=0.0
-
-def WRITEVALUE ():
-
-	if Entry.OUTRO==0:
-		P0=open(PLAN)
-		PR=P0.read()
-		PSUB=re.sub('\'_END\'', '\'{}=0\',\n\'_END\'\n'.format(Entry.NOME), PR)
-		P1=open(PLAN, 'w')
-		P1.write(PSUB)
-		P1.close()
-		P0.close()
-	else:
-		P0=open(PLAN)
-		PR=P0.read()
-		PSUB=re.sub('{}=1'.format(Entry.NOME), '{}=0'.format(Entry.NOME), PR)
-		P1=open(PLAN, 'w')
-		P1.write(PSUB)
-		P1.close()
-		P0.close()
 
 if __name__ == '__main__':
 	MapaApp().run()

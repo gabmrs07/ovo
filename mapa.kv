@@ -1,10 +1,15 @@
 
 <Menu>:
-	GridLayout
-		cols: 1
-		rows: 5
+	BoxLayout:
+		orientation: 'vertical'
+		size_hint: 1, 0.2
+		pos_hint:{'top':1}
 		Label:
-			text: 'Mapa'
+			text: 'MAPA'
+	GridLayout:
+		cols: 1
+		rows: 4
+		size_hint: 1, 0.8
 		Button:
 			text: 'Entrada'
 			on_press: root.CHECKER()
