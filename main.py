@@ -1,5 +1,3 @@
-#TESTE2
-
 import DATA
 import kivy
 import os
