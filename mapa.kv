@@ -7,8 +7,9 @@
 		Label:
 			text: 'MAPA'
 	GridLayout:
+		id: MENU
 		cols: 1
-		rows: 4
+		rows: 6
 		size_hint: 1, 0.8
 		Button:
 			text: 'Entrada'
@@ -16,6 +17,9 @@
 		Button:
 			text: 'Lista'
 			on_press: root.manager.current='output'
+		Button:
+			text: 'Histórico'
+			on_press: root.manager.current='history'
 		Button:
 			text: 'Settings'
 			on_press: root.manager.current='set'
@@ -980,6 +984,355 @@
 			Button:
 				text: '2.5'
 				on_press: root.MEIA()
+
+<History>
+	GridLayout:
+		cols: 3
+		rows: 1
+		orientation: 'horizontal'
+		size_hint: 1, 0.1
+		pos_hint:{'top':1}
+		Button:
+			size_hint: 0.3, 1
+			text: '<'
+			on_press: root.manager.current='menu'
+		Spinner:
+			id: hspin
+			values: ''
+		Button:
+			id: SELC
+			text: 'Selecionar'
+			background_color: 0, 0.8, 0, 1
+			on_press: root.SELECT()
+	GridLayout:
+		rows: 10
+		cols: 4
+		spacing: 1, 1
+		size_hint: 1, 0.9
+		canvas.before:
+			Color:
+				rgba: 1, 1, 1, 1
+			Rectangle:
+				pos: self.pos
+				size: self.size
+		Label:
+			id: DIA
+			canvas.before:
+				Color:
+					rgba: 0, 0, 0, 1
+				Rectangle:
+					pos: self.pos
+					size: self.size
+		Label:
+			text: 'Dúzia'
+			canvas.before:
+				Color:
+					rgba: 0, 0, 0, 1
+				Rectangle:
+					pos: self.pos
+					size: self.size
+		Label:
+			text: 'Preço'
+			canvas.before:
+				Color:
+					rgba: 0, 0, 0, 1
+				Rectangle:
+					pos: self.pos
+					size: self.size
+		Label:
+			text: 'Total'
+			canvas.before:
+				Color:
+					rgba: 0, 0, 0, 1
+				Rectangle:
+					pos: self.pos
+					size: self.size
+		Label:
+			canvas.before:
+				Color:
+					rgba: 0, 0, 0, 1
+				Rectangle:
+					pos: self.pos
+					size: self.size
+			text: 'BRT1'
+		Label:
+			canvas.before:
+				Color:
+					rgba: 0, 0, 0, 1
+				Rectangle:
+					pos: self.pos
+					size: self.size
+			id: BRT1
+		Label:
+			canvas.before:
+				Color:
+					rgba: 0, 0, 0, 1
+				Rectangle:
+					pos: self.pos
+					size: self.size
+			id: BRT1_DZ
+		Label:
+			canvas.before:
+				Color:
+					rgba: 0, 0, 0, 1
+				Rectangle:
+					pos: self.pos
+					size: self.size
+			id: BRT1_VLR
+		Label:
+			canvas.before:
+				Color:
+					rgba: 0, 0, 0, 1
+				Rectangle:
+					pos: self.pos
+					size: self.size
+			text: 'BRT2'
+		Label:
+			canvas.before:
+				Color:
+					rgba: 0, 0, 0, 1
+				Rectangle:
+					pos: self.pos
+					size: self.size
+			id: BRT2
+		Label:
+			canvas.before:
+				Color:
+					rgba: 0, 0, 0, 1
+				Rectangle:
+					pos: self.pos
+					size: self.size
+			id: BRT2_DZ
+		Label:
+			canvas.before:
+				Color:
+					rgba: 0, 0, 0, 1
+				Rectangle:
+					pos: self.pos
+					size: self.size
+			id: BRT2_VLR
+		Label:
+			canvas.before:
+				Color:
+					rgba: 0, 0, 0, 1
+				Rectangle:
+					pos: self.pos
+					size: self.size
+			text: 'BRT3'
+		Label:
+			canvas.before:
+				Color:
+					rgba: 0, 0, 0, 1
+				Rectangle:
+					pos: self.pos
+					size: self.size
+			id: BRT3
+		Label:
+			canvas.before:
+				Color:
+					rgba: 0, 0, 0, 1
+				Rectangle:
+					pos: self.pos
+					size: self.size
+			id: BRT3_DZ
+		Label:
+			canvas.before:
+				Color:
+					rgba: 0, 0, 0, 1
+				Rectangle:
+					pos: self.pos
+					size: self.size
+			id: BRT3_VLR
+		Label:
+			canvas.before:
+				Color:
+					rgba: 0, 0, 0, 1
+				Rectangle:
+					pos: self.pos
+					size: self.size
+			text: 'VRT1'
+		Label:
+			canvas.before:
+				Color:
+					rgba: 0, 0, 0, 1
+				Rectangle:
+					pos: self.pos
+					size: self.size
+			id: VRT1
+		Label:
+			canvas.before:
+				Color:
+					rgba: 0, 0, 0, 1
+				Rectangle:
+					pos: self.pos
+					size: self.size
+			id: VRT1_DZ
+		Label:
+			canvas.before:
+				Color:
+					rgba: 0, 0, 0, 1
+				Rectangle:
+					pos: self.pos
+					size: self.size
+			id: VRT1_VLR
+		Label:
+			canvas.before:
+				Color:
+					rgba: 0, 0, 0, 1
+				Rectangle:
+					pos: self.pos
+					size: self.size
+			text: 'BRDZ'
+		Label:
+			canvas.before:
+				Color:
+					rgba: 0, 0, 0, 1
+				Rectangle:
+					pos: self.pos
+					size: self.size
+			id: BRDZ
+		Label:
+			canvas.before:
+				Color:
+					rgba: 0, 0, 0, 1
+				Rectangle:
+					pos: self.pos
+					size: self.size
+			id: BRDZ_DZ
+		Label:
+			canvas.before:
+				Color:
+					rgba: 0, 0, 0, 1
+				Rectangle:
+					pos: self.pos
+					size: self.size
+			id: BRDZ_VLR
+		Label:
+			canvas.before:
+				Color:
+					rgba: 0, 0, 0, 1
+				Rectangle:
+					pos: self.pos
+					size: self.size
+			text: 'VRDZ'
+		Label:
+			canvas.before:
+				Color:
+					rgba: 0, 0, 0, 1
+				Rectangle:
+					pos: self.pos
+					size: self.size
+			id: VRDZ
+		Label:
+			canvas.before:
+				Color:
+					rgba: 0, 0, 0, 1
+				Rectangle:
+					pos: self.pos
+					size: self.size
+			id: VRDZ_DZ
+		Label:
+			canvas.before:
+				Color:
+					rgba: 0, 0, 0, 1
+				Rectangle:
+					pos: self.pos
+					size: self.size
+			id: VRDZ_VLR
+		Label:
+			canvas.before:
+				Color:
+					rgba: 0, 0, 0, 1
+				Rectangle:
+					pos: self.pos
+					size: self.size
+			text: 'BRMDZ'
+		Label:
+			canvas.before:
+				Color:
+					rgba: 0, 0, 0, 1
+				Rectangle:
+					pos: self.pos
+					size: self.size
+			id: BRMDZ
+		Label:
+			canvas.before:
+				Color:
+					rgba: 0, 0, 0, 1
+				Rectangle:
+					pos: self.pos
+					size: self.size
+			id: BRMDZ_DZ
+		Label:
+			canvas.before:
+				Color:
+					rgba: 0, 0, 0, 1
+				Rectangle:
+					pos: self.pos
+					size: self.size
+			id: BRMDZ_VLR
+		Label:
+			canvas.before:
+				Color:
+					rgba: 0, 0, 0, 1
+				Rectangle:
+					pos: self.pos
+					size: self.size
+			text: 'VRMDZ'
+		Label:
+			canvas.before:
+				Color:
+					rgba: 0, 0, 0, 1
+				Rectangle:
+					pos: self.pos
+					size: self.size
+			id: VRMDZ
+		Label:
+			canvas.before:
+				Color:
+					rgba: 0, 0, 0, 1
+				Rectangle:
+					pos: self.pos
+					size: self.size
+			id: VRMDZ_DZ
+		Label:
+			canvas.before:
+				Color:
+					rgba: 0, 0, 0, 1
+				Rectangle:
+					pos: self.pos
+					size: self.size
+			id: VRMDZ_VLR
+		Label:
+			canvas.before:
+				Color:
+					rgba: 0, 0, 0, 1
+				Rectangle:
+					pos: self.pos
+					size: self.size
+		Label:
+			canvas.before:
+				Color:
+					rgba: 0, 0, 0, 1
+				Rectangle:
+					pos: self.pos
+					size: self.size
+		Label:
+			canvas.before:
+				Color:
+					rgba: 0, 0, 0, 1
+				Rectangle:
+					pos: self.pos
+					size: self.size
+		Label:
+			canvas.before:
+				Color:
+					rgba: 0, 0, 0, 1
+				Rectangle:
+					pos: self.pos
+					size: self.size
+			id: TOTAL
+			color: 1, 0, 0, 1
 
 <Settings>
 	BoxLayout:

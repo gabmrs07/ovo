@@ -3,6 +3,7 @@ import kivy
 import os
 import os.path
 import re
+import socket
 import time
 from kivy.app import App
 from kivy.uix.button import Button
@@ -11,7 +12,8 @@ from kivy.uix.popup import Popup
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.base import runTouchApp
 
-from importlib import reload
+if socket.gethostname()=='josley':
+	from importlib import reload
 
 DIA=time.strftime('%d/%m/%y')
 CWD=os.getcwd()
@@ -22,12 +24,48 @@ _PL_LIST=['BRT1', 'BRT1_DZ', 'BRT1_VLR', 'BRT2', 'BRT2_DZ', 'BRT2_VLR', 'BRT3', 
 
 class Menu(Screen):
 
+	BT=Button(text='Gerar extrato')
+
 	def on_pre_enter(self, *args):
 		if os.path.isfile(CWD+'/'+PLAN):
 			global PLANILHA
 			import PLANILHA
 			reload(PLANILHA)
 			reload(DATA)
+			TRIGGER=None
+			for x in PLANILHA._C:
+				if str.endswith(x, '=1'):
+					TRIGGER=1
+					break
+				else:
+					TRIGGER=0
+			if TRIGGER==0:
+				Menu.BT=Button(text='Gerar extrato')
+				Menu.BT.bind(on_press=self.EXTRATO)
+				self.ids.MENU.add_widget(Menu.BT, index=2)
+
+	def EXTRATO(self, instance):
+		E=list()
+		for x in PLANILHA._C:
+			if x=='_END':
+				break
+			X=str.rstrip(x, '=0')
+			Y=getattr(PLANILHA, X)
+			E.append(Y)
+		E_DIA=time.strftime('H%d_%m_%y')
+		W=open('DATA.py', 'a')
+		W.write('\n{}={}'.format(E_DIA, E))
+		W.close()
+		P0=open('DATA.py')
+		PR=P0.read()
+		PSUB=re.sub('\'_END\'', '\'{}\', \'_END\''.format(E_DIA), PR)
+		P1=open('DATA.py', 'w')
+		P1.write(PSUB)
+		P1.close()
+		P0.close()
+		os.remove(PLAN)
+		self.ids.MENU.remove_widget(Menu.BT)
+
 
 	def CHECKER(self):
 		if os.path.isfile(CWD+'/'+PLAN):
@@ -152,14 +190,14 @@ class Entry(Screen):
 			Entry.NOME=self.ids.inpt0.text
 			Entry.OUTRO=0
 			if Entry.NOME=='':
-				self.popup=Popup(title='ERRO: NOME EM BRANCO!', content=Label(text='Insira o nome do cliente.'),\
+				POPUP0=Popup(title='ERRO: NOME EM BRANCO!', content=Label(text='Insira o nome do cliente.'),\
 							size_hint=(0.7, 0.3), pos_hint={'center_x': 0.5, 'center_y': 0.5})
-				self.popup.open()
+				POPUP0.open()
 				return 0
 			elif Entry.NOME+'=0' in PLANILHA._C:
-				self.popup=Popup(title='ERRO: NOME EXISTENTE!', content=Label(text='Escolha outro nome.'),\
+				POPUP1=Popup(title='ERRO: NOME EXISTENTE!', content=Label(text='Escolha outro nome.'),\
 							size_hint=(0.7, 0.3), pos_hint={'center_x': 0.5, 'center_y': 0.5})
-				self.popup.open()
+				POPUP1.open()
 				return 0
 		else:
 			Entry.NOME=SP.text
@@ -232,6 +270,7 @@ class Catcher(Screen):
 			self.ids[Catcher.TEXTFOCUS].text += '2.5'
 
 	def OK(self):
+
 		Catcher.BRT1=self.ids.inpt1.text
 		Catcher.VRT1=self.ids.inpt2.text
 		Catcher.BRT2=self.ids.inpt3.text
@@ -269,6 +308,7 @@ class Catcher(Screen):
 			VRMDZ(Catcher.VRMDZ)
 
 		DICT=dict()
+		DICT['CLIENTE']=Entry.NOME
 		for x in ['BRT1','BRT2','BRT3','VRT1','BRDZ','VRDZ','BRMDZ','VRMDZ']:
 			if 0.0!=OVO.E[x]:
 				SOMA+=OVO.E_VLR[x+'_VLR']
@@ -457,6 +497,19 @@ class Editar(Screen):
 
 		self.manager.current='menu'
 
+class History(Screen):
+
+	def on_pre_enter(self, *args):
+		reload(DATA)
+		HS=list()
+		for x in DATA._H:
+			if x=='_END':
+				break
+			X=str.strip(x, 'H')
+			S=str.replace(X, '_', '/')
+			HS.append(S)
+		self.ids.hspin.values=HS
+
 class Settings(Screen):
 	pass
 
@@ -511,6 +564,7 @@ class MapaApp(App):
 		self.sm.add_widget(Catcher(name='catcher'))
 		self.sm.add_widget(Output(name='output'))
 		self.sm.add_widget(Editar(name='editar'))
+		self.sm.add_widget(History(name='history'))
 		self.sm.add_widget(Settings(name='set'))
 		self.sm.add_widget(Setv(name='valor'))
 		self.sm.current='menu'
