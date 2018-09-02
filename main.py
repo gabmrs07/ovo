@@ -497,6 +497,9 @@ class Editar(Screen):
 
 		self.manager.current='menu'
 
+class HistSel(Screen):
+	pass
+
 class History(Screen):
 
 	def on_pre_enter(self, *args):
@@ -564,6 +567,7 @@ class MapaApp(App):
 		self.sm.add_widget(Catcher(name='catcher'))
 		self.sm.add_widget(Output(name='output'))
 		self.sm.add_widget(Editar(name='editar'))
+		self.sm.add_widget(HistSel(name='histsel'))
 		self.sm.add_widget(History(name='history'))
 		self.sm.add_widget(Settings(name='set'))
 		self.sm.add_widget(Setv(name='valor'))

@@ -19,7 +19,7 @@
 			on_press: root.manager.current='output'
 		Button:
 			text: 'Histórico'
-			on_press: root.manager.current='history'
+			on_press: root.manager.current='histsel'
 		Button:
 			text: 'Settings'
 			on_press: root.manager.current='set'
@@ -984,6 +984,34 @@
 			Button:
 				text: '2.5'
 				on_press: root.MEIA()
+
+<HistSel>
+	BoxLayout:
+		size_hint: 1, 0.1
+		pos_hint:{'top':1}
+		Button:
+			size_hint: 0.3, 1
+			text: '<'
+			on_press: root.manager.current='menu'
+		Label:
+			text: 'Escolha o dia:'
+		Button:
+			text: 'OK'
+			background_color: 0, 0.8, 0, 1
+			on_press:
+	GridLayout:
+		cols: 1
+		rows: 6
+		size_hint: 1, 0.9
+		Label:
+			text: 'Terça'
+		Spinner:
+		Label:
+			text: 'Quarta'
+		Spinner:
+		Label:
+			text: 'Quinta'
+		Spinner:
 
 <History>
 	GridLayout:
