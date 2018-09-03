@@ -3,5 +3,4 @@ Tarefas
 1- Adicionar popup de confirmação do lançamento
 2- Settings das ROTAS
 3- Carga
-4- Historico
-5- Output 
+4- Output 

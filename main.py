@@ -498,11 +498,11 @@ class Editar(Screen):
 		self.manager.current='menu'
 
 class HistSel(Screen):
-	pass
 
-class History(Screen):
+	H=None
 
 	def on_pre_enter(self, *args):
+		HistSel.H=None
 		reload(DATA)
 		HS=list()
 		for x in DATA._H:
@@ -512,6 +512,39 @@ class History(Screen):
 			S=str.replace(X, '_', '/')
 			HS.append(S)
 		self.ids.hspin.values=HS
+
+	def HSEL(self):
+		if self.ids.hspin.text!='':
+			HistSel.H=self.ids.hspin.text
+			self.manager.current='history'
+		else:
+			pass
+
+class History(Screen):
+
+	L=None
+	HS=None
+
+	def on_pre_enter(self, *args):
+		self.ids.hhspin.text=''
+		for x in _PL_LIST:
+			self.ids[x].text=''
+		H='H'+str.replace(HistSel.H, '/', '_')
+		self.ids.DIA.text=HistSel.H
+		History.HS=getattr(DATA, H)
+		History.L=list()
+		for x in range(len(History.HS)):
+			History.L.append(History.HS[x]['CLIENTE'])
+		self.ids.hhspin.values=History.L
+
+	def SEL(self):
+
+		I=History.L.index(self.ids.hhspin.text)
+		for x in _PL_LIST:
+			try:
+				self.ids[x].text=str(History.HS[I][x])
+			except:
+				self.ids[x].text='-'
 
 class Settings(Screen):
 	pass

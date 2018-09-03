@@ -993,25 +993,24 @@
 			size_hint: 0.3, 1
 			text: '<'
 			on_press: root.manager.current='menu'
-		Label:
-			text: 'Escolha o dia:'
 		Button:
 			text: 'OK'
 			background_color: 0, 0.8, 0, 1
-			on_press:
-	GridLayout:
-		cols: 1
-		rows: 6
-		size_hint: 1, 0.9
-		Label:
-			text: 'Terça'
-		Spinner:
-		Label:
-			text: 'Quarta'
-		Spinner:
-		Label:
-			text: 'Quinta'
-		Spinner:
+			on_press: root.HSEL()
+	Label:
+		text: 'Escolha o dia:'
+		size_hint: 1, 0.1
+		pos_hint: {'top':0.9}
+		canvas.before:
+			Color:
+				rgba: 0.3, 0.3, 0.3, 1
+			Rectangle:
+				pos: self.pos
+				size: self.size
+	Spinner:
+		id: hspin
+		size_hint: 1, 0.1
+		pos_hint: {'top': 0.8}
 
 <History>
 	GridLayout:
@@ -1023,15 +1022,15 @@
 		Button:
 			size_hint: 0.3, 1
 			text: '<'
-			on_press: root.manager.current='menu'
+			on_press: root.manager.current='histsel'
 		Spinner:
-			id: hspin
+			id: hhspin
 			values: ''
 		Button:
 			id: SELC
 			text: 'Selecionar'
 			background_color: 0, 0.8, 0, 1
-			on_press: root.SELECT()
+			on_press: root.SEL()
 	GridLayout:
 		rows: 10
 		cols: 4
