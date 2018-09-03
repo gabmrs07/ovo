@@ -15,16 +15,16 @@
 			text: 'Entrada'
 			on_press: root.CHECKER()
 		Button:
-			text: 'Lista'
+			text: 'Lançamentos'
 			on_press: root.manager.current='output'
 		Button:
 			text: 'Histórico'
 			on_press: root.manager.current='histsel'
 		Button:
-			text: 'Settings'
+			text: 'Configurações'
 			on_press: root.manager.current='set'
 		Button:
-			text: 'Exit'
+			text: 'Sair'
 			on_press: exit()
 
 <Rota>
@@ -1372,19 +1372,16 @@
 		Label:
 			text: 'CONFIGURAÇÕES'
 	GridLayout:
-		id: GSR
 		cols: 1
-		rows: 4
+		rows: 2
 		size_hint: 1, 0.9
 		pos_hint: {'top':0.9}
 		Button:
-			id: B1
 			text: 'Alterar preços'
 			on_press: root.manager.current='valor'
 		Button:
-			id: B2
 			text: 'Alterar rotas'
-			on_press: root.ROTA()
+			on_press: root.manager.current='presetr'
 
 <Setv>
 	BoxLayout:
@@ -1533,4 +1530,26 @@
 				text: '2.5'
 				on_press: root.MEIA()
 
-<Setr>
+<PreSetr>
+	BoxLayout:
+		size_hint: 1, 0.1
+		pos_hint: {'top':1}
+		Button:
+			text: '<'
+			on_press: root.manager.current='set'
+			size_hint: 0.2, 1
+		Label:
+			text: 'CONFIGURAÇÕES'
+	GridLayout:
+		cols: 1
+		rows: 4
+		size_hint: 1, 0.9
+		pos_hint: {'top':0.9}
+		Label:
+			text: 'Qual rota alterar?'
+		Button:
+			text: 'Terça'
+		Button:
+			text: 'Quarta'
+		Button:
+			text: 'Quinta'

@@ -25,6 +25,7 @@ _PL_LIST=['BRT1', 'BRT1_DZ', 'BRT1_VLR', 'BRT2', 'BRT2_DZ', 'BRT2_VLR', 'BRT3', 
 class Menu(Screen):
 
 	BT=Button(text='Gerar extrato')
+	TRIGGER=None
 
 	def on_pre_enter(self, *args):
 		if os.path.isfile(CWD+'/'+PLAN):
@@ -32,17 +33,19 @@ class Menu(Screen):
 			import PLANILHA
 			reload(PLANILHA)
 			reload(DATA)
-			TRIGGER=None
 			for x in PLANILHA._C:
 				if str.endswith(x, '=1'):
-					TRIGGER=1
+					Menu.TRIGGER=1
+					break
+				elif Menu.TRIGGER==2:
 					break
 				else:
-					TRIGGER=0
-			if TRIGGER==0:
+					Menu.TRIGGER=0
+			if Menu.TRIGGER==0:
 				Menu.BT=Button(text='Gerar extrato')
 				Menu.BT.bind(on_press=self.EXTRATO)
 				self.ids.MENU.add_widget(Menu.BT, index=2)
+				Menu.TRIGGER=2
 
 	def EXTRATO(self, instance):
 		E=list()
@@ -52,7 +55,7 @@ class Menu(Screen):
 			X=str.rstrip(x, '=0')
 			Y=getattr(PLANILHA, X)
 			E.append(Y)
-		E_DIA=time.strftime('H%d_%m_%y')
+		E_DIA='H'+str.replace(PLANILHA._DIA, '/', '_')
 		W=open('DATA.py', 'a')
 		W.write('\n{}={}'.format(E_DIA, E))
 		W.close()
@@ -547,32 +550,10 @@ class History(Screen):
 				self.ids[x].text='-'
 
 class Settings(Screen):
+	pass
 
-	L=None
-	BS1=None
-	BS2=None
-	BS3=None
-
-	def on_pre_enter(self, *args):
-		if Settings.L!=None:
-			self.ids.GSR.remove_widget(Settings.L)
-			self.ids.GSR.remove_widget(Settings.BS1)
-			self.ids.GSR.remove_widget(Settings.BS2)
-			self.ids.GSR.remove_widget(Settings.BS3)
-			self.ids.GSR.add_widget(self.ids.B1)
-			self.ids.GSR.add_widget(self.ids.B2)
-
-	def ROTA(self):
-		self.ids.GSR.clear_widgets()
-		Settings.L=Label(text='Qual rota modificar?')
-		Settings.BS1=Button(text='Terça')
-		Settings.BS2=Button(text='Quarta')
-		Settings.BS3=Button(text='Quinta')
-		self.ids.GSR.add_widget(Settings.L)
-		self.ids.GSR.add_widget(Settings.BS1)
-		self.ids.GSR.add_widget(Settings.BS2)
-		self.ids.GSR.add_widget(Settings.BS3)
-
+class PreSetr(Screen):
+	pass
 
 class Setv(Screen):
 
@@ -628,6 +609,7 @@ class MapaApp(App):
 		self.sm.add_widget(HistSel(name='histsel'))
 		self.sm.add_widget(History(name='history'))
 		self.sm.add_widget(Settings(name='set'))
+		self.sm.add_widget(PreSetr(name='presetr'))
 		self.sm.add_widget(Setv(name='valor'))
 		self.sm.current='menu'
 		return self.sm
