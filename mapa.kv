@@ -1370,17 +1370,21 @@
 			on_press: root.manager.current='menu'
 			size_hint: 0.2, 1
 		Label:
-			text: 'SETTINGS'
+			text: 'CONFIGURAÇÕES'
 	GridLayout:
+		id: GSR
 		cols: 1
-		rows: 2
+		rows: 4
 		size_hint: 1, 0.9
 		pos_hint: {'top':0.9}
 		Button:
+			id: B1
 			text: 'Alterar preços'
 			on_press: root.manager.current='valor'
 		Button:
+			id: B2
 			text: 'Alterar rotas'
+			on_press: root.ROTA()
 
 <Setv>
 	BoxLayout:
@@ -1528,3 +1532,5 @@
 			Button:
 				text: '2.5'
 				on_press: root.MEIA()
+
+<Setr>

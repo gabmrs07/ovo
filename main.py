@@ -547,7 +547,32 @@ class History(Screen):
 				self.ids[x].text='-'
 
 class Settings(Screen):
-	pass
+
+	L=None
+	BS1=None
+	BS2=None
+	BS3=None
+
+	def on_pre_enter(self, *args):
+		if Settings.L!=None:
+			self.ids.GSR.remove_widget(Settings.L)
+			self.ids.GSR.remove_widget(Settings.BS1)
+			self.ids.GSR.remove_widget(Settings.BS2)
+			self.ids.GSR.remove_widget(Settings.BS3)
+			self.ids.GSR.add_widget(self.ids.B1)
+			self.ids.GSR.add_widget(self.ids.B2)
+
+	def ROTA(self):
+		self.ids.GSR.clear_widgets()
+		Settings.L=Label(text='Qual rota modificar?')
+		Settings.BS1=Button(text='Terça')
+		Settings.BS2=Button(text='Quarta')
+		Settings.BS3=Button(text='Quinta')
+		self.ids.GSR.add_widget(Settings.L)
+		self.ids.GSR.add_widget(Settings.BS1)
+		self.ids.GSR.add_widget(Settings.BS2)
+		self.ids.GSR.add_widget(Settings.BS3)
+
 
 class Setv(Screen):
 
@@ -611,38 +636,11 @@ class MapaApp(App):
 
 class OVO:
 
-	E={
-'BRT1':0.0,
-'BRT2':0.0,
-'BRT3':0.0,
-'VRT1':0.0,
-'BRDZ':0.0,
-'VRDZ':0.0,
-'BRMDZ':0.0,
-'VRMDZ':0.0
-}
+	E={'BRT1':0.0,'BRT2':0.0,'BRT3':0.0,'VRT1':0.0,'BRDZ':0.0,'VRDZ':0.0,'BRMDZ':0.0,'VRMDZ':0.0}
 
-	E_DZ={
-'BRT1_DZ':0.0,
-'BRT2_DZ':0.0,
-'BRT3_DZ':0.0,
-'VRT1_DZ':0.0,
-'BRDZ_DZ':0.0,
-'VRDZ_DZ':0.0,
-'BRMDZ_DZ':0.0,
-'VRMDZ_DZ':0.0
-}
+	E_DZ={'BRT1_DZ':0.0,'BRT2_DZ':0.0,'BRT3_DZ':0.0,'VRT1_DZ':0.0,'BRDZ_DZ':0.0,'VRDZ_DZ':0.0,'BRMDZ_DZ':0.0,'VRMDZ_DZ':0.0}
 
-	E_VLR={
-'BRT1_VLR':0.0,
-'BRT2_VLR':0.0,
-'BRT3_VLR':0.0,
-'VRT1_VLR':0.0,
-'BRDZ_VLR':0.0,
-'VRDZ_VLR':0.0,
-'BRMDZ_VLR':0.0,
-'VRMDZ_VLR':0.0
-}
+	E_VLR={'BRT1_VLR':0.0,'BRT2_VLR':0.0,'BRT3_VLR':0.0,'VRT1_VLR':0.0,'BRDZ_VLR':0.0,'VRDZ_VLR':0.0,'BRMDZ_VLR':0.0,'VRMDZ_VLR':0.0}
 
 	def __init__(self, dz):
 		self.dz=float(dz)
