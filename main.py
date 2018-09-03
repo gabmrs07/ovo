@@ -571,6 +571,7 @@ class PreSetr(Screen):
 class Setr(Screen):
 
 	def on_pre_enter(self, *args):
+		self.ids.adsubspin.text=''
 		if PreSetr.MODO==1:
 			self.ids.adsubspin.values=DATA._TERCA
 		elif PreSetr.MODO==2:
@@ -578,6 +579,72 @@ class Setr(Screen):
 		elif PreSetr.MODO==3:
 			self.ids.adsubspin.values=DATA._QUINTA
 
+	def KEY(self, INSERT):
+		self.ids['cli'].text += INSERT
+
+	def BACKSPACE(self):
+		self.ids.cli.text = ''
+
+	def REMOVE(self):
+		if self.ids.adsubspin.text!='':
+			if PreSetr.MODO==1:
+				self.REMOVER('_TERCA')
+			elif PreSetr.MODO==2:
+				self.REMOVER('_QUARTA')
+			elif PreSetr.MODO==3:
+				self.REMOVER('_QUARTA')
+
+	def REMOVER(self, DIA):
+		R=getattr(DATA, DIA)
+		R.remove(self.ids.adsubspin.text)
+		P0=open('DATA.py')
+		PR=P0.read()
+		PSUB=re.sub('{}=\[.*\]'.format(DIA), '{}={}'.format(DIA, R), PR)
+		P1=open('DATA.py', 'w')
+		P1.write(PSUB)
+		P1.close()
+		P0.close()
+		self.ids.adsubspin.text=''
+		reload(DATA)
+		if PreSetr.MODO==1:
+			self.ids.adsubspin.values=DATA._TERCA
+		elif PreSetr.MODO==2:
+			self.ids.adsubspin.values=DATA._QUARTA
+		elif PreSetr.MODO==3:
+			self.ids.adsubspin.values=DATA._QUINTA
+
+	def ADD(self):
+		if self.ids.cli.text!='':
+			if PreSetr.MODO==1:
+				self.ADDER('_TERCA')
+			elif PreSetr.MODO==2:
+				self.ADDER('_QUARTA')
+			elif PreSetr.MODO==3:
+				self.ADDER('_QUARTA')
+
+	def ADDER(self, DIA):
+		R=getattr(DATA, DIA)
+		if self.ids.adsubspin.text!='':
+			I=R.index(self.ids.adsubspin.text)
+			R.insert(I, self.ids.cli.text)
+		else:
+			R.append(self.ids.cli.text)
+		P0=open('DATA.py')
+		PR=P0.read()
+		PSUB=re.sub('{}=\[.*\]'.format(DIA), '{}={}'.format(DIA, R), PR)
+		P1=open('DATA.py', 'w')
+		P1.write(PSUB)
+		P1.close()
+		P0.close()
+		self.ids.adsubspin.text=''
+		self.ids.cli.text=''
+		reload(DATA)
+		if PreSetr.MODO==1:
+			self.ids.adsubspin.values=DATA._TERCA
+		elif PreSetr.MODO==2:
+			self.ids.adsubspin.values=DATA._QUARTA
+		elif PreSetr.MODO==3:
+			self.ids.adsubspin.values=DATA._QUINTA
 
 class Setv(Screen):
 
