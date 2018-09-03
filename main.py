@@ -553,7 +553,31 @@ class Settings(Screen):
 	pass
 
 class PreSetr(Screen):
-	pass
+
+	MODO=None
+
+	def T(self):
+		PreSetr.MODO=1
+		self.manager.current='setr'
+
+	def Q(self):
+		PreSetr.MODO=2
+		self.manager.current='setr'
+
+	def QI(self):
+		PreSetr.MODO=3
+		self.manager.current='setr'
+
+class Setr(Screen):
+
+	def on_pre_enter(self, *args):
+		if PreSetr.MODO==1:
+			self.ids.adsubspin.values=DATA._TERCA
+		elif PreSetr.MODO==2:
+			self.ids.adsubspin.values=DATA._QUARTA
+		elif PreSetr.MODO==3:
+			self.ids.adsubspin.values=DATA._QUINTA
+
 
 class Setv(Screen):
 
@@ -610,6 +634,7 @@ class MapaApp(App):
 		self.sm.add_widget(History(name='history'))
 		self.sm.add_widget(Settings(name='set'))
 		self.sm.add_widget(PreSetr(name='presetr'))
+		self.sm.add_widget(Setr(name='setr'))
 		self.sm.add_widget(Setv(name='valor'))
 		self.sm.current='menu'
 		return self.sm

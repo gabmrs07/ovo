@@ -1549,7 +1549,141 @@
 			text: 'Qual rota alterar?'
 		Button:
 			text: 'Terça'
+			on_press: root.T()
 		Button:
 			text: 'Quarta'
+			on_press: root.Q()
 		Button:
 			text: 'Quinta'
+			on_press: root.QI()
+
+<Setr>
+	BoxLayout:
+		size_hint: 1, 0.1
+		pos_hint: {'top':1}
+		Button:
+			text: '<'
+			on_press: root.manager.current='set'
+			size_hint: 0.2, 1
+		Label:
+			text: 'ALTERAÇÃO DE ROTA PADRÃO'
+
+	BoxLayout:
+		size_hint: 1, 0.1
+		pos_hint: {'top':0.9}
+		Button:
+			text: 'Adicionar'
+			background_color: 0, 0.8, 0, 1
+		Button:
+			text: 'Remover'
+			background_color: 0.8, 0, 0, 1
+
+	BoxLayout:
+		size_hint: 1, 0.1
+		pos_hint: {'top':0.8}
+		Spinner:
+			id: adsubspin
+
+	Label:
+		id: cli
+		size_hint: 1, 0.2
+		pos_hint: {'top':0.7}
+		text:''
+
+	BoxLayout:
+		size_hint: 0.20, 0.165
+		pos_hint: {'right':1}
+		Button:
+			text: '<<'
+			on_press: root.BACKSPACE()
+	BoxLayout:
+		orientation: 'vertical'
+		size_hint: 1, 0.5
+		pos_hint: {'top':0.5}
+		GridLayout:
+			cols: 10
+			rows: 3
+			Button:
+				text: 'Q'
+				on_press: root.KEY(self.text)
+			Button:
+				text: 'W'
+				on_press: root.KEY(self.text)
+			Button:
+				text: 'E'
+				on_press: root.KEY(self.text)
+			Button:
+				text: 'R'
+				on_press: root.KEY(self.text)
+			Button:
+				text: 'T'
+				on_press: root.KEY(self.text)
+			Button:
+				text: 'Y'
+				on_press: root.KEY(self.text)
+			Button:
+				text: 'U'
+				on_press: root.KEY(self.text)
+			Button:
+				text: 'I'
+				on_press: root.KEY(self.text)
+			Button:
+				text: 'O'
+				on_press: root.KEY(self.text)
+			Button:
+				text: 'P'
+				on_press: root.KEY(self.text)
+			Button:
+				text: 'A'
+				on_press: root.KEY(self.text)
+			Button:
+				text: 'S'
+				on_press: root.KEY(self.text)
+			Button:
+				text: 'D'
+				on_press: root.KEY(self.text)
+			Button:
+				text: 'F'
+				on_press: root.KEY(self.text)
+			Button:
+				text: 'G'
+				on_press: root.KEY(self.text)
+			Button:
+				text: 'H'
+				on_press: root.KEY(self.text)
+			Button:
+				text: 'J'
+				on_press: root.KEY(self.text)
+			Button:
+				text: 'K'
+				on_press: root.KEY(self.text)
+			Button:
+				text: 'L'
+				on_press: root.KEY(self.text)
+			Button:
+				text: 'Ç'
+				on_press: root.KEY(self.text)
+			Button:
+				text: '_'
+				on_press: root.KEY(self.text)
+			Button:
+				text: 'Z'
+				on_press: root.KEY(self.text)
+			Button:
+				text: 'X'
+				on_press: root.KEY(self.text)
+			Button:
+				text: 'C'
+				on_press: root.KEY(self.text)
+			Button:
+				text: 'V'
+				on_press: root.KEY(self.text)
+			Button:
+				text: 'B'
+				on_press: root.KEY(self.text)
+			Button:
+				text: 'N'
+				on_press: root.KEY(self.text)
+			Button:
+				text: 'M'
+				on_press: root.KEY(self.text)
