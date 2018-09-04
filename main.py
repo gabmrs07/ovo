@@ -49,6 +49,7 @@ class Menu(Screen):
 
 	def EXTRATO(self, instance):
 		E=list()
+		E.append(PLANILHA.CARGA)
 		for x in PLANILHA._C:
 			if x=='_END':
 				break
@@ -94,14 +95,129 @@ class Rota(Screen):
 	def RS_T(self):
 		Rota.LAUDARE=0
 		self.SB(DATA._TERCA)
-		self.manager.current='entry'
+		self.manager.current='carga'
 	def RS_QUA(self):
 		Rota.LAUDARE=1
 		self.SB(DATA._QUARTA)
-		self.manager.current='entry'
+		self.manager.current='carga'
 	def RS_QUI(self):
 		Rota.LAUDARE=2
 		self.SB(DATA._QUINTA)
+		self.manager.current='carga'
+
+class Carga(Screen):
+
+	TEXTFOCUS=None
+	INSERT=None
+	BRT1=''
+	BRT2=''
+	BRT3=''
+	VRT1=''
+	BRDZ=''
+	VRDZ=''
+	BRMDZ=''
+	VRMDZ=''
+	BRT1_VALOR=DATA._CV['V1']
+	BRT2_VALOR=DATA._CV['V3']
+	BRT3_VALOR=DATA._CV['V4']
+	VRT1_VALOR=DATA._CV['V2']
+	BRDZ_VALOR=DATA._CV['V5']
+	VRDZ_VALOR=DATA._CV['V6']
+	BRMDZ_VALOR=DATA._CV['V7']
+	VRMDZ_VALOR=DATA._CV['V8']
+
+	def on_pre_enter(self, *args):
+		self.ids['inpt1'].text=''
+		self.ids['inpt2'].text=''
+		self.ids['inpt3'].text=''
+		self.ids['inpt4'].text=''
+		self.ids['inpt5'].text=''
+		self.ids['inpt6'].text=''
+		self.ids['inpt7'].text=''
+		self.ids['inpt8'].text=''
+		self.ids['inp1'].text=DATA._CV['V1']
+		self.ids['inp2'].text=DATA._CV['V2']
+		self.ids['inp3'].text=DATA._CV['V3']
+		self.ids['inp4'].text=DATA._CV['V4']
+		self.ids['inp5'].text=DATA._CV['V5']
+		self.ids['inp6'].text=DATA._CV['V6']
+		self.ids['inp7'].text=DATA._CV['V7']
+		self.ids['inp8'].text=DATA._CV['V8']
+
+		Rota.TEXTFOCUS='inpt1'
+
+	def FOCUS(self, IDS='inpt1'):
+		Rota.TEXTFOCUS=IDS
+
+	def KEY(self, INSERT):
+		self.ids[Rota.TEXTFOCUS].text += INSERT
+
+	def BACKSPACE(self):
+		self.ids[Rota.TEXTFOCUS].text = ''
+
+	def MEIA(self):
+		TEXT=self.ids[Rota.TEXTFOCUS].text
+		if TEXT!='':
+			FLT=float(self.ids[Rota.TEXTFOCUS].text)
+			self.ids[Rota.TEXTFOCUS].text = str(FLT+0.5)
+		else:
+			self.ids[Rota.TEXTFOCUS].text += '0.5'
+
+	def OK(self):
+
+		Catcher.BRT1=self.ids.inpt1.text
+		Catcher.VRT1=self.ids.inpt2.text
+		Catcher.BRT2=self.ids.inpt3.text
+		Catcher.BRT3=self.ids.inpt4.text
+		Catcher.BRDZ=self.ids.inpt5.text
+		Catcher.VRDZ=self.ids.inpt6.text
+		Catcher.BRMDZ=self.ids.inpt7.text
+		Catcher.VRMDZ=self.ids.inpt8.text
+		Catcher.BRT1_VALOR=self.ids.inp1.text
+		Catcher.VRT1_VALOR=self.ids.inp2.text
+		Catcher.BRT2_VALOR=self.ids.inp3.text
+		Catcher.BRT3_VALOR=self.ids.inp4.text
+		Catcher.BRDZ_VALOR=self.ids.inp5.text
+		Catcher.VRDZ_VALOR=self.ids.inp6.text
+		Catcher.BRMDZ_VALOR=self.ids.inp7.text
+		Catcher.VRMDZ_VALOR=self.ids.inp8.text
+
+		SOMA=0.0
+
+		if Catcher.BRT1!='':
+			BRT1(Catcher.BRT1)
+		if Catcher.BRT2!='':
+			BRT2(Catcher.BRT2)
+		if Catcher.BRT3!='':
+			BRT3(Catcher.BRT3)
+		if Catcher.VRT1!='':
+			VRT1(Catcher.VRT1)
+		if Catcher.BRDZ!='':
+			BRDZ(Catcher.BRDZ)
+		if Catcher.VRDZ!='':
+			VRDZ(Catcher.VRDZ)
+		if Catcher.BRMDZ!='':
+			BRMDZ(Catcher.BRMDZ)
+		if Catcher.VRMDZ!='':
+			VRMDZ(Catcher.VRMDZ)
+
+		DICT=dict()
+		DICT['CLIENTE']='CARGA'
+		for x in ['BRT1','BRT2','BRT3','VRT1','BRDZ','VRDZ','BRMDZ','VRMDZ']:
+			if 0.0!=OVO.E[x]:
+				SOMA+=OVO.E_VLR[x+'_VLR']
+				DICT[x]=OVO.E[x]
+				DICT[x+'_DZ']=OVO.E_DZ[x+'_DZ']
+				DICT[x+'_VLR']=OVO.E_VLR[x+'_VLR']
+		DICT['TOTAL']=(SOMA)
+
+		W=open(PLAN, 'a')
+		W.write('CARGA={}\n\n'.format(DICT))
+		W.close()
+
+		for x in ['BRT1','BRT2','BRT3','VRT1','BRDZ','VRDZ','BRMDZ','VRMDZ']:
+				OVO.E[x]=0.0
+
 		self.manager.current='entry'
 
 class Entry(Screen):
@@ -347,11 +463,10 @@ class Catcher(Screen):
 
 class Output(Screen):
 
+	T=None
+
 	def on_pre_enter(self, *args):
 		if os.path.isfile(CWD+'/'+PLAN):
-			global SO
-			global SO_LIST
-			global BTN0
 			BTN0=self.ids.EDIT
 			SO=self.ids.outspin
 			SO_LIST=list()
@@ -363,6 +478,7 @@ class Output(Screen):
 				BTN0.background_color=(0, 0, 0, 1)
 				for x in _PL_LIST:
 					self.ids[x].text=''
+			SO_LIST.append('CARGA')
 			for x in range(LEN_C):
 				if str.endswith(PLANILHA._C[x], '0'):
 					SO_LIST.append(str.rstrip(PLANILHA._C[x], '=0'))
@@ -371,7 +487,9 @@ class Output(Screen):
 			self.manager.current='menu'
 
 	def SELECT(self):
-		S=getattr(PLANILHA, SO.text)
+		Output.T=self.ids.outspin.text
+		BTN0=self.ids.EDIT
+		S=getattr(PLANILHA, Output.T)
 		self.ids.DIA.text=PLANILHA._DIA
 		BTN0.text='EDITAR'
 		BTN0.background_color=(0.8, 0, 0, 1)
@@ -382,6 +500,7 @@ class Output(Screen):
 				self.ids[x].text='-'
 
 	def EDITING(self):
+		SO=self.ids.outspin
 		if self.ids.outspin.text=='':
 			pass
 		else:
@@ -421,7 +540,15 @@ class Editar(Screen):
 		FILLPILAS('p6', 'VRDZ_DZ', 'V6')
 		FILLPILAS('p7', 'VRMDZ_DZ', 'V7')
 		FILLPILAS('p8', 'BRMDZ_DZ', 'V8')
-		self.ids['NCL'].text='CLIENTE: {}'.format(SO.text)
+		if Output.T=='CARGA':
+			self.ids['NCL'].text='CARGA'
+			for x in range(1,9):
+				self.ids['UN'+str(x)].text='CX'
+		else:
+			self.ids['NCL'].text='CLIENTE: {}'.format(Output.T)
+			for x in range(1,9):
+				self.ids['UN'+str(x)].text='DZ'
+
 		Editar.TEXTFOCUS='t1'
 
 	def FOCUS(self, IDS='t1'):
@@ -693,6 +820,7 @@ class MapaApp(App):
 		self.sm=ScreenManager()
 		self.sm.add_widget(Menu(name='menu'))
 		self.sm.add_widget(Rota(name='rota'))
+		self.sm.add_widget(Carga(name='carga'))
 		self.sm.add_widget(Entry(name='entry'))
 		self.sm.add_widget(Catcher(name='catcher'))
 		self.sm.add_widget(Output(name='output'))
