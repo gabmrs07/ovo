@@ -15,12 +15,30 @@ from kivy.base import runTouchApp
 if socket.gethostname()=='josley':
 	from importlib import reload
 
-DIA=time.strftime('%d/%m/%y')
+DIAVAR=time.strftime('%a_%d_%m_%y')
 CWD=os.getcwd()
-PLAN='PLANILHA.py'
-_PL_LIST=['BRT1', 'BRT1_DZ', 'BRT1_VLR', 'BRT2', 'BRT2_DZ', 'BRT2_VLR', 'BRT3', 'BRT3_DZ', 'BRT3_VLR',\
+D='DATA.py'
+L=['BRT1', 'BRT1_DZ', 'BRT1_VLR', 'BRT2', 'BRT2_DZ', 'BRT2_VLR', 'BRT3', 'BRT3_DZ', 'BRT3_VLR',\
 		'VRT1', 'VRT1_DZ', 'VRT1_VLR', 'BRDZ', 'BRDZ_DZ', 'BRDZ_VLR', 'VRDZ', 'VRDZ_DZ', 'VRDZ_VLR',\
 		'BRMDZ', 'BRMDZ_DZ', 'BRMDZ_VLR', 'VRMDZ', 'VRMDZ_DZ', 'VRMDZ_VLR','TOTAL']
+NOME=None
+
+BRT1=''
+VRT1=''
+BRT2=''
+BRT3=''
+BRDZ=''
+VRDZ=''
+BRMDZ=''
+VRMDZ=''
+BRT1_VALOR=DATA._CV['V1']
+VRT1_VALOR=DATA._CV['V2']
+BRT2_VALOR=DATA._CV['V3']
+BRT3_VALOR=DATA._CV['V4']
+BRDZ_VALOR=DATA._CV['V5']
+VRDZ_VALOR=DATA._CV['V6']
+BRMDZ_VALOR=DATA._CV['V7']
+VRMDZ_VALOR=DATA._CV['V8']
 
 class Menu(Screen):
 
@@ -28,82 +46,87 @@ class Menu(Screen):
 	TRIGGER=None
 
 	def on_pre_enter(self, *args):
-		if os.path.isfile(CWD+'/'+PLAN):
-			global PLANILHA
-			import PLANILHA
-			reload(PLANILHA)
-			reload(DATA)
-			for x in PLANILHA._C:
-				if str.endswith(x, '=1'):
-					Menu.TRIGGER=1
-					break
-				elif Menu.TRIGGER==2:
-					break
-				else:
-					Menu.TRIGGER=0
-			if Menu.TRIGGER==0:
-				Menu.BT=Button(text='Gerar extrato')
-				Menu.BT.bind(on_press=self.EXTRATO)
-				self.ids.MENU.add_widget(Menu.BT, index=2)
-				Menu.TRIGGER=2
+		reload(DATA)
+		for x in DATA._C:
+			if DATA._C.get(x)==1:
+				Menu.TRIGGER=1
+				break
+			elif Menu.TRIGGER==2:
+				break
+			else:
+				Menu.TRIGGER=0
+		if Menu.TRIGGER==0:
+			Menu.BT=Button(text='Gerar extrato')
+			Menu.BT.bind(on_press=self.EXTRATO)
+			self.ids.MENU.add_widget(Menu.BT, index=2)
+			Menu.TRIGGER=2
 
 	def EXTRATO(self, instance):
-		E=list()
-		E.append(PLANILHA.CARGA)
-		for x in PLANILHA._C:
-			if x=='_END':
-				break
-			X=str.rstrip(x, '=0')
-			Y=getattr(PLANILHA, X)
-			E.append(Y)
-		E_DIA='H'+str.replace(PLANILHA._DIA, '/', '_')
-		W=open('DATA.py', 'a')
-		W.write('\n{}={}'.format(E_DIA, E))
-		W.close()
-		P0=open('DATA.py')
-		PR=P0.read()
-		PSUB=re.sub('\'_END\'', '\'{}\', \'_END\''.format(E_DIA), PR)
-		P1=open('DATA.py', 'w')
-		P1.write(PSUB)
-		P1.close()
-		P0.close()
-		os.remove(PLAN)
-		self.ids.MENU.remove_widget(Menu.BT)
-
+#		E=list()
+#		E.append(PLANILHA.CARGA)
+#		for x in PLANILHA._C:
+#			if x=='_END':
+#				break
+#			X=str.rstrip(x, '=0')
+#			Y=getattr(PLANILHA, X)
+#			E.append(Y)
+#		E_DIA='H'+str.replace(PLANILHA._DIA, '/', '_')
+#		W=open('DATA.py', 'a')
+#		W.write('\n{}={}'.format(E_DIA, E))
+#		W.close()
+#		P0=open('DATA.py')
+#		PR=P0.read()
+#		PSUB=re.sub('\'_END\'', '\'{}\', \'_END\''.format(E_DIA), PR)
+#		P1=open('DATA.py', 'w')
+#		P1.write(PSUB)
+#		P1.close()
+#		P0.close()
+#		os.remove(PLAN)
+#		self.ids.MENU.remove_widget(Menu.BT)
+			pass
 
 	def CHECKER(self):
-		if os.path.isfile(CWD+'/'+PLAN):
+		if DATA._C:
 			self.manager.current='entry'
 		else:
 			self.manager.current='rota'
 
 class Rota(Screen):
 
-	LAUDARE=None
-
 	def SB(self, ROTA):
-		K='_DIA=\'{}\'\n\n_R=0\n\n_C=[\n'.format(DIA)
-		LEN_DATA=len(ROTA)
-		for x in range(LEN_DATA):
-			K+='\'{}'.format(ROTA[x])
-			K+='=1\',\n'
-		K+='\'_END\'\n]\n\n'
-		P=open(PLAN, 'w')
-		P.write(K)
+		C=dict()
+		for x in ROTA:
+			C[x]=1
+		P=open(D)
+		PR=P.read()
+		PS=re.sub('_C={}', '_C={}'.format(C), PR)
+		P1=open(D, 'w')
+		P1.write(PS)
 		P.close()
+		P1.close()
+
+		H=geattr(DATA, '_H')
+		H.insert(0, DIAVAR)
+		P=open(D)
+		PR=P.read()
+		PS=re.sub('_H=\[.*\]', '_H={}'.format(DIAVAR), PR)
+		P1=open(D, 'w')
+		P1.write(PS)
+		P.close()
+		P1.close()
+
+		W=open(D, 'a')
+		W.write('\n{}=[]'.format(DIAVAR))
+		self.manager.current='carga'
 
 	def RS_T(self):
-		Rota.LAUDARE=0
 		self.SB(DATA._TERCA)
-		self.manager.current='carga'
+
 	def RS_QUA(self):
-		Rota.LAUDARE=1
 		self.SB(DATA._QUARTA)
-		self.manager.current='carga'
+
 	def RS_QUI(self):
-		Rota.LAUDARE=2
 		self.SB(DATA._QUINTA)
-		self.manager.current='carga'
 
 class Carga(Screen):
 
@@ -117,14 +140,7 @@ class Carga(Screen):
 	VRDZ=''
 	BRMDZ=''
 	VRMDZ=''
-	BRT1_VALOR=DATA._CV['V1']
-	BRT2_VALOR=DATA._CV['V3']
-	BRT3_VALOR=DATA._CV['V4']
-	VRT1_VALOR=DATA._CV['V2']
-	BRDZ_VALOR=DATA._CV['V5']
-	VRDZ_VALOR=DATA._CV['V6']
-	BRMDZ_VALOR=DATA._CV['V7']
-	VRMDZ_VALOR=DATA._CV['V8']
+
 
 	def on_pre_enter(self, *args):
 		self.ids['inpt1'].text=''
@@ -165,41 +181,41 @@ class Carga(Screen):
 
 	def OK(self):
 
-		Catcher.BRT1=self.ids.inpt1.text
-		Catcher.VRT1=self.ids.inpt2.text
-		Catcher.BRT2=self.ids.inpt3.text
-		Catcher.BRT3=self.ids.inpt4.text
-		Catcher.BRDZ=self.ids.inpt5.text
-		Catcher.VRDZ=self.ids.inpt6.text
-		Catcher.BRMDZ=self.ids.inpt7.text
-		Catcher.VRMDZ=self.ids.inpt8.text
-		Catcher.BRT1_VALOR=self.ids.inp1.text
-		Catcher.VRT1_VALOR=self.ids.inp2.text
-		Catcher.BRT2_VALOR=self.ids.inp3.text
-		Catcher.BRT3_VALOR=self.ids.inp4.text
-		Catcher.BRDZ_VALOR=self.ids.inp5.text
-		Catcher.VRDZ_VALOR=self.ids.inp6.text
-		Catcher.BRMDZ_VALOR=self.ids.inp7.text
-		Catcher.VRMDZ_VALOR=self.ids.inp8.text
+		BRT1=self.ids.inpt1.text
+		VRT1=self.ids.inpt2.text
+		BRT2=self.ids.inpt3.text
+		BRT3=self.ids.inpt4.text
+		BRDZ=self.ids.inpt5.text
+		VRDZ=self.ids.inpt6.text
+		BRMDZ=self.ids.inpt7.text
+		VRMDZ=self.ids.inpt8.text
+		BRT1_VALOR=self.ids.inp1.text
+		VRT1_VALOR=self.ids.inp2.text
+		BRT2_VALOR=self.ids.inp3.text
+		BRT3_VALOR=self.ids.inp4.text
+		BRDZ_VALOR=self.ids.inp5.text
+		VRDZ_VALOR=self.ids.inp6.text
+		BRMDZ_VALOR=self.ids.inp7.text
+		VRMDZ_VALOR=self.ids.inp8.text
 
 		SOMA=0.0
 
-		if Catcher.BRT1!='':
-			BRT1(Catcher.BRT1)
-		if Catcher.BRT2!='':
-			BRT2(Catcher.BRT2)
-		if Catcher.BRT3!='':
-			BRT3(Catcher.BRT3)
-		if Catcher.VRT1!='':
-			VRT1(Catcher.VRT1)
-		if Catcher.BRDZ!='':
-			BRDZ(Catcher.BRDZ)
-		if Catcher.VRDZ!='':
-			VRDZ(Catcher.VRDZ)
-		if Catcher.BRMDZ!='':
-			BRMDZ(Catcher.BRMDZ)
-		if Catcher.VRMDZ!='':
-			VRMDZ(Catcher.VRMDZ)
+		if BRT1!='':
+			BRT1(BRT1)
+		if BRT2!='':
+			BRT2(BRT2)
+		if BRT3!='':
+			BRT3(BRT3)
+		if VRT1!='':
+			VRT1(VRT1)
+		if BRDZ!='':
+			BRDZ(BRDZ)
+		if VRDZ!='':
+			VRDZ(VRDZ)
+		if BRMDZ!='':
+			BRMDZ(BRMDZ)
+		if VRMDZ!='':
+			VRMDZ(VRMDZ)
 
 		DICT=dict()
 		DICT['CLIENTE']='CARGA'
@@ -222,105 +238,44 @@ class Carga(Screen):
 
 class Entry(Screen):
 
-	NOME=None
 	INSERT=None
 	OUTRO=None
 
 	def on_pre_enter(self, *args):
-		if os.path.isfile(CWD+'/'+PLAN):
-			global PLANILHA
-			import PLANILHA
-			reload(PLANILHA)
-		global SP
+		reload(DATA)
 		self.ids.inpt0.text=''
 		Entry.OUTRO=None
-		SP=self.ids.spinner
-		SP.text='OUTRO'
-		LEN_C=len(PLANILHA._C)
-		for x in range(LEN_C-1):
-			S=PLANILHA._C[x]
-			if '1' in S:
-				SP.text=str.rstrip(S, '=1')
+		S=self.ids.spinner
+		S.text='OUTRO'
+		for x in DATA._C:
+			if DATA._C.get(x)==1:
+				S.text=x
 				break
-		if Rota.LAUDARE==0:
-			G=getattr(DATA, '_TERCA')
-			if os.path.isfile(CWD+'/'+PLAN):
-				R=list()
-				for x in G:
-					if x+'=1' in PLANILHA._C:
-						R.append(x)
-				R.insert(0, 'OUTRO')
-				SP.values=R
-			else:
-				G.insert(0, 'OUTRO')
-				SP.values=G
-		elif Rota.LAUDARE==1:
-			G=getattr(DATA, '_QUARTA')
-			if os.path.isfile(CWD+'/'+PLAN):
-				R=list()
-				for x in G:
-					if x+'=1' in PLANILHA._C:
-						R.append(x)
-				R.insert(0, 'OUTRO')
-				SP.values=R
-			else:
-				G.insert(0, 'OUTRO')
-				SP.values=G
-		elif Rota.LAUDARE==2:
-			G=getattr(DATA, '_QUINTA')
-			if os.path.isfile(CWD+'/'+PLAN):
-				R=list()
-				for x in G:
-					if x+'=1' in PLANILHA._C:
-						R.append(x)
-				R.insert(0, 'OUTRO')
-				SP.values=R
-			else:
-				G.insert(0, 'OUTRO')
-				SP.values=G
-		elif os.path.isfile(CWD+'/'+PLAN):
-			if PLANILHA._R==0:
-				G=getattr(DATA, '_TERCA')
-				R=list()
-				for x in G:
-					if x+'=1' in PLANILHA._C:
-						R.append(x)
-				R.insert(0, 'OUTRO')
-				SP.values=R
-			elif PLANILHA._R==1:
-				G=getattr(DATA, '_QUARTA')
-				R=list()
-				for x in G:
-					if x+'=1' in PLANILHA._C:
-						R.append(x)
-				R.insert(0, 'OUTRO')
-				SP.values=R
-			elif PLANILHA._R==2:
-				G=getattr(DATA, '_QUINTA')
-				R=list()
-				for x in G:
-					if x+'=1' in PLANILHA._C:
-						R.append(x)
-				R.insert(0, 'OUTRO')
-				SP.values=R
+		R=list()
+		for x in DATA._C:
+			if DATA._C.get(x)==1:
+				R.append(x)
+		R.insert(0, 'OUTRO')
+		S.values=R
 
 	def NOME_TEXT(self):
-		if SP.text=='OUTRO':
-			Entry.NOME=self.ids.inpt0.text
+		global NOME
+		S=self.ids.spinner
+		if S.text=='OUTRO':
+			NOME=self.ids.inpt0.text
 			Entry.OUTRO=0
-			if Entry.NOME=='':
+			if NOME=='':
 				POPUP0=Popup(title='ERRO: NOME EM BRANCO!', content=Label(text='Insira o nome do cliente.'),\
 							size_hint=(0.7, 0.3), pos_hint={'center_x': 0.5, 'center_y': 0.5})
 				POPUP0.open()
 				return 0
-			elif Entry.NOME+'=0' in PLANILHA._C:
+			elif NOME in DATA._C:
 				POPUP1=Popup(title='ERRO: NOME EXISTENTE!', content=Label(text='Escolha outro nome.'),\
 							size_hint=(0.7, 0.3), pos_hint={'center_x': 0.5, 'center_y': 0.5})
 				POPUP1.open()
 				return 0
 		else:
-			Entry.NOME=SP.text
-
+			NOME=S.text
 		self.manager.current='catcher'
 
 	def KEY(self, INSERT):
@@ -333,22 +288,6 @@ class Catcher(Screen):
 
 	TEXTFOCUS=None
 	INSERT=None
-	BRT1=''
-	BRT2=''
-	BRT3=''
-	VRT1=''
-	BRDZ=''
-	VRDZ=''
-	BRMDZ=''
-	VRMDZ=''
-	BRT1_VALOR=DATA._V['V1']
-	BRT2_VALOR=DATA._V['V3']
-	BRT3_VALOR=DATA._V['V4']
-	VRT1_VALOR=DATA._V['V2']
-	BRDZ_VALOR=DATA._V['V5']
-	VRDZ_VALOR=DATA._V['V6']
-	BRMDZ_VALOR=DATA._V['V7']
-	VRMDZ_VALOR=DATA._V['V8']
 
 	def on_pre_enter(self, *args):
 		self.ids['inpt1'].text=''
@@ -367,7 +306,7 @@ class Catcher(Screen):
 		self.ids['inp6'].text=DATA._V['V6']
 		self.ids['inp7'].text=DATA._V['V7']
 		self.ids['inp8'].text=DATA._V['V8']
-		self.ids['NC'].text='CLIENTE: {}'.format(Entry.NOME)
+		self.ids['NC'].text='CLIENTE: {}'.format(NOME)
 
 		Catcher.TEXTFOCUS='inpt1'
 
@@ -390,71 +329,78 @@ class Catcher(Screen):
 
 	def OK(self):
 
-		Catcher.BRT1=self.ids.inpt1.text
-		Catcher.VRT1=self.ids.inpt2.text
-		Catcher.BRT2=self.ids.inpt3.text
-		Catcher.BRT3=self.ids.inpt4.text
-		Catcher.BRDZ=self.ids.inpt5.text
-		Catcher.VRDZ=self.ids.inpt6.text
-		Catcher.BRMDZ=self.ids.inpt7.text
-		Catcher.VRMDZ=self.ids.inpt8.text
-		Catcher.BRT1_VALOR=self.ids.inp1.text
-		Catcher.VRT1_VALOR=self.ids.inp2.text
-		Catcher.BRT2_VALOR=self.ids.inp3.text
-		Catcher.BRT3_VALOR=self.ids.inp4.text
-		Catcher.BRDZ_VALOR=self.ids.inp5.text
-		Catcher.VRDZ_VALOR=self.ids.inp6.text
-		Catcher.BRMDZ_VALOR=self.ids.inp7.text
-		Catcher.VRMDZ_VALOR=self.ids.inp8.text
+		global BRT1
+		global BRT2
+		global BRT3
+		global VRT1
+		global BRDZ
+		global VRDZ
+		global BRMDZ
+		global VRMDZ
+		global BRT1_VALOR
+		global VRT1_VALOR
+		global BRT2_VALOR
+		global BRT3_VALOR
+		global BRDZ_VALOR
+		global VRDZ_VALOR
+		global BRMDZ_VALOR
+		global VRMDZ_VALOR
+
+		BRT1=self.ids.inpt1.text
+		VRT1=self.ids.inpt2.text
+		BRT2=self.ids.inpt3.text
+		BRT3=self.ids.inpt4.text
+		BRDZ=self.ids.inpt5.text
+		VRDZ=self.ids.inpt6.text
+		BRMDZ=self.ids.inpt7.text
+		VRMDZ=self.ids.inpt8.text
+		BRT1_VALOR=self.ids.inp1.text
+		VRT1_VALOR=self.ids.inp2.text
+		BRT2_VALOR=self.ids.inp3.text
+		BRT3_VALOR=self.ids.inp4.text
+		BRDZ_VALOR=self.ids.inp5.text
+		VRDZ_VALOR=self.ids.inp6.text
+		BRMDZ_VALOR=self.ids.inp7.text
+		VRMDZ_VALOR=self.ids.inp8.text
 
 		SOMA=0.0
 
-		if Catcher.BRT1!='':
-			BRT1(Catcher.BRT1)
-		if Catcher.BRT2!='':
-			BRT2(Catcher.BRT2)
-		if Catcher.BRT3!='':
-			BRT3(Catcher.BRT3)
-		if Catcher.VRT1!='':
-			VRT1(Catcher.VRT1)
-		if Catcher.BRDZ!='':
-			BRDZ(Catcher.BRDZ)
-		if Catcher.VRDZ!='':
-			VRDZ(Catcher.VRDZ)
-		if Catcher.BRMDZ!='':
-			BRMDZ(Catcher.BRMDZ)
-		if Catcher.VRMDZ!='':
-			VRMDZ(Catcher.VRMDZ)
+		if BRT1!='':
+			BRT1(BRT1)
+		if BRT2!='':
+			BRT2(BRT2)
+		if BRT3!='':
+			BRT3(BRT3)
+		if VRT1!='':
+			VRT1(VRT1)
+		if BRDZ!='':
+			BRDZ(BRDZ)
+		if VRDZ!='':
+			VRDZ(VRDZ)
+		if BRMDZ!='':
+			BRMDZ(BRMDZ)
+		if VRMDZ!='':
+			VRMDZ(VRMDZ)
 
-		DICT=dict()
-		DICT['CLIENTE']=Entry.NOME
+		O=dict()
+		O['CLIENTE']=NOME
 		for x in ['BRT1','BRT2','BRT3','VRT1','BRDZ','VRDZ','BRMDZ','VRMDZ']:
 			if 0.0!=OVO.E[x]:
 				SOMA+=OVO.E_VLR[x+'_VLR']
-				DICT[x]=OVO.E[x]
-				DICT[x+'_DZ']=OVO.E_DZ[x+'_DZ']
-				DICT[x+'_VLR']=OVO.E_VLR[x+'_VLR']
-		DICT['TOTAL']=(SOMA)
+				O[x]=OVO.E[x]
+				O[x+'_DZ']=OVO.E_DZ[x+'_DZ']
+				O[x+'_VLR']=OVO.E_VLR[x+'_VLR']
+		O['TOTAL']=(SOMA)
 
-		W=open(PLAN, 'a')
-		W.write('{}={}\n\n'.format(Entry.NOME, DICT))
-		W.close()
-		if Entry.OUTRO==0:
-			P0=open(PLAN)
-			PR=P0.read()
-			PSUB=re.sub('\'_END\'', '\'{}=0\',\n\'_END\''.format(Entry.NOME), PR)
-			P1=open(PLAN, 'w')
-			P1.write(PSUB)
-			P1.close()
-			P0.close()
-		else:
-			P0=open(PLAN)
-			PR=P0.read()
-			PSUB=re.sub('{}=1'.format(Entry.NOME), '{}=0'.format(Entry.NOME), PR)
-			P1=open(PLAN, 'w')
-			P1.write(PSUB)
-			P1.close()
-			P0.close()
+		H=geattr(DATA, DATA._H[0])
+		H.append(O)
+		P=open(D)
+		PR=P.read()
+		PS=re.sub('{}=\[.*\]'.format(DATA._H[0]), '{}={}'.format(DATA._H[0], H), PR)
+		P1=open(D, 'w')
+		P1.write(PS)
+		P.close()
+		P1.close()
 
 		for x in ['BRT1','BRT2','BRT3','VRT1','BRDZ','VRDZ','BRMDZ','VRMDZ']:
 				OVO.E[x]=0.0
@@ -463,48 +409,43 @@ class Catcher(Screen):
 
 class Output(Screen):
 
-	T=None
-
 	def on_pre_enter(self, *args):
-		if os.path.isfile(CWD+'/'+PLAN):
-			BTN0=self.ids.EDIT
-			SO=self.ids.outspin
-			SO_LIST=list()
-			LEN_C=len(PLANILHA._C)
-			if SO.text!='':
-				SO.text=''
-				self.ids.DIA.text=''
-				BTN0.text=''
-				BTN0.background_color=(0, 0, 0, 1)
-				for x in _PL_LIST:
-					self.ids[x].text=''
-			SO_LIST.append('CARGA')
-			for x in range(LEN_C):
-				if str.endswith(PLANILHA._C[x], '0'):
-					SO_LIST.append(str.rstrip(PLANILHA._C[x], '=0'))
-			SO.values=SO_LIST
-		else:
-			self.manager.current='menu'
+		B=self.ids.EDIT
+		S=self.ids.outspin
+		S_LIST=list()
+		if S.text!='':
+			S.text=''
+			self.ids.DIA.text=''
+			B.text=''
+			B.background_color=(0, 0, 0, 1)
+			for x in L:
+				self.ids[x].text=''
+			for x in DATA._C:
+				if DATA._C.get(x)==0:
+					S_LIST.append(x)
+			S.values=S_LIST
 
 	def SELECT(self):
-		Output.T=self.ids.outspin.text
-		BTN0=self.ids.EDIT
-		S=getattr(PLANILHA, Output.T)
-		self.ids.DIA.text=PLANILHA._DIA
-		BTN0.text='EDITAR'
-		BTN0.background_color=(0.8, 0, 0, 1)
-		for x in _PL_LIST:
+		ST=self.ids.outspin.text
+		if ST=='':
+			return 0
+		B=self.ids.EDIT
+		S=getattr(DATA, DATA._H[0])
+		self.ids.DIA.text=str.replace(str.strip(DATA._H[0], 'H'), '_', '/')
+		B.text='EDITAR'
+		B.background_color=(0.8, 0, 0, 1)
+		for x in L:
 			if x in S:
 				self.ids[x].text=str(S[x])
 			else:
 				self.ids[x].text='-'
 
 	def EDITING(self):
-		SO=self.ids.outspin
+		global NOME
 		if self.ids.outspin.text=='':
 			pass
 		else:
-			Entry.NOME=SO.text
+			NOME=self.ids.outspin.text
 			self.manager.current='editar'
 
 class Editar(Screen):
@@ -513,15 +454,15 @@ class Editar(Screen):
 	INSERT=None
 
 	def on_pre_enter(self, *args):
-		Ed=getattr(PLANILHA, Entry.NOME)
+		E=getattr(DATA, DATA._H[0])
 		def FILL(X, Y):
-			if Y in Ed:
-				self.ids[X].text=str(Ed[Y])
+			if Y in E:
+				self.ids[X].text=str(E[Y])
 			else:
 				self.ids[X].text=''
 		def FILLPILAS(X, Y, Z):
-			if Y in Ed:
-				self.ids[X].text=str(Ed[Y])
+			if Y in E:
+				self.ids[X].text=str(E[Y])
 			else:
 				self.ids[X].text=DATA._V[Z]
 		FILL('t1', 'BRT1')
@@ -540,14 +481,7 @@ class Editar(Screen):
 		FILLPILAS('p6', 'VRDZ_DZ', 'V6')
 		FILLPILAS('p7', 'VRMDZ_DZ', 'V7')
 		FILLPILAS('p8', 'BRMDZ_DZ', 'V8')
-		if Output.T=='CARGA':
-			self.ids['NCL'].text='CARGA'
-			for x in range(1,9):
-				self.ids['UN'+str(x)].text='CX'
-		else:
-			self.ids['NCL'].text='CLIENTE: {}'.format(Output.T)
-			for x in range(1,9):
-				self.ids['UN'+str(x)].text='DZ'
+		self.ids['NCL'].text='CLIENTE: {}'.format(NOME)
 
 		Editar.TEXTFOCUS='t1'
 
@@ -569,58 +503,84 @@ class Editar(Screen):
 			self.ids[Editar.TEXTFOCUS].text += '2.5'
 
 	def OK(self):
-		Catcher.BRT1=self.ids.t1.text
-		Catcher.VRT1=self.ids.t2.text
-		Catcher.BRT2=self.ids.t3.text
-		Catcher.BRT3=self.ids.t4.text
-		Catcher.BRDZ=self.ids.t5.text
-		Catcher.VRDZ=self.ids.t6.text
-		Catcher.BRMDZ=self.ids.t7.text
-		Catcher.VRMDZ=self.ids.t8.text
-		Catcher.BRT1_VALOR=self.ids.p1.text
-		Catcher.VRT1_VALOR=self.ids.p2.text
-		Catcher.BRT2_VALOR=self.ids.p3.text
-		Catcher.BRT3_VALOR=self.ids.p4.text
-		Catcher.BRDZ_VALOR=self.ids.p5.text
-		Catcher.VRDZ_VALOR=self.ids.p6.text
-		Catcher.BRMDZ_VALOR=self.ids.p7.text
-		Catcher.VRMDZ_VALOR=self.ids.p8.text
+
+		global BRT1
+		global BRT2
+		global BRT3
+		global VRT1
+		global BRDZ
+		global VRDZ
+		global BRMDZ
+		global VRMDZ
+		global BRT1_VALOR
+		global VRT1_VALOR
+		global BRT2_VALOR
+		global BRT3_VALOR
+		global BRDZ_VALOR
+		global VRDZ_VALOR
+		global BRMDZ_VALOR
+		global VRMDZ_VALOR
+
+		BRT1=self.ids.t1.text
+		VRT1=self.ids.t2.text
+		BRT2=self.ids.t3.text
+		BRT3=self.ids.t4.text
+		BRDZ=self.ids.t5.text
+		VRDZ=self.ids.t6.text
+		BRMDZ=self.ids.t7.text
+		VRMDZ=self.ids.t8.text
+		BRT1_VALOR=self.ids.p1.text
+		VRT1_VALOR=self.ids.p2.text
+		BRT2_VALOR=self.ids.p3.text
+		BRT3_VALOR=self.ids.p4.text
+		BRDZ_VALOR=self.ids.p5.text
+		VRDZ_VALOR=self.ids.p6.text
+		BRMDZ_VALOR=self.ids.p7.text
+		VRMDZ_VALOR=self.ids.p8.text
 
 		SOMA=0.0
 
-		if Catcher.BRT1!='':
-			BRT1(Catcher.BRT1)
-		if Catcher.BRT2!='':
-			BRT2(Catcher.BRT2)
-		if Catcher.BRT3!='':
-			BRT3(Catcher.BRT3)
-		if Catcher.VRT1!='':
-			VRT1(Catcher.VRT1)
-		if Catcher.BRDZ!='':
-			BRDZ(Catcher.BRDZ)
-		if Catcher.VRDZ!='':
-			VRDZ(Catcher.VRDZ)
-		if Catcher.BRMDZ!='':
-			BRMDZ(Catcher.BRMDZ)
-		if Catcher.VRMDZ!='':
-			VRMDZ(Catcher.VRMDZ)
+		if BRT1!='':
+			BRT1(BRT1)
+		if BRT2!='':
+			BRT2(BRT2)
+		if BRT3!='':
+			BRT3(BRT3)
+		if VRT1!='':
+			VRT1(VRT1)
+		if BRDZ!='':
+			BRDZ(BRDZ)
+		if VRDZ!='':
+			VRDZ(VRDZ)
+		if BRMDZ!='':
+			BRMDZ(BRMDZ)
+		if VRMDZ!='':
+			VRMDZ(VRMDZ)
 
-		DICT=dict()
+		O=dict()
+		O['CLIENTE']=NOME
 		for x in ['BRT1','BRT2','BRT3','VRT1','BRDZ','VRDZ','BRMDZ','VRMDZ']:
 			if 0.0!=OVO.E[x]:
 				SOMA+=OVO.E_VLR[x+'_VLR']
-				DICT[x]=OVO.E[x]
-				DICT[x+'_DZ']=OVO.E_DZ[x+'_DZ']
-				DICT[x+'_VLR']=OVO.E_VLR[x+'_VLR']
-		DICT['TOTAL']=(SOMA)
+				O[x]=OVO.E[x]
+				O[x+'_DZ']=OVO.E_DZ[x+'_DZ']
+				O[x+'_VLR']=OVO.E_VLR[x+'_VLR']
+		O['TOTAL']=(SOMA)
 
-		P0=open(PLAN)
-		PR=P0.read()
-		PSUB=re.sub('{}={}'.format(Entry.NOME, '{.*}'), '{}={}'.format(Entry.NOME, DICT), PR)
-		P1=open(PLAN, 'w')
-		P1.write(PSUB)
+		H=geattr(DATA, DATA._H[0])
+		for x in H:
+			if H[x]['CLIENTE']==NOME
+				I=H.index(x)
+				H.remove(x)
+				break
+		H.insert(I, O)
+		P=open(D)
+		PR=P.read()
+		PS=re.sub('{}=\[.*\]'.format(DATA._H[0]), '{}={}'.format(DATA._H[0], H), PR)
+		P1=open(D, 'w')
+		P1.write(PS)
+		P.close()
 		P1.close()
-		P0.close()
 
 		for x in ['BRT1','BRT2','BRT3','VRT1','BRDZ','VRDZ','BRMDZ','VRMDZ']:
 				OVO.E[x]=0.0
@@ -850,7 +810,7 @@ class OVO:
 class BRT1(OVO):
 	def __init__(self, dz):
 		OVO.__init__(self, dz)
-		self.valor=float(Catcher.BRT1_VALOR)
+		self.valor=float(BRT1_VALOR)
 		self.soma=self.valor*self.dz
 		OVO.E['BRT1']=self.dz
 		OVO.E_DZ['BRT1_DZ']=self.valor
@@ -859,7 +819,7 @@ class BRT1(OVO):
 class BRT2(OVO):
 	def __init__(self, dz):
 		OVO.__init__(self, dz)
-		self.valor=float(Catcher.BRT2_VALOR)
+		self.valor=float(BRT2_VALOR)
 		self.soma=self.valor*self.dz
 		OVO.E['BRT2']=self.dz
 		OVO.E_DZ['BRT2_DZ']=self.valor
@@ -868,7 +828,7 @@ class BRT2(OVO):
 class BRT3(OVO):
 	def __init__(self, dz):
 		OVO.__init__(self, dz)
-		self.valor=float(Catcher.BRT3_VALOR)
+		self.valor=float(BRT3_VALOR)
 		self.soma=self.valor*self.dz
 		OVO.E['BRT3']=self.dz
 		OVO.E_DZ['BRT3_DZ']=self.valor
@@ -877,7 +837,7 @@ class BRT3(OVO):
 class VRT1(OVO):
 	def __init__(self, dz):
 		OVO.__init__(self, dz)
-		self.valor=float(Catcher.VRT1_VALOR)
+		self.valor=float(VRT1_VALOR)
 		self.soma=self.valor*self.dz
 		OVO.E['VRT1']=self.dz
 		OVO.E_DZ['VRT1_DZ']=self.valor
@@ -886,7 +846,7 @@ class VRT1(OVO):
 class BRDZ(OVO):
 	def __init__(self, dz):
 		OVO.__init__(self, dz)
-		self.valor=float(Catcher.BRDZ_VALOR)
+		self.valor=float(BRDZ_VALOR)
 		self.soma=self.valor*self.dz
 		OVO.E['BRDZ']=self.dz
 		OVO.E_DZ['BRDZ_DZ']=self.valor
@@ -895,7 +855,7 @@ class BRDZ(OVO):
 class VRDZ(OVO):
 	def __init__(self, dz):
 		OVO.__init__(self, dz)
-		self.valor=float(Catcher.VRDZ_VALOR)
+		self.valor=float(VRDZ_VALOR)
 		self.soma=self.valor*self.dz
 		OVO.E['VRDZ']=self.dz
 		OVO.E_DZ['VRDZ_DZ']=self.valor
@@ -904,7 +864,7 @@ class VRDZ(OVO):
 class BRMDZ(OVO):
 	def __init__(self, dz):
 		OVO.__init__(self, dz)
-		self.valor=float(Catcher.BRMDZ_VALOR)
+		self.valor=float(BRMDZ_VALOR)
 		self.soma=self.valor*self.dz
 		OVO.E['BRMDZ']=self.dz
 		OVO.E_DZ['BRMDZ_DZ']=self.valor
@@ -913,7 +873,7 @@ class BRMDZ(OVO):
 class VRMDZ(OVO):
 	def __init__(self, dz):
 		OVO.__init__(self, dz)
-		self.valor=float(Catcher.VRMDZ_VALOR)
+		self.valor=float(VRMDZ_VALOR)
 		self.soma=self.valor*self.dz
 		OVO.E['VRMDZ']=self.dz
 		OVO.E_DZ['VRMDZ_DZ']=self.valor
