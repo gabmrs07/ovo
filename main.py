@@ -12,10 +12,10 @@ from kivy.uix.popup import Popup
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.base import runTouchApp
 
-if socket.gethostname()=='josley':
+if socket.gethostname()=='josley' or socket.gethostname()=='lamettrie3':
 	from importlib import reload
 
-DIAVAR=time.strftime('%a_%d_%m_%y')
+DIAVAR=time.strftime('H%d_%m_%y')
 CWD=os.getcwd()
 D='DATA.py'
 L=['BRT1', 'BRT1_DZ', 'BRT1_VLR', 'BRT2', 'BRT2_DZ', 'BRT2_VLR', 'BRT3', 'BRT3_DZ', 'BRT3_VLR',\
@@ -62,6 +62,7 @@ class Menu(Screen):
 			Menu.TRIGGER=2
 
 	def EXTRATO(self, instance):
+		pass
 #		E=list()
 #		E.append(PLANILHA.CARGA)
 #		for x in PLANILHA._C:
@@ -83,7 +84,6 @@ class Menu(Screen):
 #		P0.close()
 #		os.remove(PLAN)
 #		self.ids.MENU.remove_widget(Menu.BT)
-			pass
 
 	def CHECKER(self):
 		if DATA._C:
@@ -105,11 +105,11 @@ class Rota(Screen):
 		P.close()
 		P1.close()
 
-		H=geattr(DATA, '_H')
+		H=getattr(DATA, '_H')
 		H.insert(0, DIAVAR)
 		P=open(D)
 		PR=P.read()
-		PS=re.sub('_H=\[.*\]', '_H={}'.format(DIAVAR), PR)
+		PS=re.sub('_H=\[.*\]', '_H={}'.format(H), PR)
 		P1=open(D, 'w')
 		P1.write(PS)
 		P.close()
@@ -117,7 +117,7 @@ class Rota(Screen):
 
 		W=open(D, 'a')
 		W.write('\n{}=[]'.format(DIAVAR))
-		self.manager.current='carga'
+		self.manager.current='entry'
 
 	def RS_T(self):
 		self.SB(DATA._TERCA)
@@ -346,14 +346,14 @@ class Catcher(Screen):
 		global BRMDZ_VALOR
 		global VRMDZ_VALOR
 
-		BRT1=self.ids.inpt1.text
-		VRT1=self.ids.inpt2.text
-		BRT2=self.ids.inpt3.text
-		BRT3=self.ids.inpt4.text
-		BRDZ=self.ids.inpt5.text
-		VRDZ=self.ids.inpt6.text
-		BRMDZ=self.ids.inpt7.text
-		VRMDZ=self.ids.inpt8.text
+		B1=self.ids.inpt1.text
+		V1=self.ids.inpt2.text
+		B2=self.ids.inpt3.text
+		B3=self.ids.inpt4.text
+		BDZ=self.ids.inpt5.text
+		VDZ=self.ids.inpt6.text
+		BMD=self.ids.inpt7.text
+		VMD=self.ids.inpt8.text
 		BRT1_VALOR=self.ids.inp1.text
 		VRT1_VALOR=self.ids.inp2.text
 		BRT2_VALOR=self.ids.inp3.text
@@ -365,22 +365,22 @@ class Catcher(Screen):
 
 		SOMA=0.0
 
-		if BRT1!='':
-			BRT1(BRT1)
-		if BRT2!='':
-			BRT2(BRT2)
-		if BRT3!='':
-			BRT3(BRT3)
-		if VRT1!='':
-			VRT1(VRT1)
-		if BRDZ!='':
-			BRDZ(BRDZ)
-		if VRDZ!='':
-			VRDZ(VRDZ)
-		if BRMDZ!='':
-			BRMDZ(BRMDZ)
-		if VRMDZ!='':
-			VRMDZ(VRMDZ)
+		if B1!='':
+			BRT1(B1)
+		if B2!='':
+			BRT2(B2)
+		if B3!='':
+			BRT3(B3)
+		if V1!='':
+			VRT1(V1)
+		if BDZ!='':
+			BRDZ(BDZ)
+		if VDZ!='':
+			VRDZ(VDZ)
+		if BMD!='':
+			BRMDZ(BMD)
+		if VMD!='':
+			VRMDZ(VMD)
 
 		O=dict()
 		O['CLIENTE']=NOME
@@ -390,9 +390,18 @@ class Catcher(Screen):
 				O[x]=OVO.E[x]
 				O[x+'_DZ']=OVO.E_DZ[x+'_DZ']
 				O[x+'_VLR']=OVO.E_VLR[x+'_VLR']
-		O['TOTAL']=(SOMA)
+		O['TOTAL']=SOMA
 
-		H=geattr(DATA, DATA._H[0])
+		DATA._C[NOME]=0
+		P=open(D)
+		PR=P.read()
+		PS=re.sub('_C={.*}', '_C={}'.format(DATA._C), PR)
+		P1=open(D, 'w')
+		P1.write(PS)
+		P1.close()
+		P.close()
+
+		H=getattr(DATA, DATA._H[0])
 		H.append(O)
 		P=open(D)
 		PR=P.read()
@@ -420,10 +429,10 @@ class Output(Screen):
 			B.background_color=(0, 0, 0, 1)
 			for x in L:
 				self.ids[x].text=''
-			for x in DATA._C:
-				if DATA._C.get(x)==0:
-					S_LIST.append(x)
-			S.values=S_LIST
+		for x in DATA._C:
+			if DATA._C.get(x)==0:
+				S_LIST.append(x)
+		S.values=S_LIST
 
 	def SELECT(self):
 		ST=self.ids.outspin.text
@@ -565,11 +574,11 @@ class Editar(Screen):
 				O[x]=OVO.E[x]
 				O[x+'_DZ']=OVO.E_DZ[x+'_DZ']
 				O[x+'_VLR']=OVO.E_VLR[x+'_VLR']
-		O['TOTAL']=(SOMA)
+		O['TOTAL']=SOMA
 
-		H=geattr(DATA, DATA._H[0])
+		H=getattr(DATA, DATA._H[0])
 		for x in H:
-			if H[x]['CLIENTE']==NOME
+			if H[x]['CLIENTE']==NOME:
 				I=H.index(x)
 				H.remove(x)
 				break
@@ -589,23 +598,20 @@ class Editar(Screen):
 
 class HistSel(Screen):
 
-	H=None
+	D=None
 
 	def on_pre_enter(self, *args):
-		HistSel.H=None
 		reload(DATA)
-		HS=list()
+		H=list()
 		for x in DATA._H:
-			if x=='_END':
-				break
 			X=str.strip(x, 'H')
 			S=str.replace(X, '_', '/')
-			HS.append(S)
-		self.ids.hspin.values=HS
+			H.append(S)
+		self.ids.hspin.values=H
 
 	def HSEL(self):
 		if self.ids.hspin.text!='':
-			HistSel.H=self.ids.hspin.text
+			HistSel.D=self.ids.hspin.text
 			self.manager.current='history'
 		else:
 			pass
@@ -613,26 +619,26 @@ class HistSel(Screen):
 class History(Screen):
 
 	L=None
-	HS=None
+	H=None
 
 	def on_pre_enter(self, *args):
 		self.ids.hhspin.text=''
-		for x in _PL_LIST:
+		for x in L:
 			self.ids[x].text=''
-		H='H'+str.replace(HistSel.H, '/', '_')
-		self.ids.DIA.text=HistSel.H
-		History.HS=getattr(DATA, H)
+		self.ids.DIA.text=HistSel.D
+		H='H'+str.replace(HistSel.D, '/', '_')
+		History.H=getattr(DATA, H)
 		History.L=list()
-		for x in range(len(History.HS)):
-			History.L.append(History.HS[x]['CLIENTE'])
+		for x in History.H:
+			History.L.append(History.H[x]['CLIENTE'])
 		self.ids.hhspin.values=History.L
 
 	def SEL(self):
 
 		I=History.L.index(self.ids.hhspin.text)
-		for x in _PL_LIST:
+		for x in L:
 			try:
-				self.ids[x].text=str(History.HS[I][x])
+				self.ids[x].text=str(History.H[I][x])
 			except:
 				self.ids[x].text='-'
 
@@ -684,13 +690,13 @@ class Setr(Screen):
 	def REMOVER(self, DIA):
 		R=getattr(DATA, DIA)
 		R.remove(self.ids.adsubspin.text)
-		P0=open('DATA.py')
-		PR=P0.read()
-		PSUB=re.sub('{}=\[.*\]'.format(DIA), '{}={}'.format(DIA, R), PR)
+		P=open('DATA.py')
+		PR=P.read()
+		PS=re.sub('{}=\[.*\]'.format(DIA), '{}={}'.format(DIA, R), PR)
 		P1=open('DATA.py', 'w')
-		P1.write(PSUB)
+		P1.write(PS)
 		P1.close()
-		P0.close()
+		P.close()
 		self.ids.adsubspin.text=''
 		reload(DATA)
 		if PreSetr.MODO==1:
@@ -716,13 +722,13 @@ class Setr(Screen):
 			R.insert(I, self.ids.cli.text)
 		else:
 			R.append(self.ids.cli.text)
-		P0=open('DATA.py')
+		P=open('DATA.py')
 		PR=P0.read()
-		PSUB=re.sub('{}=\[.*\]'.format(DIA), '{}={}'.format(DIA, R), PR)
+		PS=re.sub('{}=\[.*\]'.format(DIA), '{}={}'.format(DIA, R), PR)
 		P1=open('DATA.py', 'w')
-		P1.write(PSUB)
+		P1.write(PS)
 		P1.close()
-		P0.close()
+		P.close()
 		self.ids.adsubspin.text=''
 		self.ids.cli.text=''
 		reload(DATA)
@@ -762,16 +768,16 @@ class Setv(Screen):
 			self.ids[Setv.TEXTFOCUS].text += '2.5'
 
 	def OK(self):
-		VDICT=dict()
+		V=dict()
 		for x in ['V1','V2','V3','V4','V5','V6','V7','V8']:
-			VDICT[x]=self.ids[x].text
-		P0=open('DATA.py')
+			V[x]=self.ids[x].text
+		P=open('DATA.py')
 		PR=P0.read()
-		PSUB=re.sub('_V={.*}', '_V={}'.format(VDICT), PR)
+		PS=re.sub('_V={.*}', '_V={}'.format(V), PR)
 		P1=open('DATA.py', 'w')
-		P1.write(PSUB)
+		P1.write(PS)
 		P1.close()
-		P0.close()
+		P.close()
 		self.manager.current='menu'
 
 class MapaApp(App):
