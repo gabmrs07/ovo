@@ -117,7 +117,7 @@ class Rota(Screen):
 
 		W=open(D, 'a')
 		W.write('\n{}=[]'.format(DIAVAR))
-		self.manager.current='entry'
+		self.manager.current='carga'
 
 	def RS_T(self):
 		self.SB(DATA._TERCA)
@@ -132,15 +132,6 @@ class Carga(Screen):
 
 	TEXTFOCUS=None
 	INSERT=None
-	BRT1=''
-	BRT2=''
-	BRT3=''
-	VRT1=''
-	BRDZ=''
-	VRDZ=''
-	BRMDZ=''
-	VRMDZ=''
-
 
 	def on_pre_enter(self, *args):
 		self.ids['inpt1'].text=''
@@ -181,14 +172,23 @@ class Carga(Screen):
 
 	def OK(self):
 
-		BRT1=self.ids.inpt1.text
-		VRT1=self.ids.inpt2.text
-		BRT2=self.ids.inpt3.text
-		BRT3=self.ids.inpt4.text
-		BRDZ=self.ids.inpt5.text
-		VRDZ=self.ids.inpt6.text
-		BRMDZ=self.ids.inpt7.text
-		VRMDZ=self.ids.inpt8.text
+		global BRT1_VALOR
+		global VRT1_VALOR
+		global BRT2_VALOR
+		global BRT3_VALOR
+		global BRDZ_VALOR
+		global VRDZ_VALOR
+		global BRMDZ_VALOR
+		global VRMDZ_VALOR
+
+		B1=self.ids.inpt1.text
+		V1=self.ids.inpt2.text
+		B2=self.ids.inpt3.text
+		B3=self.ids.inpt4.text
+		BDZ=self.ids.inpt5.text
+		VDZ=self.ids.inpt6.text
+		BMD=self.ids.inpt7.text
+		VMD=self.ids.inpt8.text
 		BRT1_VALOR=self.ids.inp1.text
 		VRT1_VALOR=self.ids.inp2.text
 		BRT2_VALOR=self.ids.inp3.text
@@ -200,36 +200,39 @@ class Carga(Screen):
 
 		SOMA=0.0
 
-		if BRT1!='':
-			BRT1(BRT1)
-		if BRT2!='':
-			BRT2(BRT2)
-		if BRT3!='':
-			BRT3(BRT3)
-		if VRT1!='':
-			VRT1(VRT1)
-		if BRDZ!='':
-			BRDZ(BRDZ)
-		if VRDZ!='':
-			VRDZ(VRDZ)
-		if BRMDZ!='':
-			BRMDZ(BRMDZ)
-		if VRMDZ!='':
-			VRMDZ(VRMDZ)
+		if B1!='':
+			BRT1(B1)
+		if B2!='':
+			BRT2(B2)
+		if B3!='':
+			BRT3(B3)
+		if V1!='':
+			VRT1(V1)
+		if BDZ!='':
+			BRDZ(BDZ)
+		if VDZ!='':
+			VRDZ(VDZ)
+		if BMD!='':
+			BRMDZ(BMD)
+		if VMD!='':
+			VRMDZ(VMD)
 
-		DICT=dict()
-		DICT['CLIENTE']='CARGA'
+		C=dict()
 		for x in ['BRT1','BRT2','BRT3','VRT1','BRDZ','VRDZ','BRMDZ','VRMDZ']:
 			if 0.0!=OVO.E[x]:
 				SOMA+=OVO.E_VLR[x+'_VLR']
-				DICT[x]=OVO.E[x]
-				DICT[x+'_DZ']=OVO.E_DZ[x+'_DZ']
-				DICT[x+'_VLR']=OVO.E_VLR[x+'_VLR']
-		DICT['TOTAL']=(SOMA)
+				C[x]=OVO.E[x]
+				C[x+'_DZ']=OVO.E_DZ[x+'_DZ']
+				C[x+'_VLR']=OVO.E_VLR[x+'_VLR']
+		C['TOTAL']=SOMA
 
-		W=open(PLAN, 'a')
-		W.write('CARGA={}\n\n'.format(DICT))
-		W.close()
+		P=open(D)
+		PR=P.read()
+		PS=re.sub('_CARGA={.*}', '_CARGA={}'.format(C), PR)
+		P1=open(D, 'w')
+		P1.write(PS)
+		P1.close()
+		P.close()
 
 		for x in ['BRT1','BRT2','BRT3','VRT1','BRDZ','VRDZ','BRMDZ','VRMDZ']:
 				OVO.E[x]=0.0
@@ -329,14 +332,6 @@ class Catcher(Screen):
 
 	def OK(self):
 
-		global BRT1
-		global BRT2
-		global BRT3
-		global VRT1
-		global BRDZ
-		global VRDZ
-		global BRMDZ
-		global VRMDZ
 		global BRT1_VALOR
 		global VRT1_VALOR
 		global BRT2_VALOR
@@ -481,6 +476,7 @@ class Editar(Screen):
 				self.ids[X].text=str(Output.E[Y])
 			else:
 				self.ids[X].text=DATA._V[Z]
+				
 		FILL('t1', 'BRT1')
 		FILL('t2', 'VRT1')
 		FILL('t3', 'BRT2')
@@ -520,14 +516,6 @@ class Editar(Screen):
 
 	def OK(self):
 
-		global B1
-		global B2
-		global B3
-		global V1
-		global BDZ
-		global VDZ
-		global BMD
-		global VMD
 		global BRT1_VALOR
 		global VRT1_VALOR
 		global BRT2_VALOR
