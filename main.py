@@ -418,6 +418,9 @@ class Catcher(Screen):
 
 class Output(Screen):
 
+	E=None
+	I=None
+
 	def on_pre_enter(self, *args):
 		B=self.ids.EDIT
 		S=self.ids.outspin
@@ -440,12 +443,17 @@ class Output(Screen):
 			return 0
 		B=self.ids.EDIT
 		S=getattr(DATA, DATA._H[0])
+		for x in range(len(S)):
+			if S[x]['CLIENTE']==ST:
+				I=x
+		Output.E=S[I]
+		Output.I=I
 		self.ids.DIA.text=str.replace(str.strip(DATA._H[0], 'H'), '_', '/')
 		B.text='EDITAR'
 		B.background_color=(0.8, 0, 0, 1)
 		for x in L:
-			if x in S:
-				self.ids[x].text=str(S[x])
+			if x in S[I]:
+				self.ids[x].text=str(S[I][x])
 			else:
 				self.ids[x].text='-'
 
@@ -463,15 +471,14 @@ class Editar(Screen):
 	INSERT=None
 
 	def on_pre_enter(self, *args):
-		E=getattr(DATA, DATA._H[0])
 		def FILL(X, Y):
-			if Y in E:
-				self.ids[X].text=str(E[Y])
+			if Y in Output.E:
+				self.ids[X].text=str(Output.E[Y])
 			else:
 				self.ids[X].text=''
 		def FILLPILAS(X, Y, Z):
-			if Y in E:
-				self.ids[X].text=str(E[Y])
+			if Y in Output.E:
+				self.ids[X].text=str(Output.E[Y])
 			else:
 				self.ids[X].text=DATA._V[Z]
 		FILL('t1', 'BRT1')
@@ -513,14 +520,14 @@ class Editar(Screen):
 
 	def OK(self):
 
-		global BRT1
-		global BRT2
-		global BRT3
-		global VRT1
-		global BRDZ
-		global VRDZ
-		global BRMDZ
-		global VRMDZ
+		global B1
+		global B2
+		global B3
+		global V1
+		global BDZ
+		global VDZ
+		global BMD
+		global VMD
 		global BRT1_VALOR
 		global VRT1_VALOR
 		global BRT2_VALOR
@@ -530,14 +537,14 @@ class Editar(Screen):
 		global BRMDZ_VALOR
 		global VRMDZ_VALOR
 
-		BRT1=self.ids.t1.text
-		VRT1=self.ids.t2.text
-		BRT2=self.ids.t3.text
-		BRT3=self.ids.t4.text
-		BRDZ=self.ids.t5.text
-		VRDZ=self.ids.t6.text
-		BRMDZ=self.ids.t7.text
-		VRMDZ=self.ids.t8.text
+		B1=self.ids.t1.text
+		V1=self.ids.t2.text
+		B2=self.ids.t3.text
+		B3=self.ids.t4.text
+		BDZ=self.ids.t5.text
+		VDZ=self.ids.t6.text
+		BMD=self.ids.t7.text
+		VMD=self.ids.t8.text
 		BRT1_VALOR=self.ids.p1.text
 		VRT1_VALOR=self.ids.p2.text
 		BRT2_VALOR=self.ids.p3.text
@@ -549,22 +556,22 @@ class Editar(Screen):
 
 		SOMA=0.0
 
-		if BRT1!='':
-			BRT1(BRT1)
-		if BRT2!='':
-			BRT2(BRT2)
-		if BRT3!='':
-			BRT3(BRT3)
-		if VRT1!='':
-			VRT1(VRT1)
-		if BRDZ!='':
-			BRDZ(BRDZ)
-		if VRDZ!='':
-			VRDZ(VRDZ)
-		if BRMDZ!='':
-			BRMDZ(BRMDZ)
-		if VRMDZ!='':
-			VRMDZ(VRMDZ)
+		if B1!='':
+			BRT1(B1)
+		if B2!='':
+			BRT2(B2)
+		if B3!='':
+			BRT3(B3)
+		if V1!='':
+			VRT1(V1)
+		if BDZ!='':
+			BRDZ(BDZ)
+		if VDZ!='':
+			VRDZ(VDZ)
+		if BMD!='':
+			BRMDZ(BMD)
+		if VMD!='':
+			VRMDZ(VMD)
 
 		O=dict()
 		O['CLIENTE']=NOME
@@ -577,12 +584,8 @@ class Editar(Screen):
 		O['TOTAL']=SOMA
 
 		H=getattr(DATA, DATA._H[0])
-		for x in H:
-			if H[x]['CLIENTE']==NOME:
-				I=H.index(x)
-				H.remove(x)
-				break
-		H.insert(I, O)
+		H.pop(Output.I)
+		H.insert(Output.I, O)
 		P=open(D)
 		PR=P.read()
 		PS=re.sub('{}=\[.*\]'.format(DATA._H[0]), '{}={}'.format(DATA._H[0], H), PR)
