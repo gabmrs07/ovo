@@ -839,7 +839,7 @@ class Setv(Screen):
 	def OK(self):
 		V=dict()
 		for x in ['V1','V2','V3','V4','V5','V6','V7','V8']:
-			V[x]=self.ids[x].text
+			V[x]=str(float(self.ids[x].text))
 		P=open('DATA.py')
 		PR=P.read()
 		PS=re.sub('_V={.*}', '_V={}'.format(V), PR)
@@ -848,6 +848,49 @@ class Setv(Screen):
 		P1.close()
 		P.close()
 		self.manager.current='menu'
+
+class Setcv(Screen):
+
+	TEXTFOCUS=None
+	INSERT=None
+
+	def on_pre_enter(self, *args):
+		def FILL(X):
+			self.ids[X].text=DATA._CV[X]
+		for x in range(1,9):
+			FILL('V'+str(x))
+
+	def FOCUS(self, IDS='t1'):
+		Setcv.TEXTFOCUS=IDS
+
+	def KEY(self, INSERT):
+		self.ids[Setcv.TEXTFOCUS].text += INSERT
+
+	def BACKSPACE(self):
+		self.ids[Setcv.TEXTFOCUS].text = ''
+
+	def MEIA(self):
+		TEXT=self.ids[Setcv.TEXTFOCUS].text
+		if TEXT!='':
+			FLT=float(self.ids[Setcv.TEXTFOCUS].text)
+			self.ids[Setcv.TEXTFOCUS].text = str(FLT+2.5)
+		else:
+			self.ids[Setcv.TEXTFOCUS].text += '2.5'
+
+	def OK(self):
+		V=dict()
+		for x in ['V1','V2','V3','V4','V5','V6','V7','V8']:
+			V[x]=str(float(self.ids[x].text))
+		P=open('DATA.py')
+		PR=P.read()
+		PS=re.sub('_CV={.*}', '_CV={}'.format(V), PR)
+		P1=open('DATA.py', 'w')
+		P1.write(PS)
+		P1.close()
+		P.close()
+
+		self.manager.current='menu'
+
 
 class MapaApp(App):
 	sm=None
@@ -868,6 +911,7 @@ class MapaApp(App):
 		self.sm.add_widget(PreSetr(name='presetr'))
 		self.sm.add_widget(Setr(name='setr'))
 		self.sm.add_widget(Setv(name='valor'))
+		self.sm.add_widget(Setcv(name='setcv'))
 		self.sm.current='menu'
 		return self.sm
 

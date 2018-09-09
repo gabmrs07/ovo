@@ -1583,15 +1583,18 @@
 			text: 'CONFIGURAÇÕES'
 	GridLayout:
 		cols: 1
-		rows: 3
+		rows: 4
 		size_hint: 1, 0.9
 		pos_hint: {'top':0.9}
 		Button:
 			text: 'Carga'
 			on_press: root.manager.current='crg'
 		Button:
-			text: 'Alterar preços'
+			text: 'Alterar preços da dúzia'
 			on_press: root.manager.current='valor'
+		Button:
+			text: 'Alterar preços da caixa'
+			on_press: root.manager.current='setcv'
 		Button:
 			text: 'Alterar rotas'
 			on_press: root.manager.current='presetr'
@@ -2021,7 +2024,154 @@
 <Setv>
 	BoxLayout:
 		Label:
-			text: 'ALTERAÇÃO DOS VALORES PADRÕES'
+			text: 'VALORES PADRÕES DA CAIXA'
+			size_hint: 1, 0.05
+			pos_hint: {'top':1}
+	GridLayout:
+		cols: 2
+		rows: 4
+		size_hint: 1, 0.45
+		pos_hint: {'top':0.95}
+
+		BoxLayout:
+			orientation: 'vertical'
+			Button:
+				size_hint: 1, 0.4
+				text: 'BRT1'
+				on_press: root.FOCUS('V1')
+			Label:
+				id: V1
+				text: ''
+
+		BoxLayout:
+			orientation: 'vertical'
+			Button:
+				size_hint: 1, 0.4
+				text: 'VRT1'
+				on_press: root.FOCUS('V2')
+			Label:
+				id: V2
+				text: ''
+
+		BoxLayout:
+			orientation: 'vertical'
+			Button:
+				size_hint: 1, 0.4
+				text: 'BRT2'
+				on_press: root.FOCUS('V3')
+			Label:
+				id: V3
+				text: ''
+
+		BoxLayout:
+			orientation: 'vertical'
+			Button:
+				size_hint: 1, 0.4
+				text: 'BRT3'
+				on_press: root.FOCUS('V4')
+			Label:
+				id: V4
+				text: ''
+
+		BoxLayout:
+			orientation: 'vertical'
+			Button:
+				size_hint: 1, 0.4
+				text: 'BRDZ'
+				on_press: root.FOCUS('V5')
+			Label:
+				id: V5
+				text: ''
+
+		BoxLayout:
+			orientation: 'vertical'
+			Button:
+				size_hint: 1, 0.4
+				text: 'VRDZ'
+				on_press: root.FOCUS('V6')
+			Label:
+				id: V6
+				text: ''
+
+		BoxLayout:
+			orientation: 'vertical'
+			Button:
+				size_hint: 1, 0.4
+				text: 'BRMDZ'
+				on_press: root.FOCUS('V7')
+			Label:
+				id: V7
+				text: ''
+
+		BoxLayout:
+			orientation: 'vertical'
+			Button:
+				size_hint: 1, 0.4
+				text: 'VRMDZ'
+				on_press: root.FOCUS('V8')
+			Label:
+				id: V8
+				text: ''
+	BoxLayout
+		orientation: 'vertical'
+		size_hint:0.25, 0.5
+		pos_hint:{'right':1}
+		Button:
+			size_hint: 1, 0.33
+			pos_hint: {'top':1}
+			text: '<<'
+			on_press: root.BACKSPACE()
+		Button:
+			text: 'OK'
+			background_color: 0, 0.8, 0, 1
+			on_press: root.OK()
+
+	BoxLayout
+		size_hint: 0.75, 0.5
+		GridLayout
+			cols: 3
+			rows: 4
+			Button:
+				text: '1'
+				on_press: root.KEY(self.text)
+			Button:
+				text: '2'
+				on_press: root.KEY(self.text)
+			Button:
+				text: '3'
+				on_press: root.KEY(self.text)
+			Button:
+				text: '4'
+				on_press: root.KEY(self.text)
+			Button:
+				text: '5'
+				on_press: root.KEY(self.text)
+			Button:
+				text: '6'
+				on_press: root.KEY(self.text)
+			Button:
+				text: '7'
+				on_press: root.KEY(self.text)
+			Button:
+				text: '8'
+				on_press: root.KEY(self.text)
+			Button:
+				text: '9'
+				on_press: root.KEY(self.text)
+			Button:
+				text: '.'
+				on_press: root.KEY(self.text)
+			Button:
+				text: '0'
+				on_press: root.KEY(self.text)
+			Button:
+				text: '2.5'
+				on_press: root.MEIA()
+
+<Setcv>
+	BoxLayout:
+		Label:
+			text: 'VALORES PADRÕES DA CAIXA'
 			size_hint: 1, 0.05
 			pos_hint: {'top':1}
 	GridLayout:
