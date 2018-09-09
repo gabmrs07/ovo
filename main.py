@@ -632,7 +632,7 @@ class History(Screen):
 		H='H'+str.replace(HistSel.D, '/', '_')
 		History.H=getattr(DATA, H)
 		History.L=list()
-		for x in History.H:
+		for x in range(len(History.H)):
 			History.L.append(History.H[x]['CLIENTE'])
 		self.ids.hhspin.values=History.L
 
@@ -775,7 +775,7 @@ class Setv(Screen):
 		for x in ['V1','V2','V3','V4','V5','V6','V7','V8']:
 			V[x]=self.ids[x].text
 		P=open('DATA.py')
-		PR=P0.read()
+		PR=P.read()
 		PS=re.sub('_V={.*}', '_V={}'.format(V), PR)
 		P1=open('DATA.py', 'w')
 		P1.write(PS)
