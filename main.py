@@ -1,7 +1,5 @@
 import DATA
 import kivy
-import os
-import os.path
 import re
 import socket
 import time
@@ -16,7 +14,6 @@ if socket.gethostname()=='josley' or socket.gethostname()=='lamettrie3':
 	from importlib import reload
 
 DIAVAR=time.strftime('H%d_%m_%y')
-CWD=os.getcwd()
 D='DATA.py'
 L=['BRT1', 'BRT1_DZ', 'BRT1_VLR', 'BRT2', 'BRT2_DZ', 'BRT2_VLR', 'BRT3', 'BRT3_DZ', 'BRT3_VLR',\
 		'VRT1', 'VRT1_DZ', 'VRT1_VLR', 'BRDZ', 'BRDZ_DZ', 'BRDZ_VLR', 'VRDZ', 'VRDZ_DZ', 'VRDZ_VLR',\
@@ -115,8 +112,6 @@ class Rota(Screen):
 		P.close()
 		P1.close()
 
-		W=open(D, 'a')
-		W.write('\n{}=[]'.format(DIAVAR))
 		self.manager.current='carga'
 
 	def RS_T(self):
@@ -218,6 +213,7 @@ class Carga(Screen):
 			VRMDZ(VMD)
 
 		C=dict()
+		C['CLIENTE']='CARGA'
 		for x in ['BRT1','BRT2','BRT3','VRT1','BRDZ','VRDZ','BRMDZ','VRMDZ']:
 			if 0.0!=OVO.E[x]:
 				SOMA+=OVO.E_VLR[x+'_VLR']
@@ -226,9 +222,19 @@ class Carga(Screen):
 				C[x+'_VLR']=OVO.E_VLR[x+'_VLR']
 		C['TOTAL']=SOMA
 
+		W=open(D, 'a')
+		W.write('\n{}=[{}]'.format(DIAVAR, C))
+
+		CARGA=getattr(DATA, '_CARGA')
+
+		for x in ['BRT1','BRT2','BRT3','VRT1','BRDZ','VRDZ','BRMDZ','VRMDZ']:
+			if x in C:
+				A=CARGA[x]+C[x]*30.0
+				CARGA[x]=A
+
 		P=open(D)
 		PR=P.read()
-		PS=re.sub('_CARGA={.*}', '_CARGA={}'.format(C), PR)
+		PS=re.sub('_CARGA={.*}', '_CARGA={}'.format(CARGA), PR)
 		P1=open(D, 'w')
 		P1.write(PS)
 		P1.close()
@@ -293,6 +299,7 @@ class Catcher(Screen):
 	INSERT=None
 
 	def on_pre_enter(self, *args):
+		reload(DATA)
 		self.ids['inpt1'].text=''
 		self.ids['inpt2'].text=''
 		self.ids['inpt3'].text=''
@@ -406,6 +413,21 @@ class Catcher(Screen):
 		P.close()
 		P1.close()
 
+		CARGA=getattr(DATA, '_CARGA')
+
+		for x in ['BRT1','BRT2','BRT3','VRT1','BRDZ','VRDZ','BRMDZ','VRMDZ']:
+			if x in O:
+				A=CARGA[x]-O[x]
+				CARGA[x]=A
+
+		P=open(D)
+		PR=P.read()
+		PS=re.sub('_CARGA={.*}', '_CARGA={}'.format(CARGA), PR)
+		P1=open(D, 'w')
+		P1.write(PS)
+		P1.close()
+		P.close()
+
 		for x in ['BRT1','BRT2','BRT3','VRT1','BRDZ','VRDZ','BRMDZ','VRMDZ']:
 				OVO.E[x]=0.0
 
@@ -476,7 +498,7 @@ class Editar(Screen):
 				self.ids[X].text=str(Output.E[Y])
 			else:
 				self.ids[X].text=DATA._V[Z]
-				
+
 		FILL('t1', 'BRT1')
 		FILL('t2', 'VRT1')
 		FILL('t3', 'BRT2')
@@ -593,6 +615,7 @@ class HistSel(Screen):
 
 	def on_pre_enter(self, *args):
 		reload(DATA)
+		self.ids.hspin.text=''
 		H=list()
 		for x in DATA._H:
 			X=str.strip(x, 'H')
@@ -635,6 +658,61 @@ class History(Screen):
 
 class Settings(Screen):
 	pass
+
+class Crg(Screen):
+
+	def on_pre_enter(self, *args):
+		reload(DATA)
+		SOMA=0.0
+		self.ids.DIA.text=time.strftime('%d/%m/%y')
+		for x in ['BRT1','BRT2','BRT3','VRT1','BRDZ','VRDZ','BRMDZ','VRMDZ']:
+			self.ids[x].text=str(DATA._CARGA[x])
+			self.ids[x+'_C'].text=str(DATA._CARGA[x]/30)[0:4]
+			SOMA+=DATA._CARGA[x]/30
+		self.ids.CT.text=str(SOMA)[0:5]
+
+class Setc(Screen):
+
+	INSERT=None
+	TEXTFOCUS=None
+
+	def on_pre_enter(self, *args):
+		Setc.TEXTFOCUS='BRT1'
+		for x in ['BRT1','BRT2','BRT3','VRT1','BRDZ','VRDZ','BRMDZ','VRMDZ']:
+			self.ids[x].text=str(DATA._CARGA[x]/30)[0:4]
+
+	def FOCUS(self, IDS):
+		Setc.TEXTFOCUS=IDS
+
+	def KEY(self, INSERT):
+		self.ids[Setc.TEXTFOCUS].text += INSERT
+
+	def BACKSPACE(self):
+		self.ids[Setc.TEXTFOCUS].text = ''
+
+	def MEIA(self):
+		TEXT=self.ids[Setc.TEXTFOCUS].text
+		if TEXT!='':
+			FLT=float(self.ids[Setc.TEXTFOCUS].text)
+			self.ids[Setc.TEXTFOCUS].text = str(FLT+0.5)
+		else:
+			self.ids[Setc.TEXTFOCUS].text += '0.5'
+
+	def OK(self):
+
+		C=dict()
+		for x in ['BRT1','BRT2','BRT3','VRT1','BRDZ','VRDZ','BRMDZ','VRMDZ']:
+			C[x]=float(self.ids[x].text)*30.0
+
+		P=open(D)
+		PR=P.read()
+		PS=re.sub('_CARGA={.*}', '_CARGA={}'.format(C), PR)
+		P1=open(D, 'w')
+		P1.write(PS)
+		P1.close()
+		P.close()
+
+		self.manager.current='menu'
 
 class PreSetr(Screen):
 
@@ -785,6 +863,8 @@ class MapaApp(App):
 		self.sm.add_widget(HistSel(name='histsel'))
 		self.sm.add_widget(History(name='history'))
 		self.sm.add_widget(Settings(name='set'))
+		self.sm.add_widget(Crg(name='crg'))
+		self.sm.add_widget(Setc(name='setc'))
 		self.sm.add_widget(PreSetr(name='presetr'))
 		self.sm.add_widget(Setr(name='setr'))
 		self.sm.add_widget(Setv(name='valor'))

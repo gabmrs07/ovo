@@ -16,7 +16,7 @@ _C={}
 
 ## CARGA
 
-_CARGA={}
+_CARGA={'BRT1':0.0,'VRT1':0.0,'BRT2':0.0,'BRT3':0.0,'BRDZ':0.0,'VRDZ':0.0,'BRMDZ':0.0,'VRMDZ':0.0}
 
 ## HISTORICO
 
