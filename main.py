@@ -59,28 +59,20 @@ class Menu(Screen):
 			Menu.TRIGGER=2
 
 	def EXTRATO(self, instance):
-		pass
-#		E=list()
-#		E.append(PLANILHA.CARGA)
-#		for x in PLANILHA._C:
-#			if x=='_END':
-#				break
-#			X=str.rstrip(x, '=0')
-#			Y=getattr(PLANILHA, X)
-#			E.append(Y)
-#		E_DIA='H'+str.replace(PLANILHA._DIA, '/', '_')
-#		W=open('DATA.py', 'a')
-#		W.write('\n{}={}'.format(E_DIA, E))
-#		W.close()
-#		P0=open('DATA.py')
-#		PR=P0.read()
-#		PSUB=re.sub('\'_END\'', '\'{}\', \'_END\''.format(E_DIA), PR)
-#		P1=open('DATA.py', 'w')
-#		P1.write(PSUB)
-#		P1.close()
-#		P0.close()
-#		os.remove(PLAN)
-#		self.ids.MENU.remove_widget(Menu.BT)
+		P=open(D)
+		PR=P.read()
+		PS=re.sub('_C={.*}', '_C={}', PR)
+		P1=open(D, 'w')
+		P1.write(PS)
+		P1.close()
+		P.close()
+
+		O=open('EXTRATO_{}.txt'.format(DIAVAR), 'a')
+		H=getattr(DATA, DATA._H[0])
+		O.write('EXTRATO DIA {}\n\n'.format(time.strftime('%d/%m/%y')))
+
+		self.ids.MENU.remove_widget(Menu.BT)
+		Menu.TRIGGER=None
 
 	def CHECKER(self):
 		if DATA._C:
@@ -657,7 +649,9 @@ class History(Screen):
 				self.ids[x].text='-'
 
 class Settings(Screen):
-	pass
+
+	def CLEAN(self):
+		pass
 
 class Crg(Screen):
 
@@ -890,7 +884,6 @@ class Setcv(Screen):
 		P.close()
 
 		self.manager.current='menu'
-
 
 class MapaApp(App):
 	sm=None

@@ -4,4 +4,6 @@ Tarefas
 2- Historico da carga separado
 3- Output
 4- Backspace
-5- Input carga com duzia e caixa.
+5- Input carga com duzia e caixa
+6- Autoclear alteração valores
+7- Limpeza de historico

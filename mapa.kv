@@ -1583,21 +1583,24 @@
 			text: 'CONFIGURAÇÕES'
 	GridLayout:
 		cols: 1
-		rows: 4
+		rows: 5
 		size_hint: 1, 0.9
 		pos_hint: {'top':0.9}
-		Button:
-			text: 'Carga'
-			on_press: root.manager.current='crg'
-		Button:
-			text: 'Alterar preços da dúzia'
-			on_press: root.manager.current='valor'
 		Button:
 			text: 'Alterar preços da caixa'
 			on_press: root.manager.current='setcv'
 		Button:
+			text: 'Alterar preços da dúzia'
+			on_press: root.manager.current='valor'
+		Button:
 			text: 'Alterar rotas'
 			on_press: root.manager.current='presetr'
+		Button:
+			text: 'Carga'
+			on_press: root.manager.current='crg'
+		Button:
+			text: 'Limpar'
+			on_press: root.CLEAN()
 
 <Crg>
 	GridLayout:
