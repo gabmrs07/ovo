@@ -1,8 +1,11 @@
 import DATA
 import kivy
 import re
+import smtplib
 import socket
 import time
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 from kivy.app import App
 from kivy.uix.button import Button
 from kivy.uix.label import Label
@@ -59,15 +62,30 @@ class Menu(Screen):
 			Menu.TRIGGER=2
 
 	def EXTRATO(self, instance):
-		P=open(D)
-		PR=P.read()
-		PS=re.sub('_C={.*}', '_C={}', PR)
-		P1=open(D, 'w')
-		P1.write(PS)
-		P1.close()
-		P.close()
-		self.ids.MENU.remove_widget(Menu.BT)
-		Menu.TRIGGER=None
+#		P=open(D)
+#		PR=P.read()
+#		PS=re.sub('_C={.*}', '_C={}', PR)
+#		P1=open(D, 'w')
+#		P1.write(PS)
+#		P1.close()
+#		P.close()
+
+		H=getattr(DATA, DATA._H[0])
+		MSG=MIMEMultipart()
+		MSG['From']='ratatoskr.sedex@yandex.com'
+		MSG['To']='ggmoraes07@gmail.com'
+		MSG['Subject']='Extrato {}.'.format(time.strftime('%d/%m/%y'))
+		BODY='{}'.format(H)
+		MSG.attach(MIMEText(BODY, 'plain'))
+		YANDEX=smtplib.SMTP(host='smtp.yandex.com', port=587)
+		YANDEX.starttls()
+		YANDEX.login('ratatoskr.sedex@yandex.com', 'lzcxthcehbgvcblq')
+		TEXT=MSG.as_string()
+		YANDEX.sendmail('ratatoskr.sedex@yandex.com', 'ggmoraes07@gmail.com', TEXT)
+		YANDEX.quit()
+
+#		self.ids.MENU.remove_widget(Menu.BT)
+#		Menu.TRIGGER=None
 
 	def CHECKER(self):
 		if DATA._C:
