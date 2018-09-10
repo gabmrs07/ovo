@@ -17,7 +17,7 @@ DIAVAR=time.strftime('H%d_%m_%y')
 D='DATA.py'
 L=['BRT1', 'BRT1_DZ', 'BRT1_VLR', 'BRT2', 'BRT2_DZ', 'BRT2_VLR', 'BRT3', 'BRT3_DZ', 'BRT3_VLR',\
 		'VRT1', 'VRT1_DZ', 'VRT1_VLR', 'BRDZ', 'BRDZ_DZ', 'BRDZ_VLR', 'VRDZ', 'VRDZ_DZ', 'VRDZ_VLR',\
-		'BRMDZ', 'BRMDZ_DZ', 'BRMDZ_VLR', 'VRMDZ', 'VRMDZ_DZ', 'VRMDZ_VLR','TOTAL']
+		'BRMD', 'BRMD_DZ', 'BRMD_VLR', 'VRMD', 'VRMD_DZ', 'VRMD_VLR','TOTAL']
 NOME=None
 
 BRT1=''
@@ -26,16 +26,16 @@ BRT2=''
 BRT3=''
 BRDZ=''
 VRDZ=''
-BRMDZ=''
-VRMDZ=''
+BRMD=''
+VRMD=''
 BRT1_VALOR=DATA._CV['V1']
 VRT1_VALOR=DATA._CV['V2']
 BRT2_VALOR=DATA._CV['V3']
 BRT3_VALOR=DATA._CV['V4']
 BRDZ_VALOR=DATA._CV['V5']
 VRDZ_VALOR=DATA._CV['V6']
-BRMDZ_VALOR=DATA._CV['V7']
-VRMDZ_VALOR=DATA._CV['V8']
+BRMD_VALOR=DATA._CV['V7']
+VRMD_VALOR=DATA._CV['V8']
 
 class Menu(Screen):
 
@@ -66,11 +66,6 @@ class Menu(Screen):
 		P1.write(PS)
 		P1.close()
 		P.close()
-
-		O=open('EXTRATO_{}.txt'.format(DIAVAR), 'a')
-		H=getattr(DATA, DATA._H[0])
-		O.write('EXTRATO DIA {}\n\n'.format(time.strftime('%d/%m/%y')))
-
 		self.ids.MENU.remove_widget(Menu.BT)
 		Menu.TRIGGER=None
 
@@ -165,8 +160,8 @@ class Carga(Screen):
 		global BRT3_VALOR
 		global BRDZ_VALOR
 		global VRDZ_VALOR
-		global BRMDZ_VALOR
-		global VRMDZ_VALOR
+		global BRMD_VALOR
+		global VRMD_VALOR
 
 		B1=self.ids.inpt1.text
 		V1=self.ids.inpt2.text
@@ -182,8 +177,8 @@ class Carga(Screen):
 		BRT3_VALOR=self.ids.inp4.text
 		BRDZ_VALOR=self.ids.inp5.text
 		VRDZ_VALOR=self.ids.inp6.text
-		BRMDZ_VALOR=self.ids.inp7.text
-		VRMDZ_VALOR=self.ids.inp8.text
+		BRMD_VALOR=self.ids.inp7.text
+		VRMD_VALOR=self.ids.inp8.text
 
 		SOMA=0.0
 
@@ -200,13 +195,13 @@ class Carga(Screen):
 		if VDZ!='':
 			VRDZ(VDZ)
 		if BMD!='':
-			BRMDZ(BMD)
+			BRMD(BMD)
 		if VMD!='':
-			VRMDZ(VMD)
+			VRMD(VMD)
 
 		C=dict()
 		C['CLIENTE']='CARGA'
-		for x in ['BRT1','BRT2','BRT3','VRT1','BRDZ','VRDZ','BRMDZ','VRMDZ']:
+		for x in ['BRT1','BRT2','BRT3','VRT1','BRDZ','VRDZ','BRMD','VRMD']:
 			if 0.0!=OVO.E[x]:
 				SOMA+=OVO.E_VLR[x+'_VLR']
 				C[x]=OVO.E[x]
@@ -219,7 +214,7 @@ class Carga(Screen):
 
 		CARGA=getattr(DATA, '_CARGA')
 
-		for x in ['BRT1','BRT2','BRT3','VRT1','BRDZ','VRDZ','BRMDZ','VRMDZ']:
+		for x in ['BRT1','BRT2','BRT3','VRT1','BRDZ','VRDZ','BRMD','VRMD']:
 			if x in C:
 				A=CARGA[x]+C[x]*30.0
 				CARGA[x]=A
@@ -232,7 +227,7 @@ class Carga(Screen):
 		P1.close()
 		P.close()
 
-		for x in ['BRT1','BRT2','BRT3','VRT1','BRDZ','VRDZ','BRMDZ','VRMDZ']:
+		for x in ['BRT1','BRT2','BRT3','VRT1','BRDZ','VRDZ','BRMD','VRMD']:
 				OVO.E[x]=0.0
 
 		self.manager.current='entry'
@@ -337,8 +332,8 @@ class Catcher(Screen):
 		global BRT3_VALOR
 		global BRDZ_VALOR
 		global VRDZ_VALOR
-		global BRMDZ_VALOR
-		global VRMDZ_VALOR
+		global BRMD_VALOR
+		global VRMD_VALOR
 
 		B1=self.ids.inpt1.text
 		V1=self.ids.inpt2.text
@@ -354,8 +349,8 @@ class Catcher(Screen):
 		BRT3_VALOR=self.ids.inp4.text
 		BRDZ_VALOR=self.ids.inp5.text
 		VRDZ_VALOR=self.ids.inp6.text
-		BRMDZ_VALOR=self.ids.inp7.text
-		VRMDZ_VALOR=self.ids.inp8.text
+		BRMD_VALOR=self.ids.inp7.text
+		VRMD_VALOR=self.ids.inp8.text
 
 		SOMA=0.0
 
@@ -372,13 +367,13 @@ class Catcher(Screen):
 		if VDZ!='':
 			VRDZ(VDZ)
 		if BMD!='':
-			BRMDZ(BMD)
+			BRMD(BMD)
 		if VMD!='':
-			VRMDZ(VMD)
+			VRMD(VMD)
 
 		O=dict()
 		O['CLIENTE']=NOME
-		for x in ['BRT1','BRT2','BRT3','VRT1','BRDZ','VRDZ','BRMDZ','VRMDZ']:
+		for x in ['BRT1','BRT2','BRT3','VRT1','BRDZ','VRDZ','BRMD','VRMD']:
 			if 0.0!=OVO.E[x]:
 				SOMA+=OVO.E_VLR[x+'_VLR']
 				O[x]=OVO.E[x]
@@ -407,7 +402,7 @@ class Catcher(Screen):
 
 		CARGA=getattr(DATA, '_CARGA')
 
-		for x in ['BRT1','BRT2','BRT3','VRT1','BRDZ','VRDZ','BRMDZ','VRMDZ']:
+		for x in ['BRT1','BRT2','BRT3','VRT1','BRDZ','VRDZ','BRMD','VRMD']:
 			if x in O:
 				A=CARGA[x]-O[x]
 				CARGA[x]=A
@@ -420,7 +415,7 @@ class Catcher(Screen):
 		P1.close()
 		P.close()
 
-		for x in ['BRT1','BRT2','BRT3','VRT1','BRDZ','VRDZ','BRMDZ','VRMDZ']:
+		for x in ['BRT1','BRT2','BRT3','VRT1','BRDZ','VRDZ','BRMD','VRMD']:
 				OVO.E[x]=0.0
 
 		self.manager.current='menu'
@@ -497,16 +492,16 @@ class Editar(Screen):
 		FILL('t4', 'BRT3')
 		FILL('t5', 'BRDZ')
 		FILL('t6', 'VRDZ')
-		FILL('t7', 'VRMDZ')
-		FILL('t8', 'BRMDZ')
+		FILL('t7', 'VRMD')
+		FILL('t8', 'BRMD')
 		FILLPILAS('p1', 'BRT1_DZ', 'V1')
 		FILLPILAS('p2', 'VRT1_DZ', 'V2')
 		FILLPILAS('p3', 'BRT2_DZ', 'V3')
 		FILLPILAS('p4', 'BRT3_DZ', 'V4')
 		FILLPILAS('p5', 'BRDZ_DZ', 'V5')
 		FILLPILAS('p6', 'VRDZ_DZ', 'V6')
-		FILLPILAS('p7', 'VRMDZ_DZ', 'V7')
-		FILLPILAS('p8', 'BRMDZ_DZ', 'V8')
+		FILLPILAS('p7', 'VRMD_DZ', 'V7')
+		FILLPILAS('p8', 'BRMD_DZ', 'V8')
 		self.ids['NCL'].text='CLIENTE: {}'.format(NOME)
 
 		Editar.TEXTFOCUS='t1'
@@ -536,8 +531,8 @@ class Editar(Screen):
 		global BRT3_VALOR
 		global BRDZ_VALOR
 		global VRDZ_VALOR
-		global BRMDZ_VALOR
-		global VRMDZ_VALOR
+		global BRMD_VALOR
+		global VRMD_VALOR
 
 		B1=self.ids.t1.text
 		V1=self.ids.t2.text
@@ -553,8 +548,8 @@ class Editar(Screen):
 		BRT3_VALOR=self.ids.p4.text
 		BRDZ_VALOR=self.ids.p5.text
 		VRDZ_VALOR=self.ids.p6.text
-		BRMDZ_VALOR=self.ids.p7.text
-		VRMDZ_VALOR=self.ids.p8.text
+		BRMD_VALOR=self.ids.p7.text
+		VRMD_VALOR=self.ids.p8.text
 
 		SOMA=0.0
 
@@ -571,13 +566,13 @@ class Editar(Screen):
 		if VDZ!='':
 			VRDZ(VDZ)
 		if BMD!='':
-			BRMDZ(BMD)
+			BRMD(BMD)
 		if VMD!='':
-			VRMDZ(VMD)
+			VRMD(VMD)
 
 		O=dict()
 		O['CLIENTE']=NOME
-		for x in ['BRT1','BRT2','BRT3','VRT1','BRDZ','VRDZ','BRMDZ','VRMDZ']:
+		for x in ['BRT1','BRT2','BRT3','VRT1','BRDZ','VRDZ','BRMD','VRMD']:
 			if 0.0!=OVO.E[x]:
 				SOMA+=OVO.E_VLR[x+'_VLR']
 				O[x]=OVO.E[x]
@@ -596,7 +591,7 @@ class Editar(Screen):
 		P.close()
 		P1.close()
 
-		for x in ['BRT1','BRT2','BRT3','VRT1','BRDZ','VRDZ','BRMDZ','VRMDZ']:
+		for x in ['BRT1','BRT2','BRT3','VRT1','BRDZ','VRDZ','BRMD','VRMD']:
 				OVO.E[x]=0.0
 
 		self.manager.current='menu'
@@ -659,7 +654,7 @@ class Crg(Screen):
 		reload(DATA)
 		SOMA=0.0
 		self.ids.DIA.text=time.strftime('%d/%m/%y')
-		for x in ['BRT1','BRT2','BRT3','VRT1','BRDZ','VRDZ','BRMDZ','VRMDZ']:
+		for x in ['BRT1','BRT2','BRT3','VRT1','BRDZ','VRDZ','BRMD','VRMD']:
 			self.ids[x].text=str(DATA._CARGA[x])
 			self.ids[x+'_C'].text=str(DATA._CARGA[x]/30)[0:4]
 			SOMA+=DATA._CARGA[x]/30
@@ -672,7 +667,7 @@ class Setc(Screen):
 
 	def on_pre_enter(self, *args):
 		Setc.TEXTFOCUS='BRT1'
-		for x in ['BRT1','BRT2','BRT3','VRT1','BRDZ','VRDZ','BRMDZ','VRMDZ']:
+		for x in ['BRT1','BRT2','BRT3','VRT1','BRDZ','VRDZ','BRMD','VRMD']:
 			self.ids[x].text=str(DATA._CARGA[x]/30)[0:4]
 
 	def FOCUS(self, IDS):
@@ -695,7 +690,7 @@ class Setc(Screen):
 	def OK(self):
 
 		C=dict()
-		for x in ['BRT1','BRT2','BRT3','VRT1','BRDZ','VRDZ','BRMDZ','VRMDZ']:
+		for x in ['BRT1','BRT2','BRT3','VRT1','BRDZ','VRDZ','BRMD','VRMD']:
 			C[x]=float(self.ids[x].text)*30.0
 
 		P=open(D)
@@ -912,11 +907,11 @@ class MapaApp(App):
 
 class OVO:
 
-	E={'BRT1':0.0,'BRT2':0.0,'BRT3':0.0,'VRT1':0.0,'BRDZ':0.0,'VRDZ':0.0,'BRMDZ':0.0,'VRMDZ':0.0}
+	E={'BRT1':0.0,'BRT2':0.0,'BRT3':0.0,'VRT1':0.0,'BRDZ':0.0,'VRDZ':0.0,'BRMD':0.0,'VRMD':0.0}
 
-	E_DZ={'BRT1_DZ':0.0,'BRT2_DZ':0.0,'BRT3_DZ':0.0,'VRT1_DZ':0.0,'BRDZ_DZ':0.0,'VRDZ_DZ':0.0,'BRMDZ_DZ':0.0,'VRMDZ_DZ':0.0}
+	E_DZ={'BRT1_DZ':0.0,'BRT2_DZ':0.0,'BRT3_DZ':0.0,'VRT1_DZ':0.0,'BRDZ_DZ':0.0,'VRDZ_DZ':0.0,'BRMD_DZ':0.0,'VRMD_DZ':0.0}
 
-	E_VLR={'BRT1_VLR':0.0,'BRT2_VLR':0.0,'BRT3_VLR':0.0,'VRT1_VLR':0.0,'BRDZ_VLR':0.0,'VRDZ_VLR':0.0,'BRMDZ_VLR':0.0,'VRMDZ_VLR':0.0}
+	E_VLR={'BRT1_VLR':0.0,'BRT2_VLR':0.0,'BRT3_VLR':0.0,'VRT1_VLR':0.0,'BRDZ_VLR':0.0,'VRDZ_VLR':0.0,'BRMD_VLR':0.0,'VRMD_VLR':0.0}
 
 	def __init__(self, dz):
 		self.dz=float(dz)
@@ -975,23 +970,23 @@ class VRDZ(OVO):
 		OVO.E_DZ['VRDZ_DZ']=self.valor
 		OVO.E_VLR['VRDZ_VLR']=self.soma
 
-class BRMDZ(OVO):
+class BRMD(OVO):
 	def __init__(self, dz):
 		OVO.__init__(self, dz)
-		self.valor=float(BRMDZ_VALOR)
+		self.valor=float(BRMD_VALOR)
 		self.soma=self.valor*self.dz
-		OVO.E['BRMDZ']=self.dz
-		OVO.E_DZ['BRMDZ_DZ']=self.valor
-		OVO.E_VLR['BRMDZ_VLR']=self.soma
+		OVO.E['BRMD']=self.dz
+		OVO.E_DZ['BRMD_DZ']=self.valor
+		OVO.E_VLR['BRMD_VLR']=self.soma
 
-class VRMDZ(OVO):
+class VRMD(OVO):
 	def __init__(self, dz):
 		OVO.__init__(self, dz)
-		self.valor=float(VRMDZ_VALOR)
+		self.valor=float(VRMD_VALOR)
 		self.soma=self.valor*self.dz
-		OVO.E['VRMDZ']=self.dz
-		OVO.E_DZ['VRMDZ_DZ']=self.valor
-		OVO.E_VLR['VRMDZ_VLR']=self.soma
+		OVO.E['VRMD']=self.dz
+		OVO.E_DZ['VRMD_DZ']=self.valor
+		OVO.E_VLR['VRMD_VLR']=self.soma
 
 
 if __name__ == '__main__':
