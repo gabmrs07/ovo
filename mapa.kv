@@ -1203,24 +1203,39 @@
 			size_hint: 0.3, 1
 			text: '<'
 			on_press: root.manager.current='menu'
-		Button:
-			text: 'OK'
-			background_color: 0, 0.8, 0, 1
-			on_press: root.HSEL()
+		Label:
+			text: 'HISTÓRICO'
+			canvas.before:
+				Color:
+					rgba: 0.3, 0.3, 0.3, 1
+				Rectangle:
+					pos: self.pos
+					size: self.size
 	Label:
 		text: 'Escolha o dia:'
 		size_hint: 1, 0.1
 		pos_hint: {'top':0.9}
-		canvas.before:
-			Color:
-				rgba: 0.3, 0.3, 0.3, 1
-			Rectangle:
-				pos: self.pos
-				size: self.size
+
 	Spinner:
 		id: hspin
 		size_hint: 1, 0.1
 		pos_hint: {'top': 0.8}
+
+	BoxLayout:
+		id: PB
+		pos_hint: {'top':0.7}
+		size_hint: 1, 0.1
+
+	GridLayout:
+		cols: 1
+		rows: 3
+		size_hint: 1, 0.6
+		Button:
+			text: 'Vizualizar'
+			on_press: root.HSEL()
+		Button:
+			text: 'Enviar extrato'
+			on_press: root.EXTRATO()
 
 <History>
 	GridLayout:

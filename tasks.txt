@@ -7,3 +7,4 @@ Tarefas
 5- Input carga com duzia e caixa
 6- Autoclear alteração valores
 7- Limpeza de historico
+8- Ao editar, editar carga também

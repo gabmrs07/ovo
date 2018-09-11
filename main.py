@@ -1,7 +1,6 @@
 import DATA
 import kivy
 import re
-import smtplib
 import socket
 import time
 from email.mime.multipart import MIMEMultipart
@@ -11,7 +10,9 @@ from kivy.uix.button import Button
 from kivy.uix.label import Label
 from kivy.uix.popup import Popup
 from kivy.uix.screenmanager import ScreenManager, Screen
+from kivy.uix.progressbar import ProgressBar
 from kivy.base import runTouchApp
+from smtplib import SMTP
 
 if socket.gethostname()=='josley' or socket.gethostname()=='lamettrie3':
 	from importlib import reload
@@ -42,50 +43,8 @@ VRMD_VALOR=DATA._CV['V8']
 
 class Menu(Screen):
 
-	BT=Button(text='Gerar extrato')
-	TRIGGER=None
-
 	def on_pre_enter(self, *args):
 		reload(DATA)
-		for x in DATA._C:
-			if DATA._C.get(x)==1:
-				Menu.TRIGGER=1
-				break
-			elif Menu.TRIGGER==2:
-				break
-			else:
-				Menu.TRIGGER=0
-		if Menu.TRIGGER==0:
-			Menu.BT=Button(text='Gerar extrato')
-			Menu.BT.bind(on_press=self.EXTRATO)
-			self.ids.MENU.add_widget(Menu.BT, index=2)
-			Menu.TRIGGER=2
-
-	def EXTRATO(self, instance):
-#		P=open(D)
-#		PR=P.read()
-#		PS=re.sub('_C={.*}', '_C={}', PR)
-#		P1=open(D, 'w')
-#		P1.write(PS)
-#		P1.close()
-#		P.close()
-
-		H=getattr(DATA, DATA._H[0])
-		MSG=MIMEMultipart()
-		MSG['From']='ratatoskr.sedex@yandex.com'
-		MSG['To']='ggmoraes07@gmail.com'
-		MSG['Subject']='Extrato {}.'.format(time.strftime('%d/%m/%y'))
-		BODY='{}'.format(H)
-		MSG.attach(MIMEText(BODY, 'plain'))
-		YANDEX=smtplib.SMTP(host='smtp.yandex.com', port=587)
-		YANDEX.starttls()
-		YANDEX.login('ratatoskr.sedex@yandex.com', 'lzcxthcehbgvcblq')
-		TEXT=MSG.as_string()
-		YANDEX.sendmail('ratatoskr.sedex@yandex.com', 'ggmoraes07@gmail.com', TEXT)
-		YANDEX.quit()
-
-#		self.ids.MENU.remove_widget(Menu.BT)
-#		Menu.TRIGGER=None
 
 	def CHECKER(self):
 		if DATA._C:
@@ -620,20 +579,52 @@ class HistSel(Screen):
 
 	def on_pre_enter(self, *args):
 		reload(DATA)
-		self.ids.hspin.text=''
 		H=list()
 		for x in DATA._H:
 			X=str.strip(x, 'H')
 			S=str.replace(X, '_', '/')
 			H.append(S)
+		self.ids.hspin.text=H[0]
 		self.ids.hspin.values=H
 
 	def HSEL(self):
 		if self.ids.hspin.text!='':
 			HistSel.D=self.ids.hspin.text
 			self.manager.current='history'
-		else:
-			pass
+
+	def EXTRATO(self):
+		if self.ids.hspin.text!='':
+			G='H'+str.replace(self.ids.hspin.text, '/', '_')
+			LB=Label(text='Enviando email...')
+			self.ids.PB.add_widget(LB)
+
+		#	try:
+			H=getattr(DATA, G)
+			MSG=MIMEMultipart()
+			MSG['From']='ratatoskr.sedex@yandex.com'
+			MSG['To']='ggmoraes07@gmail.com'
+			MSG['Subject']='Extrato {}.'.format(time.strftime('%d/%m/%y'))
+			BODY='{}'.format(H)
+			MSG.attach(MIMEText(BODY, 'plain'))
+			YANDEX=SMTP(host='smtp.yandex.com', port=587)
+			YANDEX.starttls()
+			YANDEX.login('ratatoskr.sedex@yandex.com', 'lzcxthcehbgvcblq')
+			TEXT=MSG.as_string()
+			YANDEX.sendmail('ratatoskr.sedex@yandex.com', 'ggmoraes07@gmail.com', TEXT)
+			YANDEX.quit()
+			LB.text='Email enviado com sucesso!'
+		#	except:
+		#		LB.text='Erro!'
+
+			#if G==DATA._H[0]:
+			#	P=open(D)
+			#	PR=P.read()
+			#	PS=re.sub('_C={.*}', '_C={}', PR)
+			#	P1=open(D, 'w')
+			#	P1.write(PS)
+			#	P1.close()
+			#	P.close()
+
 
 class History(Screen):
 
