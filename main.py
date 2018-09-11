@@ -470,16 +470,16 @@ class Editar(Screen):
 		FILL('t4', 'BRT3')
 		FILL('t5', 'BRDZ')
 		FILL('t6', 'VRDZ')
-		FILL('t7', 'VRMD')
-		FILL('t8', 'BRMD')
+		FILL('t7', 'BRMD')
+		FILL('t8', 'VRMD')
 		FILLPILAS('p1', 'BRT1_DZ', 'V1')
 		FILLPILAS('p2', 'VRT1_DZ', 'V2')
 		FILLPILAS('p3', 'BRT2_DZ', 'V3')
 		FILLPILAS('p4', 'BRT3_DZ', 'V4')
 		FILLPILAS('p5', 'BRDZ_DZ', 'V5')
 		FILLPILAS('p6', 'VRDZ_DZ', 'V6')
-		FILLPILAS('p7', 'VRMD_DZ', 'V7')
-		FILLPILAS('p8', 'BRMD_DZ', 'V8')
+		FILLPILAS('p7', 'BRMD_DZ', 'V7')
+		FILLPILAS('p8', 'VRMD_DZ', 'V8')
 		self.ids['NCL'].text='CLIENTE: {}'.format(NOME)
 
 		Editar.TEXTFOCUS='t1'
@@ -559,6 +559,14 @@ class Editar(Screen):
 		O['TOTAL']=SOMA
 
 		H=getattr(DATA, DATA._H[0])
+
+		CARGA=getattr(DATA, '_CARGA')
+
+		for x in ['BRT1','BRT2','BRT3','VRT1','BRDZ','VRDZ','BRMD','VRMD']:
+			if x in H[Output.I]:
+				A=CARGA[x]+H[Output.I][x]
+				CARGA[x]=A
+
 		H.pop(Output.I)
 		H.insert(Output.I, O)
 		P=open(D)
@@ -568,6 +576,19 @@ class Editar(Screen):
 		P1.write(PS)
 		P.close()
 		P1.close()
+
+		for x in ['BRT1','BRT2','BRT3','VRT1','BRDZ','VRDZ','BRMD','VRMD']:
+			if x in O:
+				A=CARGA[x]-O[x]
+				CARGA[x]=A
+
+		P=open(D)
+		PR=P.read()
+		PS=re.sub('_CARGA={.*}', '_CARGA={}'.format(CARGA), PR)
+		P1=open(D, 'w')
+		P1.write(PS)
+		P1.close()
+		P.close()
 
 		for x in ['BRT1','BRT2','BRT3','VRT1','BRDZ','VRDZ','BRMD','VRMD']:
 				OVO.E[x]=0.0
