@@ -614,11 +614,14 @@ class HistSel(Screen):
 			HistSel.D=self.ids.hspin.text
 			self.manager.current='history'
 
+	def HCARGA(self):
+		if self.ids.hspin.text!='':
+			HistSel.D=self.ids.hspin.text
+			self.manager.current='hcarga'
+
 	def EXTRATO(self):
 		if self.ids.hspin.text!='':
 			G='H'+str.replace(self.ids.hspin.text, '/', '_')
-			LB=Label(text='Enviando email...')
-			self.ids.PB.add_widget(LB)
 
 			try:
 				H=getattr(DATA, G)
@@ -634,9 +637,8 @@ class HistSel(Screen):
 				TEXT=MSG.as_string()
 				YANDEX.sendmail('ratatoskr.sedex@yandex.com', 'ggmoraes07@gmail.com', TEXT)
 				YANDEX.quit()
-				LB.text='Email enviado com sucesso!'
 			except:
-				LB.text='Erro!'
+				pass
 
 			#if G==DATA._H[0]:
 			#	P=open(D)
@@ -670,6 +672,17 @@ class History(Screen):
 		for x in L:
 			try:
 				self.ids[x].text=str(History.H[I][x])
+			except:
+				self.ids[x].text='-'
+
+class HCarga(Screen):
+
+	def on_pre_enter(self, *args):
+		self.ids.DIA.text=HistSel.D
+		H=getattr(DATA, 'H'+str.replace(HistSel.D, '/', '_'))
+		for x in L:
+			try:
+				self.ids[x].text=str(H[0][x])
 			except:
 				self.ids[x].text='-'
 
@@ -924,6 +937,7 @@ class MapaApp(App):
 		self.sm.add_widget(Editar(name='editar'))
 		self.sm.add_widget(HistSel(name='histsel'))
 		self.sm.add_widget(History(name='history'))
+		self.sm.add_widget(HCarga(name='hcarga'))
 		self.sm.add_widget(Settings(name='set'))
 		self.sm.add_widget(Crg(name='crg'))
 		self.sm.add_widget(Setc(name='setc'))

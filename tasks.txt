@@ -1,7 +1,6 @@
 Tarefas
 
 1- Adicionar popup de confirmação do lançamento
-2- Historico da carga separado
 3- Output
 5- Input carga com duzia e caixa
 6- Autoclear alteração valores
