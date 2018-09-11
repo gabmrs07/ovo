@@ -255,7 +255,8 @@ class Entry(Screen):
 		self.ids['inpt0'].text += INSERT
 
 	def BACKSPACE(self):
-		self.ids.inpt0.text = ''
+		B=self.ids.inpt0.text[:len(self.ids.inpt0.text)-1]
+		self.ids.inpt0.text = B
 
 class Catcher(Screen):
 
@@ -598,23 +599,23 @@ class HistSel(Screen):
 			LB=Label(text='Enviando email...')
 			self.ids.PB.add_widget(LB)
 
-		#	try:
-			H=getattr(DATA, G)
-			MSG=MIMEMultipart()
-			MSG['From']='ratatoskr.sedex@yandex.com'
-			MSG['To']='ggmoraes07@gmail.com'
-			MSG['Subject']='Extrato {}.'.format(time.strftime('%d/%m/%y'))
-			BODY='{}'.format(H)
-			MSG.attach(MIMEText(BODY, 'plain'))
-			YANDEX=SMTP(host='smtp.yandex.com', port=587)
-			YANDEX.starttls()
-			YANDEX.login('ratatoskr.sedex@yandex.com', 'lzcxthcehbgvcblq')
-			TEXT=MSG.as_string()
-			YANDEX.sendmail('ratatoskr.sedex@yandex.com', 'ggmoraes07@gmail.com', TEXT)
-			YANDEX.quit()
-			LB.text='Email enviado com sucesso!'
-		#	except:
-		#		LB.text='Erro!'
+			try:
+				H=getattr(DATA, G)
+				MSG=MIMEMultipart()
+				MSG['From']='ratatoskr.sedex@yandex.com'
+				MSG['To']='ggmoraes07@gmail.com'
+				MSG['Subject']='Extrato {}.'.format(time.strftime('%d/%m/%y'))
+				BODY='{}'.format(H)
+				MSG.attach(MIMEText(BODY, 'plain'))
+				YANDEX=SMTP(host='smtp.yandex.com', port=587)
+				YANDEX.starttls()
+				YANDEX.login('ratatoskr.sedex@yandex.com', 'lzcxthcehbgvcblq')
+				TEXT=MSG.as_string()
+				YANDEX.sendmail('ratatoskr.sedex@yandex.com', 'ggmoraes07@gmail.com', TEXT)
+				YANDEX.quit()
+				LB.text='Email enviado com sucesso!'
+			except:
+				LB.text='Erro!'
 
 			#if G==DATA._H[0]:
 			#	P=open(D)
@@ -624,7 +625,6 @@ class HistSel(Screen):
 			#	P1.write(PS)
 			#	P1.close()
 			#	P.close()
-
 
 class History(Screen):
 
@@ -743,7 +743,8 @@ class Setr(Screen):
 		self.ids['cli'].text += INSERT
 
 	def BACKSPACE(self):
-		self.ids.cli.text = ''
+		B=self.ids.cli.text[:len(self.ids.cli.text)-1]
+		self.ids.cli.text = B
 
 	def REMOVE(self):
 		if self.ids.adsubspin.text!='':
