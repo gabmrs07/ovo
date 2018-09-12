@@ -56,6 +56,7 @@ class Rota(Screen):
 
 	def SB(self, ROTA):
 		C=dict()
+		C['ROTA']=ROTA
 		for x in ROTA:
 			C[x]=1
 		P=open(D)
@@ -93,6 +94,7 @@ class Carga(Screen):
 	INSERT=None
 
 	def on_pre_enter(self, *args):
+		reload(DATA)
 		self.ids['inpt1'].text=''
 		self.ids['inpt2'].text=''
 		self.ids['inpt3'].text=''
@@ -188,6 +190,7 @@ class Carga(Screen):
 
 		W=open(D, 'a')
 		W.write('\n{}=[{}]'.format(DIAVAR, C))
+		W.close()
 
 		CARGA=getattr(DATA, '_CARGA')
 
@@ -220,12 +223,12 @@ class Entry(Screen):
 		Entry.OUTRO=None
 		S=self.ids.spinner
 		S.text='OUTRO'
-		for x in DATA._C:
+		for x in DATA._C['ROTA']:
 			if DATA._C.get(x)==1:
 				S.text=x
 				break
 		R=list()
-		for x in DATA._C:
+		for x in DATA._C['ROTA']:
 			if DATA._C.get(x)==1:
 				R.append(x)
 		R.insert(0, 'OUTRO')
@@ -414,10 +417,13 @@ class Output(Screen):
 			B.background_color=(0, 0, 0, 1)
 			for x in L:
 				self.ids[x].text=''
-		for x in DATA._C:
-			if DATA._C.get(x)==0:
-				S_LIST.append(x)
-		S.values=S_LIST
+		try:
+			for x in DATA._C['ROTA']:
+				if DATA._C.get(x)==0:
+					S_LIST.append(x)
+			S.values=S_LIST
+		except:
+			pass
 
 	def SELECT(self):
 		ST=self.ids.outspin.text
@@ -638,6 +644,7 @@ class HistSel(Screen):
 				TEXT=MSG.as_string()
 				YANDEX.sendmail('ratatoskr.sedex@yandex.com', 'ggmoraes07@gmail.com', TEXT)
 				YANDEX.quit()
+				self.manager.current='menu'
 			except:
 				pass
 
@@ -663,8 +670,10 @@ class History(Screen):
 		H='H'+str.replace(HistSel.D, '/', '_')
 		History.H=getattr(DATA, H)
 		History.L=list()
-		for x in range(len(History.H)):
-			History.L.append(History.H[x]['CLIENTE'])
+		for x in History.H:
+			if x['CLIENTE']=='CARGA':
+				continue
+			History.L.append(x['CLIENTE'])
 		self.ids.hhspin.values=History.L
 
 	def SEL(self):
