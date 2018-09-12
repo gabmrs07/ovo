@@ -602,12 +602,13 @@ class HistSel(Screen):
 	def on_pre_enter(self, *args):
 		reload(DATA)
 		H=list()
-		for x in DATA._H:
-			X=str.strip(x, 'H')
-			S=str.replace(X, '_', '/')
-			H.append(S)
-		self.ids.hspin.text=H[0]
-		self.ids.hspin.values=H
+		if DATA._H:
+			for x in DATA._H:
+				X=str.strip(x, 'H')
+				S=str.replace(X, '_', '/')
+				H.append(S)
+			self.ids.hspin.text=H[0]
+			self.ids.hspin.values=H
 
 	def HSEL(self):
 		if self.ids.hspin.text!='':
