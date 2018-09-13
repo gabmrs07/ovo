@@ -2242,10 +2242,15 @@
 
 <Setc>
 	BoxLayout:
+		size_hint: 1, 0.05
+		pos_hint: {'top':1}
+		Button:
+			size_hint: 0.3, 1
+			text: '<'
+			on_press: root.manager.current='set'
 		Label:
 			text: 'ALTERAÇÃO DA CARGA NO FURGÃO'
-			size_hint: 1, 0.05
-			pos_hint: {'top':1}
+
 	GridLayout:
 		cols: 2
 		rows: 4
@@ -2384,15 +2389,20 @@
 				text: '0'
 				on_press: root.KEY(self.text)
 			ToggleButton:
-				text: 'Cx/Dz'
+				id: CH
+				text: 'CAIXA'
 				on_press: root.CHANGER()
 
 <Setv>
 	BoxLayout:
+		size_hint: 1, 0.05
+		pos_hint: {'top':1}
+		Button:
+			size_hint: 0.3, 1
+			text: '<'
+			on_press: root.manager.current='set'
 		Label:
 			text: 'VALORES PADRÕES DA CAIXA'
-			size_hint: 1, 0.05
-			pos_hint: {'top':1}
 	GridLayout:
 		cols: 2
 		rows: 4
@@ -2536,10 +2546,14 @@
 
 <Setcv>
 	BoxLayout:
+		size_hint: 1, 0.05
+		pos_hint: {'top':1}
+		Button:
+			size_hint: 0.3, 1
+			text: '<'
+			on_press: root.manager.current='set'
 		Label:
 			text: 'VALORES PADRÕES DA CAIXA'
-			size_hint: 1, 0.05
-			pos_hint: {'top':1}
 	GridLayout:
 		cols: 2
 		rows: 4

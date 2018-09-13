@@ -719,9 +719,10 @@ class Setc(Screen):
 	TEXTFOCUS=None
 
 	def on_pre_enter(self, *args):
+		self.ids.CH.state='normal'
 		Setc.TEXTFOCUS='BRT1'
 		for x in ['BRT1','BRT2','BRT3','VRT1','BRDZ','VRDZ','BRMD','VRMD']:
-			self.ids[x].text=str(DATA._CARGA[x]/30)[0:4]
+			self.ids[x].text=str(DATA._CARGA[x])
 
 	def FOCUS(self, IDS):
 		Setc.TEXTFOCUS=IDS
@@ -733,27 +734,43 @@ class Setc(Screen):
 		self.ids[Setc.TEXTFOCUS].text = ''
 
 	def CHANGER(self):
-		for x in ['BRT1','BRT2','BRT3','VRT1','BRDZ','VRDZ','BRMD','VRMD']:
-			if C/2:
-				self.ids[x].text=str(float(self.ids[x].text)*30)
-			else:
-				self.ids[x].text=str(float(self.ids[x].text)/30)[0:4]
+		try:
+			for x in ['BRT1','BRT2','BRT3','VRT1','BRDZ','VRDZ','BRMD','VRMD']:
+				if self.ids[x].text=='':
+					if self.ids.CH.state=='down':
+						self.ids.CH.state='normal'
+					else:
+						self.ids.CH.state='down'
+					return 0
+			for x in ['BRT1','BRT2','BRT3','VRT1','BRDZ','VRDZ','BRMD','VRMD']:
+				if self.ids.CH.state=='down':
+					self.ids[x].text=str(float(self.ids[x].text)/30)[0:4]
+				else:
+					self.ids[x].text=str(round(float(self.ids[x].text)*30))
+		except:
+			pass
+
 
 	def OK(self):
+		try:
+			C=dict()
+			for x in ['BRT1','BRT2','BRT3','VRT1','BRDZ','VRDZ','BRMD','VRMD']:
+				if self.ids.CH.state=='down':
+					C[x]=round(float(self.ids[x].text)*30.0)
+				else:
+					C[x]=float(self.ids[x].text)
 
-		C=dict()
-		for x in ['BRT1','BRT2','BRT3','VRT1','BRDZ','VRDZ','BRMD','VRMD']:
-			C[x]=float(self.ids[x].text)*30.0
+			P=open(D)
+			PR=P.read()
+			PS=re.sub('_CARGA={.*}', '_CARGA={}'.format(C), PR)
+			P1=open(D, 'w')
+			P1.write(PS)
+			P1.close()
+			P.close()
 
-		P=open(D)
-		PR=P.read()
-		PS=re.sub('_CARGA={.*}', '_CARGA={}'.format(C), PR)
-		P1=open(D, 'w')
-		P1.write(PS)
-		P1.close()
-		P.close()
-
-		self.manager.current='menu'
+			self.manager.current='menu'
+		except:
+			pass
 
 class PreSetr(Screen):
 
@@ -954,7 +971,7 @@ class MapaApp(App):
 		self.sm.add_widget(Setr(name='setr'))
 		self.sm.add_widget(Setv(name='valor'))
 		self.sm.add_widget(Setcv(name='setcv'))
-		self.sm.current='setc'
+		self.sm.current='menu'
 		return self.sm
 
 ## MAIN.PY
