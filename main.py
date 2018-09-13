@@ -732,13 +732,12 @@ class Setc(Screen):
 	def BACKSPACE(self):
 		self.ids[Setc.TEXTFOCUS].text = ''
 
-	def MEIA(self):
-		TEXT=self.ids[Setc.TEXTFOCUS].text
-		if TEXT!='':
-			FLT=float(self.ids[Setc.TEXTFOCUS].text)
-			self.ids[Setc.TEXTFOCUS].text = str(FLT+0.5)
-		else:
-			self.ids[Setc.TEXTFOCUS].text += '0.5'
+	def CHANGER(self):
+		for x in ['BRT1','BRT2','BRT3','VRT1','BRDZ','VRDZ','BRMD','VRMD']:
+			if C/2:
+				self.ids[x].text=str(float(self.ids[x].text)*30)
+			else:
+				self.ids[x].text=str(float(self.ids[x].text)/30)[0:4]
 
 	def OK(self):
 
@@ -955,7 +954,7 @@ class MapaApp(App):
 		self.sm.add_widget(Setr(name='setr'))
 		self.sm.add_widget(Setv(name='valor'))
 		self.sm.add_widget(Setcv(name='setcv'))
-		self.sm.current='menu'
+		self.sm.current='setc'
 		return self.sm
 
 ## MAIN.PY
