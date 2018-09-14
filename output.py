@@ -55,14 +55,14 @@ class Main(BoxLayout):
 				for y in ['BRT1','VRT1','BRT2','BRT3','BRDZ','VRDZ','BRMD','VRMD']:
 					if y in x:
 						O+='{}: {}	PREÇO CAIXA: R$ {}	SUBTOTAL: R$ {}\n'.format(y,x[y],x[y+'_DZ'],x[y+'_VLR'])
-				O+='					   TOTAL: R$ {}\n'.format(x['TOTAL'])
+				O+='\nTOTAL: R$ {}\n'.format(x['TOTAL'])
 				SOMACARGA=x['TOTAL']
 			else:
 				O+='\n{}\n'.format(x['CLIENTE'])
 				for y in ['BRT1','VRT1','BRT2','BRT3','BRDZ','VRDZ','BRMD','VRMD']:
 					if y in x:
 						O+='{}: {}	PREÇO DÚZIA: R$ {}	SUBTOTAL: R$ {}\n'.format(y,x[y],x[y+'_DZ'],x[y+'_VLR'])
-				O+='					   TOTAL: R$ {}\n'.format(x['TOTAL'])
+				O+='\nTOTAL: R$ {}\n'.format(x['TOTAL'])
 				SOMA+=x['TOTAL']
 		O+='-----------------------------------------------------------\n'
 		O+='TOTAL COMPRADO: R$ {}\nTOTAL VENDIDO: R$ {}\n'.format(SOMACARGA, SOMA)
