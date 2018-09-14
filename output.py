@@ -1,5 +1,31 @@
 import DATA
+import kivy
 import time
+from kivy.app import App
+from kivy.uix.boxlayout import BoxLayout
+from kivy.lang import Builder
+
+Builder.load_string('''
+<Main>
+	Label:
+		pos_hint: {'top':1}
+		size_hint: 1, 0.1
+		text: 'Gerador de Extrato'
+	FileChooserListView:
+		size_hint: 1, 0.3
+		pos_hint: {'top': 0.9}
+''')
+
+class Main(BoxLayout):
+	pass
+
+class GenApp(App):
+	def build(self):
+		return Main()
+
+if __name__ == '__main__':
+	GenApp().run()
+
 
 SOMA=0.0
 H=getattr(DATA, DATA._H[0])
