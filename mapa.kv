@@ -1229,7 +1229,7 @@
 
 	GridLayout:
 		cols: 1
-		rows: 3
+		rows: 4
 		size_hint: 1, 0.7
 		Button:
 			text: 'Clientes'
@@ -1240,6 +1240,9 @@
 		Button:
 			text: 'Enviar extrato'
 			on_press: root.EXTRATO()
+		Button:
+			text: 'Limpar histórico'
+			on_press: root.CLEAR()
 
 <History>
 	GridLayout:

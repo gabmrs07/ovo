@@ -665,6 +665,30 @@ class HistSel(Screen):
 			#	P1.close()
 			#	P.close()
 
+	def CLEAR(self):
+		G='H'+str.replace(self.ids.hspin.text, '/', '_')
+		R=getattr(DATA, G)
+		DATA._H.remove(G)
+		P=open(D)
+		PR=P.read()
+		PS=re.sub('_H=\[.*\]', '_H={}'.format(DATA._H), PR)
+		PS1=re.sub('{}=\[.*\]'.format(G), '', PS)
+		P1=open(D, 'w')
+		P1.write(PS1)
+		P1.close()
+		P.close()
+		reload(DATA)
+		self.ids.hspin.text=''
+		self.ids.hspin.values=''
+		H=list()
+		if DATA._H:
+			for x in DATA._H:
+				X=str.strip(x, 'H')
+				S=str.replace(X, '_', '/')
+				H.append(S)
+			self.ids.hspin.text=H[0]
+			self.ids.hspin.values=H
+
 class History(Screen):
 
 	L=None
@@ -707,8 +731,16 @@ class HCarga(Screen):
 class Settings(Screen):
 
 	def CLEAN(self):
-		pass
-
+		if DATA._C:
+			P=open(D)
+			PR=P.read()
+			PS=re.sub('_C={.*}', '_C={}', PR)
+			P1=open(D, 'w')
+			P1.write(PS)
+			P1.close()
+			P.close()
+			reload(DATA)
+			
 class Crg(Screen):
 
 	def on_pre_enter(self, *args):
