@@ -859,7 +859,7 @@ class Setr(Screen):
 		else:
 			R.append(self.ids.cli.text)
 		P=open('DATA.py')
-		PR=P0.read()
+		PR=P.read()
 		PS=re.sub('{}=\[.*\]'.format(DIA), '{}={}'.format(DIA, R), PR)
 		P1=open('DATA.py', 'w')
 		P1.write(PS)
