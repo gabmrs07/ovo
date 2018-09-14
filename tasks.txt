@@ -1,7 +1,6 @@
 Tarefas
 
 1- Adicionar popup de confirmação do lançamento
-3- Output
-6- Autoclear alteração valores
-7- Limpeza de historico
-8- try/except nos botoes 'ok' e outros que possam geram exceptions
+2- Limpeza de historico
+3- try/except nos botoes 'ok' e outros que possam geram exceptions
+4- except popups

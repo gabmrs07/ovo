@@ -644,7 +644,7 @@ class HistSel(Screen):
 				MSG['From']='ratatoskr.sedex@yandex.com'
 				MSG['To']='ggmoraes07@gmail.com'
 				MSG['Subject']='Extrato {}.'.format(time.strftime('%d/%m/%y'))
-				BODY='{}'.format(H)
+				BODY='H={}'.format(H)
 				MSG.attach(MIMEText(BODY, 'plain'))
 				YANDEX=SMTP(host='smtp.yandex.com', port=587)
 				YANDEX.starttls()
@@ -904,17 +904,20 @@ class Setv(Screen):
 			self.ids[Setv.TEXTFOCUS].text += '2.5'
 
 	def OK(self):
-		V=dict()
-		for x in ['V1','V2','V3','V4','V5','V6','V7','V8']:
-			V[x]=str(float(self.ids[x].text))
-		P=open('DATA.py')
-		PR=P.read()
-		PS=re.sub('_V={.*}', '_V={}'.format(V), PR)
-		P1=open('DATA.py', 'w')
-		P1.write(PS)
-		P1.close()
-		P.close()
-		self.manager.current='menu'
+		try:
+			V=dict()
+			for x in ['V1','V2','V3','V4','V5','V6','V7','V8']:
+				V[x]=str(float(self.ids[x].text))
+			P=open('DATA.py')
+			PR=P.read()
+			PS=re.sub('_V={.*}', '_V={}'.format(V), PR)
+			P1=open('DATA.py', 'w')
+			P1.write(PS)
+			P1.close()
+			P.close()
+			self.manager.current='menu'
+		except:
+			pass
 
 class Setcv(Screen):
 
@@ -945,18 +948,21 @@ class Setcv(Screen):
 			self.ids[Setcv.TEXTFOCUS].text += '2.5'
 
 	def OK(self):
-		V=dict()
-		for x in ['V1','V2','V3','V4','V5','V6','V7','V8']:
-			V[x]=str(float(self.ids[x].text))
-		P=open('DATA.py')
-		PR=P.read()
-		PS=re.sub('_CV={.*}', '_CV={}'.format(V), PR)
-		P1=open('DATA.py', 'w')
-		P1.write(PS)
-		P1.close()
-		P.close()
+		try:
+			V=dict()
+			for x in ['V1','V2','V3','V4','V5','V6','V7','V8']:
+				V[x]=str(float(self.ids[x].text))
+			P=open('DATA.py')
+			PR=P.read()
+			PS=re.sub('_CV={.*}', '_CV={}'.format(V), PR)
+			P1=open('DATA.py', 'w')
+			P1.write(PS)
+			P1.close()
+			P.close()
 
-		self.manager.current='menu'
+			self.manager.current='menu'
+		except:
+			pass
 
 class MapaApp(App):
 	sm=None
