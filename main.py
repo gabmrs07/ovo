@@ -421,6 +421,8 @@ class Output(Screen):
 			for x in DATA._C['ROTA']:
 				if DATA._C.get(x)==0:
 					S_LIST.append(x)
+			if DATA._C:
+				S_LIST.insert(0, 'CARGA')
 			S.values=S_LIST
 		except:
 			pass
@@ -489,6 +491,12 @@ class Editar(Screen):
 		self.ids['NCL'].text='CLIENTE: {}'.format(NOME)
 
 		Editar.TEXTFOCUS='t1'
+
+		for x in range(1,9):
+			if NOME=='CARGA':
+				self.ids['UN'+str(x)].text='CX'
+			else:
+				self.ids['UN'+str(x)].text='DZ'
 
 	def FOCUS(self, IDS='t1'):
 		Editar.TEXTFOCUS=IDS

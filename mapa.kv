@@ -662,7 +662,7 @@
 					pos: self.pos
 					size: self.size
 		Label:
-			text: 'Dúzia'
+			text: 'Quantia'
 			canvas.before:
 				Color:
 					rgba: 0, 0, 0, 1
@@ -973,16 +973,22 @@
 			color: 1, 0, 0, 1
 	Button:
 		id: EDIT
-		size_hint: 0.75, 0.088
+		size_hint: 0.75, 0.1
+		pos_hint: {'top':0.089}
 		background_color: 0, 0, 0, 1
 		on_press: root.EDITING()
 
 <Editar>
-	Label:
-		id: NCL
-		text: ''
+	BoxLayout:
 		size_hint: 1, 0.05
 		pos_hint: {'top':1}
+		Button:
+			size_hint: 0.3, 1
+			text: '<'
+			on_press: root.manager.current='output'
+		Label:
+			id: NCL
+
 	GridLayout:
 		cols: 2
 		rows: 4
@@ -997,7 +1003,7 @@
 					size_hint: 0.5, 1
 					on_press: root.FOCUS('t1')
 				Button:
-					text: 'DZ'
+					id: UN1
 					size_hint: 0.5, 1
 					on_press: root.FOCUS('p1')
 			BoxLayout:
@@ -1016,7 +1022,7 @@
 					size_hint: 0.5, 1
 					on_press: root.FOCUS('t2')
 				Button:
-					text: 'DZ'
+					id: UN2
 					size_hint: 0.5, 1
 					on_press: root.FOCUS('p2')
 			BoxLayout:
@@ -1035,7 +1041,7 @@
 					size_hint: 0.5, 1
 					on_press: root.FOCUS('t3')
 				Button:
-					text: 'DZ'
+					id: UN3
 					size_hint: 0.5, 1
 					on_press: root.FOCUS('p3')
 			BoxLayout:
@@ -1054,7 +1060,7 @@
 					size_hint: 0.5, 1
 					on_press: root.FOCUS('t4')
 				Button:
-					text: 'DZ'
+					id: UN4
 					size_hint: 0.5, 1
 					on_press: root.FOCUS('p4')
 			BoxLayout:
@@ -1073,7 +1079,7 @@
 					size_hint: 0.5, 1
 					on_press: root.FOCUS('t5')
 				Button:
-					text: 'DZ'
+					id: UN5
 					size_hint: 0.5, 1
 					on_press: root.FOCUS('p5')
 			BoxLayout:
@@ -1092,7 +1098,7 @@
 					size_hint: 0.5, 1
 					on_press: root.FOCUS('t6')
 				Button:
-					text: 'DZ'
+					id: UN6
 					size_hint: 0.5, 1
 					on_press: root.FOCUS('p6')
 			BoxLayout:
@@ -1111,7 +1117,7 @@
 					size_hint: 0.5, 1
 					on_press: root.FOCUS('t7')
 				Button:
-					text: 'DZ'
+					id: UN7
 					size_hint: 0.5, 1
 					on_press: root.FOCUS('p7')
 			BoxLayout:
@@ -1130,7 +1136,7 @@
 					size_hint: 0.5, 1
 					on_press: root.FOCUS('t8')
 				Button:
-					text: 'DZ'
+					id: UN8
 					size_hint: 0.5, 1
 					on_press: root.FOCUS('p8')
 			BoxLayout:

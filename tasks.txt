@@ -5,3 +5,4 @@ Tarefas
 6- Autoclear alteração valores
 7- Limpeza de historico
 8- try/except nos botoes 'ok' e outros que possam geram exceptions
+*- Lançamentos alterar 'UN'
