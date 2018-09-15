@@ -5,8 +5,6 @@ import kivy
 import re
 import socket
 import time
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
 from kivy.app import App
 from kivy.uix.button import Button
 from kivy.uix.label import Label
@@ -14,7 +12,6 @@ from kivy.uix.popup import Popup
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.uix.progressbar import ProgressBar
 from kivy.base import runTouchApp
-from smtplib import SMTP
 
 if socket.gethostname()=='josley' or socket.gethostname()=='lamettrie3':
 	from importlib import reload
@@ -687,42 +684,6 @@ class HistSel(Screen):
 			HistSel.D=self.ids.hspin.text
 			self.manager.current='history'
 
-	def HCARGA(self):
-		if self.ids.hspin.text!='':
-			HistSel.D=self.ids.hspin.text
-			self.manager.current='hcarga'
-
-	def EXTRATO(self):
-		if self.ids.hspin.text!='':
-			G='H'+str.replace(self.ids.hspin.text, '/', '_')
-
-			try:
-				H=getattr(DATA, G)
-				MSG=MIMEMultipart()
-				MSG['From']='ratatoskr.sedex@yandex.com'
-				MSG['To']='ggmoraes07@gmail.com'
-				MSG['Subject']='Extrato {}.'.format(time.strftime('%d/%m/%y'))
-				BODY='H={}'.format(H)
-				MSG.attach(MIMEText(BODY, 'plain'))
-				YANDEX=SMTP(host='smtp.yandex.com', port=587)
-				YANDEX.starttls()
-				YANDEX.login('ratatoskr.sedex@yandex.com', 'lzcxthcehbgvcblq')
-				TEXT=MSG.as_string()
-				YANDEX.sendmail('ratatoskr.sedex@yandex.com', 'ggmoraes07@gmail.com', TEXT)
-				YANDEX.quit()
-				self.manager.current='menu'
-			except:
-				pass
-
-			#if G==DATA._H[0]:
-			#	P=open(D)
-			#	PR=P.read()
-			#	PS=re.sub('_C={.*}', '_C={}', PR)
-			#	P1=open(D, 'w')
-			#	P1.write(PS)
-			#	P1.close()
-			#	P.close()
-
 	def CLEAR(self):
 		G='H'+str.replace(self.ids.hspin.text, '/', '_')
 		R=getattr(DATA, G)
@@ -756,33 +717,26 @@ class History(Screen):
 		self.ids.hhspin.text=''
 		for x in L:
 			self.ids[x].text=''
+		self.ids.UN.text='Unidade'
 		self.ids.DIA.text=HistSel.D
 		H='H'+str.replace(HistSel.D, '/', '_')
 		History.H=getattr(DATA, H)
 		History.L=list()
 		for x in History.H:
-			if x['CLIENTE']=='CARGA':
-				continue
 			History.L.append(x['CLIENTE'])
 		self.ids.hhspin.values=History.L
 
 	def SEL(self):
 
-		I=History.L.index(self.ids.hhspin.text)
+		HT=self.ids.hhspin.text
+		I=History.L.index(HT)
+		if HT=='CARGA':
+			self.ids.UN.text='Caixa'
+		else:
+			self.ids.UN.text='Dúzia'
 		for x in L:
 			try:
 				self.ids[x].text=str(History.H[I][x])
-			except:
-				self.ids[x].text='-'
-
-class HCarga(Screen):
-
-	def on_pre_enter(self, *args):
-		self.ids.DIA.text=HistSel.D
-		H=getattr(DATA, 'H'+str.replace(HistSel.D, '/', '_'))
-		for x in L:
-			try:
-				self.ids[x].text=str(H[0][x])
 			except:
 				self.ids[x].text='-'
 
@@ -1067,7 +1021,6 @@ class MapaApp(App):
 		self.sm.add_widget(Editar(name='editar'))
 		self.sm.add_widget(HistSel(name='histsel'))
 		self.sm.add_widget(History(name='history'))
-		self.sm.add_widget(HCarga(name='hcarga'))
 		self.sm.add_widget(Settings(name='set'))
 		self.sm.add_widget(Crg(name='crg'))
 		self.sm.add_widget(Setc(name='setc'))
@@ -1077,6 +1030,12 @@ class MapaApp(App):
 		self.sm.add_widget(Setcv(name='setcv'))
 		self.sm.current='menu'
 		return self.sm
+
+	def on_pause(self):
+		return True
+
+	def on_resume(self):
+		pass
 
 ## MAIN.PY
 

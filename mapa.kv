@@ -2,15 +2,16 @@
 <Menu>:
 	BoxLayout:
 		orientation: 'vertical'
-		size_hint: 1, 0.2
+		size_hint: 1, 0.1
 		pos_hint:{'top':1}
+		padding: 1
 		Label:
-			text: 'MAPA'
+			text: 'MAPA APP'
 	GridLayout:
 		id: MENU
 		cols: 1
 		rows: 6
-		size_hint: 1, 0.8
+		size_hint: 1, 0.9
 		Button:
 			text: 'Entrada'
 			on_press: root.CHECKER()
@@ -21,11 +22,14 @@
 			text: 'Histórico'
 			on_press: root.manager.current='histsel'
 		Button:
+			text: 'Gerar extrato'
+			on_press: root.EXT()
+		Button:
 			text: 'Configurações'
 			on_press: root.manager.current='set'
 		Button:
-			text: 'Extrato'
-			on_press: root.EXT()
+			text: 'Sair'
+			on_press: exit()
 
 <Rota>
 	BoxLayout:
@@ -1218,6 +1222,18 @@
 				Rectangle:
 					pos: self.pos
 					size: self.size
+	BoxLayout:
+		size_hint: 1, 0.7
+		pos_hint: {'top':0.7}
+		Button:
+			text: 'Visualizar'
+			on_press: root.HSEL()
+			background_color: 0, 0.8, 0, 1
+		Button:
+			text: 'Excluir data'
+			on_press: root.CLEAR()
+			background_color: 0.8, 0, 0, 1
+
 	Label:
 		text: 'Escolha o dia:'
 		size_hint: 1, 0.1
@@ -1227,23 +1243,6 @@
 		id: hspin
 		size_hint: 1, 0.1
 		pos_hint: {'top': 0.8}
-
-	GridLayout:
-		cols: 1
-		rows: 4
-		size_hint: 1, 0.7
-		Button:
-			text: 'Clientes'
-			on_press: root.HSEL()
-		Button:
-			text: 'Carga'
-			on_press: root.HCARGA()
-		Button:
-			text: 'Enviar extrato'
-			on_press: root.EXTRATO()
-		Button:
-			text: 'Limpar histórico'
-			on_press: root.CLEAR()
 
 <History>
 	GridLayout:
@@ -1284,357 +1283,7 @@
 					pos: self.pos
 					size: self.size
 		Label:
-			text: 'Dúzia'
-			canvas.before:
-				Color:
-					rgba: 0, 0, 0, 1
-				Rectangle:
-					pos: self.pos
-					size: self.size
-		Label:
-			text: 'Preço'
-			canvas.before:
-				Color:
-					rgba: 0, 0, 0, 1
-				Rectangle:
-					pos: self.pos
-					size: self.size
-		Label:
-			text: 'Total'
-			canvas.before:
-				Color:
-					rgba: 0, 0, 0, 1
-				Rectangle:
-					pos: self.pos
-					size: self.size
-		Label:
-			canvas.before:
-				Color:
-					rgba: 0, 0, 0, 1
-				Rectangle:
-					pos: self.pos
-					size: self.size
-			text: 'BRT1'
-		Label:
-			canvas.before:
-				Color:
-					rgba: 0, 0, 0, 1
-				Rectangle:
-					pos: self.pos
-					size: self.size
-			id: BRT1
-		Label:
-			canvas.before:
-				Color:
-					rgba: 0, 0, 0, 1
-				Rectangle:
-					pos: self.pos
-					size: self.size
-			id: BRT1_DZ
-		Label:
-			canvas.before:
-				Color:
-					rgba: 0, 0, 0, 1
-				Rectangle:
-					pos: self.pos
-					size: self.size
-			id: BRT1_VLR
-		Label:
-			canvas.before:
-				Color:
-					rgba: 0, 0, 0, 1
-				Rectangle:
-					pos: self.pos
-					size: self.size
-			text: 'BRT2'
-		Label:
-			canvas.before:
-				Color:
-					rgba: 0, 0, 0, 1
-				Rectangle:
-					pos: self.pos
-					size: self.size
-			id: BRT2
-		Label:
-			canvas.before:
-				Color:
-					rgba: 0, 0, 0, 1
-				Rectangle:
-					pos: self.pos
-					size: self.size
-			id: BRT2_DZ
-		Label:
-			canvas.before:
-				Color:
-					rgba: 0, 0, 0, 1
-				Rectangle:
-					pos: self.pos
-					size: self.size
-			id: BRT2_VLR
-		Label:
-			canvas.before:
-				Color:
-					rgba: 0, 0, 0, 1
-				Rectangle:
-					pos: self.pos
-					size: self.size
-			text: 'BRT3'
-		Label:
-			canvas.before:
-				Color:
-					rgba: 0, 0, 0, 1
-				Rectangle:
-					pos: self.pos
-					size: self.size
-			id: BRT3
-		Label:
-			canvas.before:
-				Color:
-					rgba: 0, 0, 0, 1
-				Rectangle:
-					pos: self.pos
-					size: self.size
-			id: BRT3_DZ
-		Label:
-			canvas.before:
-				Color:
-					rgba: 0, 0, 0, 1
-				Rectangle:
-					pos: self.pos
-					size: self.size
-			id: BRT3_VLR
-		Label:
-			canvas.before:
-				Color:
-					rgba: 0, 0, 0, 1
-				Rectangle:
-					pos: self.pos
-					size: self.size
-			text: 'VRT1'
-		Label:
-			canvas.before:
-				Color:
-					rgba: 0, 0, 0, 1
-				Rectangle:
-					pos: self.pos
-					size: self.size
-			id: VRT1
-		Label:
-			canvas.before:
-				Color:
-					rgba: 0, 0, 0, 1
-				Rectangle:
-					pos: self.pos
-					size: self.size
-			id: VRT1_DZ
-		Label:
-			canvas.before:
-				Color:
-					rgba: 0, 0, 0, 1
-				Rectangle:
-					pos: self.pos
-					size: self.size
-			id: VRT1_VLR
-		Label:
-			canvas.before:
-				Color:
-					rgba: 0, 0, 0, 1
-				Rectangle:
-					pos: self.pos
-					size: self.size
-			text: 'BRDZ'
-		Label:
-			canvas.before:
-				Color:
-					rgba: 0, 0, 0, 1
-				Rectangle:
-					pos: self.pos
-					size: self.size
-			id: BRDZ
-		Label:
-			canvas.before:
-				Color:
-					rgba: 0, 0, 0, 1
-				Rectangle:
-					pos: self.pos
-					size: self.size
-			id: BRDZ_DZ
-		Label:
-			canvas.before:
-				Color:
-					rgba: 0, 0, 0, 1
-				Rectangle:
-					pos: self.pos
-					size: self.size
-			id: BRDZ_VLR
-		Label:
-			canvas.before:
-				Color:
-					rgba: 0, 0, 0, 1
-				Rectangle:
-					pos: self.pos
-					size: self.size
-			text: 'VRDZ'
-		Label:
-			canvas.before:
-				Color:
-					rgba: 0, 0, 0, 1
-				Rectangle:
-					pos: self.pos
-					size: self.size
-			id: VRDZ
-		Label:
-			canvas.before:
-				Color:
-					rgba: 0, 0, 0, 1
-				Rectangle:
-					pos: self.pos
-					size: self.size
-			id: VRDZ_DZ
-		Label:
-			canvas.before:
-				Color:
-					rgba: 0, 0, 0, 1
-				Rectangle:
-					pos: self.pos
-					size: self.size
-			id: VRDZ_VLR
-		Label:
-			canvas.before:
-				Color:
-					rgba: 0, 0, 0, 1
-				Rectangle:
-					pos: self.pos
-					size: self.size
-			text: 'BRMD'
-		Label:
-			canvas.before:
-				Color:
-					rgba: 0, 0, 0, 1
-				Rectangle:
-					pos: self.pos
-					size: self.size
-			id: BRMD
-		Label:
-			canvas.before:
-				Color:
-					rgba: 0, 0, 0, 1
-				Rectangle:
-					pos: self.pos
-					size: self.size
-			id: BRMD_DZ
-		Label:
-			canvas.before:
-				Color:
-					rgba: 0, 0, 0, 1
-				Rectangle:
-					pos: self.pos
-					size: self.size
-			id: BRMD_VLR
-		Label:
-			canvas.before:
-				Color:
-					rgba: 0, 0, 0, 1
-				Rectangle:
-					pos: self.pos
-					size: self.size
-			text: 'VRMD'
-		Label:
-			canvas.before:
-				Color:
-					rgba: 0, 0, 0, 1
-				Rectangle:
-					pos: self.pos
-					size: self.size
-			id: VRMD
-		Label:
-			canvas.before:
-				Color:
-					rgba: 0, 0, 0, 1
-				Rectangle:
-					pos: self.pos
-					size: self.size
-			id: VRMD_DZ
-		Label:
-			canvas.before:
-				Color:
-					rgba: 0, 0, 0, 1
-				Rectangle:
-					pos: self.pos
-					size: self.size
-			id: VRMD_VLR
-		Label:
-			canvas.before:
-				Color:
-					rgba: 0, 0, 0, 1
-				Rectangle:
-					pos: self.pos
-					size: self.size
-		Label:
-			canvas.before:
-				Color:
-					rgba: 0, 0, 0, 1
-				Rectangle:
-					pos: self.pos
-					size: self.size
-		Label:
-			canvas.before:
-				Color:
-					rgba: 0, 0, 0, 1
-				Rectangle:
-					pos: self.pos
-					size: self.size
-		Label:
-			canvas.before:
-				Color:
-					rgba: 0, 0, 0, 1
-				Rectangle:
-					pos: self.pos
-					size: self.size
-			id: TOTAL
-			color: 1, 0, 0, 1
-
-<HCarga>
-	GridLayout:
-		cols: 3
-		rows: 1
-		orientation: 'horizontal'
-		size_hint: 1, 0.1
-		pos_hint:{'top':1}
-		Button:
-			size_hint: 0.3, 1
-			text: '<'
-			on_press: root.manager.current='histsel'
-		Label:
-			text: 'CARGA'
-			canvas.before:
-				Color:
-					rgba: 0.3, 0.3, 0.3, 1
-				Rectangle:
-					pos: self.pos
-					size: self.size
-
-	GridLayout:
-		rows: 10
-		cols: 4
-		spacing: 1, 1
-		size_hint: 1, 0.9
-		canvas.before:
-			Color:
-				rgba: 1, 1, 1, 1
-			Rectangle:
-				pos: self.pos
-				size: self.size
-		Label:
-			id: DIA
-			canvas.before:
-				Color:
-					rgba: 0, 0, 0, 1
-				Rectangle:
-					pos: self.pos
-					size: self.size
-		Label:
-			text: 'Caixa'
+			id: UN
 			canvas.before:
 				Color:
 					rgba: 0, 0, 0, 1
@@ -1969,7 +1618,7 @@
 			text: 'Alterar rotas'
 			on_press: root.manager.current='presetr'
 		Button:
-			text: 'Carga'
+			text: 'Carga no furgão'
 			on_press: root.manager.current='crg'
 		Button:
 			text: 'Limpar'
