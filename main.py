@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import DATA
 import kivy
 import re
@@ -51,6 +53,57 @@ class Menu(Screen):
 			self.manager.current='entry'
 		else:
 			self.manager.current='rota'
+
+	def EXT(self):
+		SOMA=0.0
+		D1=0.0
+		D2=0.0
+		D3=0.0
+		D4=0.0
+		D5=0.0
+		D6=0.0
+		D7=0.0
+		D8=0.0
+		T1=0.0
+		T2=0.0
+		T3=0.0
+		T4=0.0
+		T5=0.0
+		T6=0.0
+		T7=0.0
+		T8=0.0
+		H=getattr(DATA, DATA._H[0])
+		O='EXTRATO DIA {}\n\n'.format(time.strftime('%d/%m/%y'))
+		for x in H:
+			O+='-----------------------------------------------------------'
+			if x['CLIENTE']=='CARGA':
+				O+='\nCARGA\n'
+				for y in ['BRT1','VRT1','BRT2','BRT3','BRDZ','VRDZ','BRMD','VRMD']:
+					if y in x:
+						O+='{}: {}	PREÇO CAIXA: R$ {}	SUBTOTAL: R$ {}\n'.format(y,x[y],x[y+'_DZ'],x[y+'_VLR'])
+				O+='\nTOTAL: R$ {}\n'.format(x['TOTAL'])
+				SOMACARGA=x['TOTAL']
+			else:
+				O+='\n{}\n'.format(x['CLIENTE'])
+				for y in ['BRT1','VRT1','BRT2','BRT3','BRDZ','VRDZ','BRMD','VRMD']:
+					if y in x:
+						O+='{}: {}	PREÇO DÚZIA: R$ {}	SUBTOTAL: R$ {}\n'.format(y,x[y],x[y+'_DZ'],x[y+'_VLR'])
+				O+='\nTOTAL: R$ {}\n'.format(x['TOTAL'])
+				SOMA+=x['TOTAL']
+		O+='-----------------------------------------------------------\n'
+		O+='TOTAL COMPRADO: R$ {}\nTOTAL VENDIDO: R$ {}\n'.format(SOMACARGA, SOMA)
+		O+='LUCRO: R$ {}'.format(SOMA-SOMACARGA)
+		P=open('EXTRATO.txt', 'w')
+		P.write(O)
+		P.close()
+
+		P=open('DATA.py')
+		PR=P.read()
+		PS=re.sub('_C={.*}', '_C={}', PR)
+		P1=open('DATA.py', 'w')
+		P1.write(PS)
+		P1.close()
+		P.close()
 
 class Rota(Screen):
 
@@ -412,6 +465,7 @@ class Output(Screen):
 		S_LIST=list()
 		if S.text!='':
 			S.text=''
+			self.ids.UN.text='Unidade'
 			self.ids.DIA.text=''
 			B.text=''
 			B.background_color=(0, 0, 0, 1)
@@ -431,6 +485,10 @@ class Output(Screen):
 		ST=self.ids.outspin.text
 		if ST=='':
 			return 0
+		elif ST=='CARGA':
+			self.ids.UN.text='Caixa'
+		else:
+			self.ids.UN.text='Dúzia'
 		B=self.ids.EDIT
 		S=getattr(DATA, DATA._H[0])
 		for x in range(len(S)):
@@ -740,7 +798,7 @@ class Settings(Screen):
 			P1.close()
 			P.close()
 			reload(DATA)
-			
+
 class Crg(Screen):
 
 	def on_pre_enter(self, *args):

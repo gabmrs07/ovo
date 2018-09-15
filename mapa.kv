@@ -24,8 +24,8 @@
 			text: 'Configurações'
 			on_press: root.manager.current='set'
 		Button:
-			text: 'Sair'
-			on_press: exit()
+			text: 'Extrato'
+			on_press: root.EXT()
 
 <Rota>
 	BoxLayout:
@@ -662,7 +662,8 @@
 					pos: self.pos
 					size: self.size
 		Label:
-			text: 'Quantia'
+			id: UN
+			text: 'Unidade'
 			canvas.before:
 				Color:
 					rgba: 0, 0, 0, 1
