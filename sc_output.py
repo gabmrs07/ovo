@@ -7,6 +7,22 @@ import re
 
 os.chdir('/storage/emulated/0/kivy/app/')
 SOMA=0.0
+D1=0.0
+D2=0.0
+D3=0.0
+D4=0.0
+D5=0.0
+D6=0.0
+D7=0.0
+D8=0.0
+T1=0.0
+T2=0.0
+T3=0.0
+T4=0.0
+T5=0.0
+T6=0.0
+T7=0.0
+T8=0.0
 H=getattr(DATA, DATA._H[0])
 O='EXTRATO DIA {}\n\n'.format(time.strftime('%d/%m/%y'))
 for x in H:
