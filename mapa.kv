@@ -32,15 +32,20 @@
 			on_press: exit()
 
 <Rota>
+
+	BoxLayout:
+		pos_hint: {'top':1}
+		size_hint: 1, 0.1
+		Button:
+			size_hint: 0.3, 1
+			text: '<'
+			on_press: root.manager.current='menu'
+		Label:
+			text: 'ESCOLHA A ROTA:'
+
 	BoxLayout:
 		orientation: 'vertical'
-		BoxLayout:
-			Button:
-				size_hint: 0.3, 1
-				text: '<'
-				on_press: root.manager.current='menu'
-			Label:
-				text: 'Escolha a rota:'
+		size_hint: 1, 0.9
 		Button:
 			id: t
 			text: 'Terça'
@@ -290,7 +295,7 @@
 					Rectangle:
 						pos: self.pos
 						size: self.size
-				text: 'Selecione o cliente:'
+				text: 'SELECIONE O CLIENTE:'
 		BoxLayout:
 			size_hint: 1, 0.5
 			Spinner:
@@ -1642,7 +1647,7 @@
 				Rectangle:
 					pos: self.pos
 					size: self.size
-			text: 'Carga no furgão'
+			text: 'CARGA NO FURGÃO'
 		Button:
 			id: ED
 			text: 'Editar'

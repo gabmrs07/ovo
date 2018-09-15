@@ -21,6 +21,7 @@ D='DATA.py'
 L=['BRT1', 'BRT1_DZ', 'BRT1_VLR', 'BRT2', 'BRT2_DZ', 'BRT2_VLR', 'BRT3', 'BRT3_DZ', 'BRT3_VLR',\
 		'VRT1', 'VRT1_DZ', 'VRT1_VLR', 'BRDZ', 'BRDZ_DZ', 'BRDZ_VLR', 'VRDZ', 'VRDZ_DZ', 'VRDZ_VLR',\
 		'BRMD', 'BRMD_DZ', 'BRMD_VLR', 'VRMD', 'VRMD_DZ', 'VRMD_VLR','TOTAL']
+L1=['BRT1','VRT1','BRT2','BRT3','BRDZ','VRDZ','BRMD','VRMD']
 NOME=None
 
 BRT1=''
@@ -52,6 +53,7 @@ class Menu(Screen):
 			self.manager.current='rota'
 
 	def EXT(self):
+
 		SOMA=0.0
 		D1=0.0
 		D2=0.0
@@ -69,35 +71,62 @@ class Menu(Screen):
 		T6=0.0
 		T7=0.0
 		T8=0.0
+
 		H=getattr(DATA, DATA._H[0])
 		O='EXTRATO DIA {}\n\n'.format(time.strftime('%d/%m/%y'))
 		for x in H:
-			O+='-----------------------------------------------------------'
+			O+='--------------------------------------------------------------------------'
 			if x['CLIENTE']=='CARGA':
 				O+='\nCARGA\n'
-				for y in ['BRT1','VRT1','BRT2','BRT3','BRDZ','VRDZ','BRMD','VRMD']:
+				for y in L1:
 					if y in x:
-						O+='{}: {}	PREÇO CAIXA: R$ {}	SUBTOTAL: R$ {}\n'.format(y,x[y],x[y+'_DZ'],x[y+'_VLR'])
-				O+='\nTOTAL: R$ {}\n'.format(x['TOTAL'])
+						O+='{}: {}\t\tPREÇO: R$ {}\t\tSUBTOTAL: R$ {}\n'.format(y,x[y],x[y+'_DZ'],x[y+'_VLR'])
+				O+='TOTAL: R$ {}\n'.format(x['TOTAL'])
 				SOMACARGA=x['TOTAL']
 			else:
 				O+='\n{}\n'.format(x['CLIENTE'])
-				for y in ['BRT1','VRT1','BRT2','BRT3','BRDZ','VRDZ','BRMD','VRMD']:
+				for y in L1:
 					if y in x:
-						O+='{}: {}	PREÇO DÚZIA: R$ {}	SUBTOTAL: R$ {}\n'.format(y,x[y],x[y+'_DZ'],x[y+'_VLR'])
-				O+='\nTOTAL: R$ {}\n'.format(x['TOTAL'])
+						O+='{}: {}\t\tPREÇO: R$ {}\t\tSUBTOTAL: R$ {}\n'.format(y,x[y],x[y+'_DZ'],x[y+'_VLR'])
+						if y=='BRT1':
+							D1+=x[y]
+							T1+=x[y+'_VLR']
+						elif y=='VRT1':
+							D2+=x[y]
+							T2+=x[y+'_VLR']
+						elif y=='BRT2':
+							D3+=x[y]
+							T3+=x[y+'_VLR']
+						elif y=='BRT3':
+							D4+=x[y]
+							T4+=x[y+'_VLR']
+						elif y=='BRDZ':
+							D5+=x[y]
+							T5+=x[y+'_VLR']
+						elif y=='VRDZ':
+							D6+=x[y]
+							T6+=x[y+'_VLR']
+						elif y=='BRMD':
+							D7+=x[y]
+							T7+=x[y+'_VLR']
+						elif y=='VRMD':
+							D8+=x[y]
+							T8+=x[y+'_VLR']
+				O+='TOTAL: R$ {}\n'.format(x['TOTAL'])
 				SOMA+=x['TOTAL']
-		O+='-----------------------------------------------------------\n'
-		O+='TOTAL COMPRADO: R$ {}\nTOTAL VENDIDO: R$ {}\n'.format(SOMACARGA, SOMA)
-		O+='LUCRO: R$ {}'.format(SOMA-SOMACARGA)
-		P=open('EXTRATO.txt', 'w')
+		O+='--------------------------------------------------------------------------\nBALANÇO\n'
+		O+='BRT1: {}; R$ {}\nVRT1: {}; R$ {}\nBRT2: {}; R$ {}\nBRT3: {}; R$ {}\nBRDZ: {}; R$ {}\nVRDZ: {}; R$ {}\nBRMD: {}; R$ {}\nVRMD: {}; R$ {}\n'.format(D1, T1, D2, T2, D3, T3, D4, T4, D5, T5, D6, T6, D7, T7, D8, T8)
+		O+='--------------------------------------------------------------------------'
+		O+='\nTOTAL COMPRADO: R$ {}\nTOTAL VENDIDO: R$ {}\nLUCRO: R$ {}'.format(SOMACARGA, SOMA, SOMA-SOMACARGA)
+
+		P=open('EXTRATO{}.txt'.format(time.strftime('%d%m%y')), 'w')
 		P.write(O)
 		P.close()
 
-		P=open('DATA.py')
+		P=open(D)
 		PR=P.read()
 		PS=re.sub('_C={.*}', '_C={}', PR)
-		P1=open('DATA.py', 'w')
+		P1=open(D, 'w')
 		P1.write(PS)
 		P1.close()
 		P.close()
@@ -450,6 +479,7 @@ class Catcher(Screen):
 				OVO.E[x]=0.0
 
 		self.manager.current='menu'
+
 
 class Output(Screen):
 

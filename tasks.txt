@@ -1,7 +1,6 @@
 Tarefas
 
 1- Adicionar popup de confirmação do lançamento
-2- Limpeza de historico
 3- try/except nos botoes 'ok' e outros que possam geram exceptions (ExceptionHandle)
 4- except popups
-5- popup extrato
+5- popup extrato para limpa _C
