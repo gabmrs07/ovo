@@ -45,6 +45,8 @@ VRMD_VALOR=DATA._CV['V8']
 
 class Menu(Screen):
 
+	POPUP=Popup()
+
 	def on_pre_enter(self, *args):
 		reload(DATA)
 
@@ -125,6 +127,25 @@ class Menu(Screen):
 		P.write(O)
 		P.close()
 
+		BX=BoxLayout(orientation='vertical')
+		BXT=BoxLayout(size_hint=(1, 0.3))
+		BT1=Button(text='Sim', background_color=(0, 0.8, 0, 1))
+		BT2=Button(text='Não', background_color=(0.8, 0, 0, 1))
+		BT1.bind(on_press=self.CLEAN)
+		BT2.bind(on_press=Menu.POPUP.dismiss)
+		BXT.add_widget(BT1)
+		BXT.add_widget(BT2)
+		BX.add_widget(Label(text='Deseja encerrar a praça?', size_hint=(1, 0.7), pos_hint={'top':1}))
+		BX.add_widget(BXT)
+		Menu.POPUP.title='ENCERRAMENTO DE PRAÇA.'
+		Menu.POPUP.content=BX
+		Menu.POPUP.size_hint=(0.8, 0.5)
+		Menu.POPUP.pos_hint={'center_x': 0.5, 'center_y': 0.5}
+		Menu.POPUP.auto_dismiss=False
+		Menu.POPUP.open()
+
+	def CLEAN(self, instance):
+		Menu.POPUP.dismiss()
 		P=open(D)
 		PR=P.read()
 		PS=re.sub('_C={.*}', '_C={}', PR)
@@ -132,6 +153,7 @@ class Menu(Screen):
 		P1.write(PS)
 		P1.close()
 		P.close()
+		reload(DATA)
 
 class Rota(Screen):
 
@@ -322,14 +344,32 @@ class Entry(Screen):
 			NOME=self.ids.inpt0.text
 			Entry.OUTRO=0
 			if NOME=='':
-				POPUP0=Popup(title='ERRO: NOME EM BRANCO!', content=Label(text='Insira o nome do cliente.'),\
-							size_hint=(0.7, 0.3), pos_hint={'center_x': 0.5, 'center_y': 0.5})
-				POPUP0.open()
+				POPUP=Popup()
+				BX=BoxLayout(orientation='vertical')
+				BT=Button(text='OK', background_color=(0, 0.8, 0, 1), size_hint=(1, 0.3))
+				BT.bind(on_press=POPUP.dismiss)
+				BX.add_widget(Label(text='Insira o nome do cliente.', size_hint=(1, 0.7), pos_hint={'top':1}))
+				BX.add_widget(BT)
+				POPUP.title='ERRO: NOME EM BRANCO!'
+				POPUP.content=BX
+				POPUP.size_hint=(0.8, 0.5)
+				POPUP.pos_hint={'center_x': 0.5, 'center_y': 0.5}
+				POPUP.auto_dismiss=False
+				POPUP.open()
 				return 0
 			elif NOME in DATA._C:
-				POPUP1=Popup(title='ERRO: NOME EXISTENTE!', content=Label(text='Escolha outro nome.'),\
-							size_hint=(0.7, 0.3), pos_hint={'center_x': 0.5, 'center_y': 0.5})
-				POPUP1.open()
+				POPUP=Popup()
+				BX=BoxLayout(orientation='vertical')
+				BT=Button(text='OK', background_color=(0, 0.8, 0, 1), size_hint=(1, 0.3))
+				BT.bind(on_press=POPUP.dismiss)
+				BX.add_widget(Label(text='Insira outro nome para o cliente.', size_hint=(1, 0.7), pos_hint={'top':1}))
+				BX.add_widget(BT)
+				POPUP.title='ERRO: NOME JÁ UTILIZADO!'
+				POPUP.content=BX
+				POPUP.size_hint=(0.8, 0.5)
+				POPUP.pos_hint={'center_x': 0.5, 'center_y': 0.5}
+				POPUP.auto_dismiss=False
+				POPUP.open()
 				return 0
 		else:
 			NOME=S.text
@@ -346,6 +386,7 @@ class Catcher(Screen):
 
 	TEXTFOCUS=None
 	INSERT=None
+	POPUP=Popup()
 
 	def on_pre_enter(self, *args):
 		reload(DATA)
@@ -422,12 +463,14 @@ class Catcher(Screen):
 		BXT.add_widget(BT2)
 		BX.add_widget(GL)
 		BX.add_widget(BXT)
-
-		POPUP=Popup(title='CORFIMAÇÃO DO LANÇAMENTO', content=BX, auto_dismiss=False, size_hint=(0.9, 0.9), pos_hint={'center_x': 0.5, 'center_y': 0.5})
-		POPUP.open()
+		Catcher.POPUP.title='CONFIRMAÇÃO DE LANÇAMENTO.'
+		Catcher.POPUP.content=BX
+		Catcher.POPUP.auto_dismiss=False
+		Catcher.POPUP.size_hint=(0.9, 0.9)
+		Catcher.POPUP.pos_hint={'center_x': 0.5, 'center_y': 0.5}
+		Catcher.POPUP.open()
 		BT1.bind(on_press=self.OK)
-		BT1.bind(on_press=POPUP.dismiss)
-		BT2.bind(on_press=POPUP.dismiss)
+		BT2.bind(on_press=Catcher.POPUP.dismiss)
 
 	def OK(self, instance):
 
@@ -456,6 +499,8 @@ class Catcher(Screen):
 		VRDZ_VALOR=self.ids.inp6.text
 		BRMD_VALOR=self.ids.inp7.text
 		VRMD_VALOR=self.ids.inp8.text
+
+		Catcher.POPUP.dismiss()
 
 		SOMA=0.0
 
@@ -545,13 +590,14 @@ class Output(Screen):
 		try:
 			if DATA._C:
 				self.ids.DIA.text=str.replace(str.strip(DATA._H[0], 'H'), '_', '/')
-				for x in DATA._C['ROTA']:
-					if DATA._C.get(x)==0:
+				for x in DATA._C:
+					if x in DATA._C['ROTA'] and DATA._C.get(x)==0:
+						S_LIST.append(x)
+					elif DATA._C.get(x)==1:
+						continue
+					elif DATA._C.get(x)==0:
 						S_LIST.append(x)
 				S_LIST.insert(0, 'CARGA')
-				for x in DATA._C:
-					if DATA._C.get(x)==0 and x not in DATA._C['ROTA']:
-						S_LIST.append(x)
 			S.values=S_LIST
 		except:
 			pass
@@ -819,16 +865,37 @@ class History(Screen):
 
 class Settings(Screen):
 
-	def CLEAN(self):
+	POPUP=Popup()
+
+	def PUP(self):
 		if DATA._C:
-			P=open(D)
-			PR=P.read()
-			PS=re.sub('_C={.*}', '_C={}', PR)
-			P1=open(D, 'w')
-			P1.write(PS)
-			P1.close()
-			P.close()
-			reload(DATA)
+			BX=BoxLayout(orientation='vertical')
+			BXT=BoxLayout(size_hint=(1, 0.3))
+			BT1=Button(text='Sim', background_color=(0, 0.8, 0, 1))
+			BT2=Button(text='Não', background_color=(0.8, 0, 0, 1))
+			BT1.bind(on_press=self.CLEAN)
+			BT2.bind(on_press=Settings.POPUP.dismiss)
+			BXT.add_widget(BT1)
+			BXT.add_widget(BT2)
+			BX.add_widget(Label(text='Deseja encerrar a praça?', size_hint=(1, 0.7), pos_hint={'top':1}))
+			BX.add_widget(BXT)
+			Settings.POPUP.title='ENCERRAMENTO DE PRAÇA.'
+			Settings.POPUP.content=BX
+			Settings.POPUP.size_hint=(0.8, 0.5)
+			Settings.POPUP.pos_hint={'center_x': 0.5, 'center_y': 0.5}
+			Settings.POPUP.auto_dismiss=False
+			Settings.POPUP.open()
+
+	def CLEAN(self, instance):
+		Settings.POPUP.dismiss()
+		P=open(D)
+		PR=P.read()
+		PS=re.sub('_C={.*}', '_C={}', PR)
+		P1=open(D, 'w')
+		P1.write(PS)
+		P1.close()
+		P.close()
+		reload(DATA)
 
 class Crg(Screen):
 
