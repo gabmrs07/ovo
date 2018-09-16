@@ -12,7 +12,6 @@ from kivy.uix.button import Button
 from kivy.uix.label import Label
 from kivy.uix.popup import Popup
 from kivy.uix.screenmanager import ScreenManager, Screen
-from kivy.uix.progressbar import ProgressBar
 from kivy.base import runTouchApp
 
 if socket.gethostname()=='josley' or socket.gethostname()=='lamettrie3':
@@ -1180,8 +1179,6 @@ class MapaApp(App):
 
 	def on_resume(self):
 		pass
-
-## MAIN.PY
 
 class OVO:
 
