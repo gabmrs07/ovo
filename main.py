@@ -7,7 +7,6 @@ import socket
 import time
 from kivy.app import App
 from kivy.uix.boxlayout import BoxLayout
-from kivy.uix.gridlayout import GridLayout
 from kivy.uix.button import Button
 from kivy.uix.label import Label
 from kivy.uix.popup import Popup
@@ -136,7 +135,7 @@ class Menu(Screen):
 		BXT.add_widget(BT2)
 		BX.add_widget(Label(text='Deseja encerrar a praça?', size_hint=(1, 0.7), pos_hint={'top':1}))
 		BX.add_widget(BXT)
-		Menu.POPUP.title='ENCERRAMENTO DE PRAÇA.'
+		Menu.POPUP.title='ENCERRAMENTO DE PRAÇA'
 		Menu.POPUP.content=BX
 		Menu.POPUP.size_hint=(0.8, 0.5)
 		Menu.POPUP.pos_hint={'center_x': 0.5, 'center_y': 0.5}
@@ -385,7 +384,6 @@ class Catcher(Screen):
 
 	TEXTFOCUS=None
 	INSERT=None
-	POPUP=Popup()
 
 	def on_pre_enter(self, *args):
 		reload(DATA)
@@ -426,52 +424,7 @@ class Catcher(Screen):
 		else:
 			self.ids[Catcher.TEXTFOCUS].text += '2.5'
 
-	def PUP(self):
-		BX=BoxLayout(orientation='vertical')
-		GL=GridLayout(cols=4, rows=8, size_hint=(1, 0.9))
-		GL.add_widget(Label(text='BRT1'))
-		GL.add_widget(Label(text='R$'))
-		GL.add_widget(Label(text='VRT1'))
-		GL.add_widget(Label(text='R$'))
-		for x in range(1,9):
-			if x==3:
-				GL.add_widget(Label(text='BRT2'))
-				GL.add_widget(Label(text='R$'))
-				GL.add_widget(Label(text='BRT3'))
-				GL.add_widget(Label(text='R$'))
-			elif x==5:
-				GL.add_widget(Label(text='BRDZ'))
-				GL.add_widget(Label(text='R$'))
-				GL.add_widget(Label(text='VRDZ'))
-				GL.add_widget(Label(text='R$'))
-			elif x==7:
-				GL.add_widget(Label(text='BRMD'))
-				GL.add_widget(Label(text='R$'))
-				GL.add_widget(Label(text='VRMD'))
-				GL.add_widget(Label(text='R$'))
-			if self.ids['inpt'+str(x)].text=='':
-				GL.add_widget(Label(text='0.0'))
-				GL.add_widget(Label(text=self.ids['inp'+str(x)].text))
-			else:
-				GL.add_widget(Label(text=self.ids['inpt'+str(x)].text))
-				GL.add_widget(Label(text=self.ids['inp'+str(x)].text))
-		BXT=BoxLayout(size_hint=(1, 0.1))
-		BT1=Button(text='Sim', background_color=(0, 0.8, 0, 1))
-		BT2=Button(text='Não', background_color=(0.8, 0, 0, 1))
-		BXT.add_widget(BT1)
-		BXT.add_widget(BT2)
-		BX.add_widget(GL)
-		BX.add_widget(BXT)
-		Catcher.POPUP.title='CONFIRMAÇÃO DE LANÇAMENTO.'
-		Catcher.POPUP.content=BX
-		Catcher.POPUP.auto_dismiss=False
-		Catcher.POPUP.size_hint=(0.9, 0.9)
-		Catcher.POPUP.pos_hint={'center_x': 0.5, 'center_y': 0.5}
-		Catcher.POPUP.open()
-		BT1.bind(on_press=self.OK)
-		BT2.bind(on_press=Catcher.POPUP.dismiss)
-
-	def OK(self, instance):
+	def OK(self):
 
 		global BRT1_VALOR
 		global VRT1_VALOR
@@ -498,8 +451,6 @@ class Catcher(Screen):
 		VRDZ_VALOR=self.ids.inp6.text
 		BRMD_VALOR=self.ids.inp7.text
 		VRMD_VALOR=self.ids.inp8.text
-
-		Catcher.POPUP.dismiss()
 
 		SOMA=0.0
 
@@ -573,13 +524,16 @@ class Output(Screen):
 
 	E=None
 	I=None
+	S=None
 
 	def on_pre_enter(self, *args):
+		if DATA._H:
+			Output.S=getattr(DATA, DATA._H[0])
 		B=self.ids.EDIT
-		S=self.ids.outspin
+		O=self.ids.outspin
 		S_LIST=list()
-		if S.text!='':
-			S.text=''
+		if O.text!='':
+			O.text=''
 			self.ids.UN.text='Unidade'
 			self.ids.DIA.text=''
 			B.text=''
@@ -588,16 +542,12 @@ class Output(Screen):
 				self.ids[x].text=''
 		try:
 			if DATA._C:
+				S_LIST.append('CARGA')
 				self.ids.DIA.text=str.replace(str.strip(DATA._H[0], 'H'), '_', '/')
-				for x in DATA._C:
-					if x in DATA._C['ROTA'] and DATA._C.get(x)==0:
-						S_LIST.append(x)
-					elif DATA._C.get(x)==1:
-						continue
-					elif DATA._C.get(x)==0:
-						S_LIST.append(x)
-				S_LIST.insert(0, 'CARGA')
-			S.values=S_LIST
+				for x in Output.S:
+					if DATA._C.get(x['CLIENTE'])==0:
+						S_LIST.append(x['CLIENTE'])
+			O.values=S_LIST
 		except:
 			pass
 
@@ -610,17 +560,16 @@ class Output(Screen):
 		else:
 			self.ids.UN.text='Dúzia'
 		B=self.ids.EDIT
-		S=getattr(DATA, DATA._H[0])
-		for x in range(len(S)):
-			if S[x]['CLIENTE']==ST:
+		for x in range(len(Output.S)):
+			if Output.S[x]['CLIENTE']==ST:
 				I=x
-		Output.E=S[I]
+		Output.E=Output.S[I]
 		Output.I=I
 		B.text='EDITAR'
 		B.background_color=(0.8, 0, 0, 1)
 		for x in L:
-			if x in S[I]:
-				self.ids[x].text=str(S[I][x])
+			if x in Output.S[I]:
+				self.ids[x].text=str(Output.S[I][x])
 			else:
 				self.ids[x].text='-'
 
@@ -878,7 +827,7 @@ class Settings(Screen):
 			BXT.add_widget(BT2)
 			BX.add_widget(Label(text='Deseja encerrar a praça?', size_hint=(1, 0.7), pos_hint={'top':1}))
 			BX.add_widget(BXT)
-			Settings.POPUP.title='ENCERRAMENTO DE PRAÇA.'
+			Settings.POPUP.title='ENCERRAMENTO DE PRAÇA'
 			Settings.POPUP.content=BX
 			Settings.POPUP.size_hint=(0.8, 0.5)
 			Settings.POPUP.pos_hint={'center_x': 0.5, 'center_y': 0.5}
