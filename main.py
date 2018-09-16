@@ -386,37 +386,7 @@ class Catcher(Screen):
 		else:
 			self.ids[Catcher.TEXTFOCUS].text += '2.5'
 
-	def RET(self):
-		pass
-
-	def OK(self):
-
-		global BRT1_VALOR
-		global VRT1_VALOR
-		global BRT2_VALOR
-		global BRT3_VALOR
-		global BRDZ_VALOR
-		global VRDZ_VALOR
-		global BRMD_VALOR
-		global VRMD_VALOR
-
-		B1=self.ids.inpt1.text
-		V1=self.ids.inpt2.text
-		B2=self.ids.inpt3.text
-		B3=self.ids.inpt4.text
-		BDZ=self.ids.inpt5.text
-		VDZ=self.ids.inpt6.text
-		BMD=self.ids.inpt7.text
-		VMD=self.ids.inpt8.text
-		BRT1_VALOR=self.ids.inp1.text
-		VRT1_VALOR=self.ids.inp2.text
-		BRT2_VALOR=self.ids.inp3.text
-		BRT3_VALOR=self.ids.inp4.text
-		BRDZ_VALOR=self.ids.inp5.text
-		VRDZ_VALOR=self.ids.inp6.text
-		BRMD_VALOR=self.ids.inp7.text
-		VRMD_VALOR=self.ids.inp8.text
-
+	def PUP(self):
 		BX=BoxLayout(orientation='vertical')
 		GL=GridLayout(cols=4, rows=8, size_hint=(1, 0.9))
 		GL.add_widget(Label(text='BRT1'))
@@ -453,10 +423,39 @@ class Catcher(Screen):
 		BX.add_widget(GL)
 		BX.add_widget(BXT)
 
-		POPUP1=Popup(title='CORFIMAÇÃO DO LANÇAMENTO', content=BX, auto_dismiss=False, size_hint=(0.9, 0.9), pos_hint={'center_x': 0.5, 'center_y': 0.5})
-		POPUP1.open()
-		BT1.bind(on_press=POPUP1.dismiss)
-		BT2.bind(on_press=self.RET())
+		POPUP=Popup(title='CORFIMAÇÃO DO LANÇAMENTO', content=BX, auto_dismiss=False, size_hint=(0.9, 0.9), pos_hint={'center_x': 0.5, 'center_y': 0.5})
+		POPUP.open()
+		BT1.bind(on_press=self.OK)
+		BT1.bind(on_press=POPUP.dismiss)
+		BT2.bind(on_press=POPUP.dismiss)
+
+	def OK(self, instance):
+
+		global BRT1_VALOR
+		global VRT1_VALOR
+		global BRT2_VALOR
+		global BRT3_VALOR
+		global BRDZ_VALOR
+		global VRDZ_VALOR
+		global BRMD_VALOR
+		global VRMD_VALOR
+
+		B1=self.ids.inpt1.text
+		V1=self.ids.inpt2.text
+		B2=self.ids.inpt3.text
+		B3=self.ids.inpt4.text
+		BDZ=self.ids.inpt5.text
+		VDZ=self.ids.inpt6.text
+		BMD=self.ids.inpt7.text
+		VMD=self.ids.inpt8.text
+		BRT1_VALOR=self.ids.inp1.text
+		VRT1_VALOR=self.ids.inp2.text
+		BRT2_VALOR=self.ids.inp3.text
+		BRT3_VALOR=self.ids.inp4.text
+		BRDZ_VALOR=self.ids.inp5.text
+		VRDZ_VALOR=self.ids.inp6.text
+		BRMD_VALOR=self.ids.inp7.text
+		VRMD_VALOR=self.ids.inp8.text
 
 		SOMA=0.0
 
@@ -544,11 +543,15 @@ class Output(Screen):
 			for x in L:
 				self.ids[x].text=''
 		try:
-			for x in DATA._C['ROTA']:
-				if DATA._C.get(x)==0:
-					S_LIST.append(x)
 			if DATA._C:
+				self.ids.DIA.text=str.replace(str.strip(DATA._H[0], 'H'), '_', '/')
+				for x in DATA._C['ROTA']:
+					if DATA._C.get(x)==0:
+						S_LIST.append(x)
 				S_LIST.insert(0, 'CARGA')
+				for x in DATA._C:
+					if DATA._C.get(x)==0 and x not in DATA._C['ROTA']:
+						S_LIST.append(x)
 			S.values=S_LIST
 		except:
 			pass
@@ -568,7 +571,6 @@ class Output(Screen):
 				I=x
 		Output.E=S[I]
 		Output.I=I
-		self.ids.DIA.text=str.replace(str.strip(DATA._H[0], 'H'), '_', '/')
 		B.text='EDITAR'
 		B.background_color=(0.8, 0, 0, 1)
 		for x in L:
