@@ -75,7 +75,8 @@ class Menu(Screen):
 		T8=0.0
 
 		H=getattr(DATA, DATA._H[0])
-		O='EXTRATO DIA {}\n\n'.format(time.strftime('%d/%m/%y'))
+		D=str.strip(DATA._H[0], 'H')
+		O='EXTRATO DIA {}\n\n'.format(str.replace(D, '_', '/'))
 		for x in H:
 			O+='--------------------------------------------------------------------------'
 			if x['CLIENTE']=='CARGA':
@@ -130,20 +131,20 @@ class Menu(Screen):
 		BT1=Button(text='Sim', background_color=(0, 0.8, 0, 1))
 		BT2=Button(text='Não', background_color=(0.8, 0, 0, 1))
 		BT1.bind(on_press=self.CLEAN)
-		BT2.bind(on_press=Menu.POPUP.dismiss)
+		BT2.bind(on_press=self.POPUP.dismiss)
 		BXT.add_widget(BT1)
 		BXT.add_widget(BT2)
 		BX.add_widget(Label(text='Deseja encerrar a praça?', size_hint=(1, 0.7), pos_hint={'top':1}))
 		BX.add_widget(BXT)
-		Menu.POPUP.title='ENCERRAMENTO DE PRAÇA'
-		Menu.POPUP.content=BX
-		Menu.POPUP.size_hint=(0.8, 0.5)
-		Menu.POPUP.pos_hint={'center_x': 0.5, 'center_y': 0.5}
-		Menu.POPUP.auto_dismiss=False
-		Menu.POPUP.open()
+		self.POPUP.title='ENCERRAMENTO DE PRAÇA'
+		self.POPUP.content=BX
+		self.POPUP.size_hint=(0.8, 0.5)
+		self.POPUP.pos_hint={'center_x': 0.5, 'center_y': 0.5}
+		self.POPUP.auto_dismiss=False
+		self.POPUP.open()
 
 	def CLEAN(self, instance):
-		Menu.POPUP.dismiss()
+		self.POPUP.dismiss()
 		P=open(D)
 		PR=P.read()
 		PS=re.sub('_C={.*}', '_C={}', PR)
@@ -738,6 +739,7 @@ class Editar(Screen):
 class HistSel(Screen):
 
 	D=None
+	POPUP=Popup()
 
 	def on_pre_enter(self, *args):
 		reload(DATA)
@@ -756,6 +758,25 @@ class HistSel(Screen):
 			self.manager.current='history'
 
 	def CLEAR(self):
+		BX=BoxLayout(orientation='vertical')
+		BXT=BoxLayout(size_hint=(1, 0.3))
+		BT1=Button(text='Sim', background_color=(0, 0.8, 0, 1))
+		BT2=Button(text='Não', background_color=(0.8, 0, 0, 1))
+		BT1.bind(on_press=self.KILL)
+		BT2.bind(on_press=self.POPUP.dismiss)
+		BXT.add_widget(BT1)
+		BXT.add_widget(BT2)
+		BX.add_widget(Label(text='Deseja excluir \'{}\'?'.format(self.ids.hspin.text), size_hint=(1, 0.7), pos_hint={'top':1}))
+		BX.add_widget(BXT)
+		self.POPUP.title='LIMPEZA DO HISTÓRICO'
+		self.POPUP.content=BX
+		self.POPUP.size_hint=(0.8, 0.5)
+		self.POPUP.pos_hint={'center_x': 0.5, 'center_y': 0.5}
+		self.POPUP.auto_dismiss=False
+		self.POPUP.open()
+
+	def KILL(self, instance):
+		self.POPUP.dismiss()
 		G='H'+str.replace(self.ids.hspin.text, '/', '_')
 		R=getattr(DATA, G)
 		DATA._H.remove(G)
@@ -822,20 +843,20 @@ class Settings(Screen):
 			BT1=Button(text='Sim', background_color=(0, 0.8, 0, 1))
 			BT2=Button(text='Não', background_color=(0.8, 0, 0, 1))
 			BT1.bind(on_press=self.CLEAN)
-			BT2.bind(on_press=Settings.POPUP.dismiss)
+			BT2.bind(on_press=self.POPUP.dismiss)
 			BXT.add_widget(BT1)
 			BXT.add_widget(BT2)
 			BX.add_widget(Label(text='Deseja encerrar a praça?', size_hint=(1, 0.7), pos_hint={'top':1}))
 			BX.add_widget(BXT)
-			Settings.POPUP.title='ENCERRAMENTO DE PRAÇA'
-			Settings.POPUP.content=BX
-			Settings.POPUP.size_hint=(0.8, 0.5)
-			Settings.POPUP.pos_hint={'center_x': 0.5, 'center_y': 0.5}
-			Settings.POPUP.auto_dismiss=False
-			Settings.POPUP.open()
+			self.POPUP.title='ENCERRAMENTO DE PRAÇA'
+			self.POPUP.content=BX
+			self.POPUP.size_hint=(0.8, 0.5)
+			self.POPUP.pos_hint={'center_x': 0.5, 'center_y': 0.5}
+			self.POPUP.auto_dismiss=False
+			self.POPUP.open()
 
 	def CLEAN(self, instance):
-		Settings.POPUP.dismiss()
+		self.POPUP.dismiss()
 		P=open(D)
 		PR=P.read()
 		PS=re.sub('_C={.*}', '_C={}', PR)
