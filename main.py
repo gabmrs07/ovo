@@ -388,6 +388,8 @@ class Catcher(Screen):
 
 	TEXTFOCUS=None
 	INSERT=None
+	O=None
+	POPUP=Popup()
 
 	def on_pre_enter(self, *args):
 		reload(DATA)
@@ -475,16 +477,40 @@ class Catcher(Screen):
 		if VMD!='':
 			VRMD(VMD)
 
-		O=dict()
-		O['CLIENTE']=NOME
+		self.O=dict()
+		self.O['CLIENTE']=NOME
 		for x in ['BRT1','BRT2','BRT3','VRT1','BRDZ','VRDZ','BRMD','VRMD']:
 			if 0.0!=OVO.E[x]:
 				SOMA+=OVO.E_VLR[x+'_VLR']
-				O[x]=OVO.E[x]
-				O[x+'_DZ']=OVO.E_DZ[x+'_DZ']
-				O[x+'_VLR']=OVO.E_VLR[x+'_VLR']
-		O['TOTAL']=SOMA
+				self.O[x]=OVO.E[x]
+				self.O[x+'_DZ']=OVO.E_DZ[x+'_DZ']
+				self.O[x+'_VLR']=OVO.E_VLR[x+'_VLR']
+		self.O['TOTAL']=SOMA
 
+		BX=BoxLayout(orientation='vertical')
+		BXT=BoxLayout(size_hint=(1, 0.3))
+		BT1=Button(text='Sim', background_color=(0, 0.8, 0, 1))
+		BT2=Button(text='Não', background_color=(0.8, 0, 0, 1))
+		BT1.bind(on_press=self.WRITER)
+		BT2.bind(on_press=self.DISMISS)
+		BXT.add_widget(BT1)
+		BXT.add_widget(BT2)
+		BX.add_widget(Label(text='R$ {}'.format(SOMA), size_hint=(1, 0.7), pos_hint={'top':1}))
+		BX.add_widget(BXT)
+		self.POPUP.title='CONFIRMAÇÃO DO VALOR'
+		self.POPUP.content=BX
+		self.POPUP.size_hint=(0.8, 0.5)
+		self.POPUP.pos_hint={'center_x': 0.5, 'center_y': 0.5}
+		self.POPUP.auto_dismiss=False
+		self.POPUP.open()
+
+	def DISMISS(self, instance):
+		self.POPUP.dismiss()
+		for x in ['BRT1','BRT2','BRT3','VRT1','BRDZ','VRDZ','BRMD','VRMD']:
+				OVO.E[x]=0.0
+
+	def WRITER(self, instace):
+		self.POPUP.dismiss()
 		DATA._C[NOME]=0
 		P=open(D)
 		PR=P.read()
@@ -495,7 +521,7 @@ class Catcher(Screen):
 		P.close()
 
 		H=getattr(DATA, DATA._H[0])
-		H.append(O)
+		H.append(self.O)
 		P=open(D)
 		PR=P.read()
 		PS=re.sub('{}=\[.*\]'.format(DATA._H[0]), '{}={}'.format(DATA._H[0], H), PR)
@@ -507,8 +533,8 @@ class Catcher(Screen):
 		CARGA=getattr(DATA, '_CARGA')
 
 		for x in ['BRT1','BRT2','BRT3','VRT1','BRDZ','VRDZ','BRMD','VRMD']:
-			if x in O:
-				A=CARGA[x]-O[x]
+			if x in self.O:
+				A=CARGA[x]-self.O[x]
 				CARGA[x]=A
 
 		P=open(D)
