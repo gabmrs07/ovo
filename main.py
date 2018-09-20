@@ -381,14 +381,15 @@ class Entry(Screen):
 		self.ids['inpt0'].text += INSERT
 
 	def BACKSPACE(self):
-		B=self.ids.inpt0.text[:len(self.ids.inpt0.text)-1]
-		self.ids.inpt0.text = B
+		self.ids.inpt0.text = self.ids.inpt0.text[:len(self.ids.inpt0.text)-1]
 
 class Catcher(Screen):
 
 	TEXTFOCUS=None
 	INSERT=None
 	O=None
+	SOMA=0.0
+	LABEL=Label(size_hint=(1, 0.45), pos_hint={'top':0.95}, font_size=60)
 	POPUP=Popup()
 
 	def on_pre_enter(self, *args):
@@ -403,6 +404,7 @@ class Catcher(Screen):
 		self.ids['inpt8'].text=''
 		self.ids['inp1'].text=DATA._V['V1']
 		self.ids['inp2'].text=DATA._V['V2']
+
 		self.ids['inp3'].text=DATA._V['V3']
 		self.ids['inp4'].text=DATA._V['V4']
 		self.ids['inp5'].text=DATA._V['V5']
@@ -412,15 +414,22 @@ class Catcher(Screen):
 		self.ids['NC'].text='CLIENTE: {}'.format(NOME)
 
 		Catcher.TEXTFOCUS='inpt1'
+		self.SOMA=0.0
 
 	def FOCUS(self, IDS='inpt1'):
 		Catcher.TEXTFOCUS=IDS
 
 	def KEY(self, INSERT):
-		self.ids[Catcher.TEXTFOCUS].text += INSERT
+		if self.SOMA == 0.0:
+			self.ids[Catcher.TEXTFOCUS].text += INSERT
+		else:
+			self.LABEL.text += INSERT
 
 	def BACKSPACE(self):
-		self.ids[Catcher.TEXTFOCUS].text = ''
+		if self.SOMA == 0.0:
+			self.ids[Catcher.TEXTFOCUS].text = ''
+		else:
+			self.LABEL.text = self.LABEL.text[:len(self.LABEL.text)-1]
 
 	def MEIA(self):
 		TEXT=self.ids[Catcher.TEXTFOCUS].text
@@ -432,70 +441,77 @@ class Catcher(Screen):
 
 	def OK(self):
 
-		global BRT1_VALOR
-		global VRT1_VALOR
-		global BRT2_VALOR
-		global BRT3_VALOR
-		global BRDZ_VALOR
-		global VRDZ_VALOR
-		global BRMD_VALOR
-		global VRMD_VALOR
+		if self.SOMA == 0.0:
 
-		B1=self.ids.inpt1.text
-		V1=self.ids.inpt2.text
-		B2=self.ids.inpt3.text
-		B3=self.ids.inpt4.text
-		BDZ=self.ids.inpt5.text
-		VDZ=self.ids.inpt6.text
-		BMD=self.ids.inpt7.text
-		VMD=self.ids.inpt8.text
-		BRT1_VALOR=self.ids.inp1.text
-		VRT1_VALOR=self.ids.inp2.text
-		BRT2_VALOR=self.ids.inp3.text
-		BRT3_VALOR=self.ids.inp4.text
-		BRDZ_VALOR=self.ids.inp5.text
-		VRDZ_VALOR=self.ids.inp6.text
-		BRMD_VALOR=self.ids.inp7.text
-		VRMD_VALOR=self.ids.inp8.text
+			global BRT1_VALOR
+			global VRT1_VALOR
+			global BRT2_VALOR
+			global BRT3_VALOR
+			global BRDZ_VALOR
+			global VRDZ_VALOR
+			global BRMD_VALOR
+			global VRMD_VALOR
 
-		SOMA=0.0
+			B1=self.ids.inpt1.text
+			V1=self.ids.inpt2.text
+			B2=self.ids.inpt3.text
+			B3=self.ids.inpt4.text
+			BDZ=self.ids.inpt5.text
+			VDZ=self.ids.inpt6.text
+			BMD=self.ids.inpt7.text
+			VMD=self.ids.inpt8.text
+			BRT1_VALOR=self.ids.inp1.text
+			VRT1_VALOR=self.ids.inp2.text
+			BRT2_VALOR=self.ids.inp3.text
+			BRT3_VALOR=self.ids.inp4.text
+			BRDZ_VALOR=self.ids.inp5.text
+			VRDZ_VALOR=self.ids.inp6.text
+			BRMD_VALOR=self.ids.inp7.text
+			VRMD_VALOR=self.ids.inp8.text
 
-		if B1!='':
-			BRT1(B1)
-		if B2!='':
-			BRT2(B2)
-		if B3!='':
-			BRT3(B3)
-		if V1!='':
-			VRT1(V1)
-		if BDZ!='':
-			BRDZ(BDZ)
-		if VDZ!='':
-			VRDZ(VDZ)
-		if BMD!='':
-			BRMD(BMD)
-		if VMD!='':
-			VRMD(VMD)
+			if B1!='':
+				BRT1(B1)
+			if B2!='':
+				BRT2(B2)
+			if B3!='':
+				BRT3(B3)
+			if V1!='':
+				VRT1(V1)
+			if BDZ!='':
+				BRDZ(BDZ)
+			if VDZ!='':
+				VRDZ(VDZ)
+			if BMD!='':
+				BRMD(BMD)
+			if VMD!='':
+				VRMD(VMD)
 
-		self.O=dict()
-		self.O['CLIENTE']=NOME
-		for x in ['BRT1','BRT2','BRT3','VRT1','BRDZ','VRDZ','BRMD','VRMD']:
-			if 0.0!=OVO.E[x]:
-				SOMA+=OVO.E_VLR[x+'_VLR']
-				self.O[x]=OVO.E[x]
-				self.O[x+'_DZ']=OVO.E_DZ[x+'_DZ']
-				self.O[x+'_VLR']=OVO.E_VLR[x+'_VLR']
-		self.O['TOTAL']=SOMA
+			self.O=dict()
+			self.O['CLIENTE']=NOME
+			for x in ['BRT1','BRT2','BRT3','VRT1','BRDZ','VRDZ','BRMD','VRMD']:
+				if 0.0!=OVO.E[x]:
+					self.SOMA+=OVO.E_VLR[x+'_VLR']
+					self.O[x]=OVO.E[x]
+					self.O[x+'_DZ']=OVO.E_DZ[x+'_DZ']
+					self.O[x+'_VLR']=OVO.E_VLR[x+'_VLR']
+			self.O['TOTAL']=self.SOMA
+
+		else:
+			self.SOMA=str(float(self.LABEL.text))
+			self.O['TOTAL']=float(self.LABEL.text)
 
 		BX=BoxLayout(orientation='vertical')
 		BXT=BoxLayout(size_hint=(1, 0.3))
 		BT1=Button(text='Sim', background_color=(0, 0.8, 0, 1))
-		BT2=Button(text='Não', background_color=(0.8, 0, 0, 1))
+		BT2=Button(text='Trocar', background_color=(0, 0, 1, 1))
+		BT3=Button(text='Não', background_color=(0.8, 0, 0, 1))
 		BT1.bind(on_press=self.WRITER)
-		BT2.bind(on_press=self.DISMISS)
+		BT2.bind(on_press=self.DESC)
+		BT3.bind(on_press=self.DISMISS)
 		BXT.add_widget(BT1)
 		BXT.add_widget(BT2)
-		BX.add_widget(Label(text='R$ {}'.format(SOMA), size_hint=(1, 0.7), pos_hint={'top':1}))
+		BXT.add_widget(BT3)
+		BX.add_widget(Label(text='R$ {}'.format(self.SOMA), size_hint=(1, 0.7), pos_hint={'top':1}))
 		BX.add_widget(BXT)
 		self.POPUP.title='CONFIRMAÇÃO DO VALOR'
 		self.POPUP.content=BX
@@ -504,13 +520,31 @@ class Catcher(Screen):
 		self.POPUP.auto_dismiss=False
 		self.POPUP.open()
 
+	def DESC(self, instance):
+		if self.SOMA != 0.0:
+			try:
+				self.remove_widget(self.ids.GL)
+				self.add_widget(self.LABEL)
+				self.POPUP.dismiss()
+				self.LABEL.text += str(self.SOMA)
+			except:
+				self.POPUP.dismiss()
+		else:
+			pass
+
 	def DISMISS(self, instance):
 		self.POPUP.dismiss()
 		for x in ['BRT1','BRT2','BRT3','VRT1','BRDZ','VRDZ','BRMD','VRMD']:
 				OVO.E[x]=0.0
 
-	def WRITER(self, instace):
-		self.POPUP.dismiss()
+	def WRITER(self, instance):
+		try:
+			self.POPUP.dismiss()
+			self.add_widget(self.LABEL)
+			self.remove_widget(self.LABEL)
+		except:
+			self.remove_widget(self.LABEL)
+			self.add_widget(self.ids.GL)
 		DATA._C[NOME]=0
 		P=open(D)
 		PR=P.read()
@@ -997,8 +1031,7 @@ class Setr(Screen):
 		self.ids['cli'].text += INSERT
 
 	def BACKSPACE(self):
-		B=self.ids.cli.text[:len(self.ids.cli.text)-1]
-		self.ids.cli.text = B
+		self.ids.cli.text = self.ids.cli.text[:len(self.ids.cli.text)-1]
 
 	def REMOVE(self):
 		if self.ids.adsubspin.text!='':
