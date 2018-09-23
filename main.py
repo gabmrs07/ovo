@@ -471,6 +471,7 @@ class Entry(Screen):
 
 class Catcher(Screen):
 
+	CHECKER=1
 	TEXTFOCUS=None
 	O=None
 	SOMA=0.0
@@ -479,6 +480,7 @@ class Catcher(Screen):
 
 	def on_pre_enter(self, *args):
 		reload(DATA)
+		self.CHECKER=1
 		self.ids['inpt1'].text=''
 		self.ids['inpt2'].text=''
 		self.ids['inpt3'].text=''
@@ -504,13 +506,13 @@ class Catcher(Screen):
 		Catcher.TEXTFOCUS=IDS
 
 	def KEY(self, INSERT):
-		if self.SOMA == 0.0:
+		if self.CHECKER == 1:
 			self.ids[Catcher.TEXTFOCUS].text += INSERT
 		else:
 			self.LABEL.text += INSERT
 
 	def BACKSPACE(self):
-		if self.SOMA == 0.0:
+		if self.CHECKER == 1:
 			self.ids[Catcher.TEXTFOCUS].text = ''
 		else:
 			self.LABEL.text = self.LABEL.text[:len(self.LABEL.text)-1]
@@ -525,7 +527,7 @@ class Catcher(Screen):
 
 	def OK(self):
 
-		if self.SOMA == 0.0:
+		if self.CHECKER == 1:
 
 			global BRT1_VALOR
 			global VRT1_VALOR
@@ -605,30 +607,33 @@ class Catcher(Screen):
 		self.POPUP.open()
 
 	def DESC(self, instance):
-		if self.SOMA != 0.0:
-			try:
-				self.remove_widget(self.ids.GL)
-				self.add_widget(self.LABEL)
-				self.POPUP.dismiss()
-				self.LABEL.text += str(self.SOMA)
-			except:
-				self.POPUP.dismiss()
+		if self.CHECKER == 1:
+			self.remove_widget(self.ids.GL)
+			self.add_widget(self.LABEL)
+			self.POPUP.dismiss()
+			self.LABEL.text = str(self.SOMA)
+			self.CHECKER=0
 		else:
-			pass
+			self.POPUP.dismiss()
 
 	def DISMISS(self, instance):
-		self.POPUP.dismiss()
-		for x in ['BRT1','BRT2','BRT3','VRT1','BRDZ','VRDZ','BRMD','VRMD']:
+		if self.CHECKER == 1:
+			self.POPUP.dismiss()
+			self.SOMA=0.0
+			for x in ['BRT1','BRT2','BRT3','VRT1','BRDZ','VRDZ','BRMD','VRMD']:
 				OVO.E[x]=0.0
+		else:
+			self.POPUP.dismiss()
 
 	def WRITER(self, instance):
-		try:
+		if self.CHECKER == 1:
 			self.POPUP.dismiss()
-			self.add_widget(self.LABEL)
-			self.remove_widget(self.LABEL)
-		except:
+		else:
+			self.LABEL.text = ''
+			self.POPUP.dismiss()
 			self.remove_widget(self.LABEL)
 			self.add_widget(self.ids.GL)
+			
 		DATA._C[NOME]=0
 		P=open(D)
 		PR=P.read()
@@ -731,9 +736,15 @@ class Output(Screen):
 
 class Editar(Screen):
 
+	CHECKER=1
+	LABEL=Label(size_hint=(1, 0.45), pos_hint={'top':0.95}, font_size=60)
 	TEXTFOCUS=None
+	POPUP=Popup()
+	O=None
+	SOMA=0.0
 
 	def on_pre_enter(self, *args):
+		self.CHECKER=1
 		def FILL(X, Y):
 			if Y in Output.E:
 				self.ids[X].text=str(Output.E[Y])
@@ -775,10 +786,16 @@ class Editar(Screen):
 		Editar.TEXTFOCUS=IDS
 
 	def KEY(self, INSERT):
-		self.ids[Editar.TEXTFOCUS].text += INSERT
+		if self.CHECKER == 1:
+			self.ids[Editar.TEXTFOCUS].text += INSERT
+		else:
+			self.LABEL.text += INSERT
 
 	def BACKSPACE(self):
-		self.ids[Editar.TEXTFOCUS].text = ''
+		if self.CHECKER == 1:
+			self.ids[Editar.TEXTFOCUS].text = ''
+		else:
+			self.LABEL.text = self.LABEL.text[:len(self.LABEL.text)-1]
 
 	def MEIA(self):
 		TEXT=self.ids[Editar.TEXTFOCUS].text
@@ -816,8 +833,6 @@ class Editar(Screen):
 		BRMD_VALOR=self.ids.p7.text
 		VRMD_VALOR=self.ids.p8.text
 
-		SOMA=0.0
-
 		if B1!='':
 			BRT1(B1)
 		if B2!='':
@@ -835,15 +850,74 @@ class Editar(Screen):
 		if VMD!='':
 			VRMD(VMD)
 
-		O=dict()
-		O['CLIENTE']=NOME
-		for x in ['BRT1','BRT2','BRT3','VRT1','BRDZ','VRDZ','BRMD','VRMD']:
-			if 0.0!=OVO.E[x]:
-				SOMA+=OVO.E_VLR[x+'_VLR']
-				O[x]=OVO.E[x]
-				O[x+'_DZ']=OVO.E_DZ[x+'_DZ']
-				O[x+'_VLR']=OVO.E_VLR[x+'_VLR']
-		O['TOTAL']=SOMA
+		if self.CHECKER == 1:
+			self.SOMA=0.0
+			self.O=dict()
+			self.O['CLIENTE']=NOME
+			for x in ['BRT1','BRT2','BRT3','VRT1','BRDZ','VRDZ','BRMD','VRMD']:
+				if 0.0!=OVO.E[x]:
+					self.SOMA+=OVO.E_VLR[x+'_VLR']
+					self.O[x]=OVO.E[x]
+					self.O[x+'_DZ']=OVO.E_DZ[x+'_DZ']
+					self.O[x+'_VLR']=OVO.E_VLR[x+'_VLR']
+			self.O['TOTAL']=self.SOMA
+		else:
+			self.O=dict()
+			self.O['CLIENTE']=NOME
+			for x in ['BRT1','BRT2','BRT3','VRT1','BRDZ','VRDZ','BRMD','VRMD']:
+				if 0.0!=OVO.E[x]:
+					self.O[x]=OVO.E[x]
+					self.O[x+'_DZ']=OVO.E_DZ[x+'_DZ']
+					self.O[x+'_VLR']=OVO.E_VLR[x+'_VLR']
+			self.SOMA=str(float(self.LABEL.text))
+			self.O['TOTAL']=float(self.LABEL.text)
+
+		BX=BoxLayout(orientation='vertical')
+		BXT=BoxLayout(size_hint=(1, 0.3))
+		BT1=Button(text='Sim', background_color=(0, 0.8, 0, 1))
+		BT2=Button(text='Trocar', background_color=(0, 0, 1, 1))
+		BT3=Button(text='Não', background_color=(0.8, 0, 0, 1))
+		BT1.bind(on_press=self.WRITER)
+		BT2.bind(on_press=self.DESC)
+		BT3.bind(on_press=self.DISMISS)
+		BXT.add_widget(BT1)
+		BXT.add_widget(BT2)
+		BXT.add_widget(BT3)
+		BX.add_widget(Label(text='R$ {}'.format(self.SOMA), size_hint=(1, 0.7), pos_hint={'top':1}))
+		BX.add_widget(BXT)
+		self.POPUP.title='CONFIRMAÇÃO DO VALOR'
+		self.POPUP.content=BX
+		self.POPUP.size_hint=(0.8, 0.5)
+		self.POPUP.pos_hint={'center_x': 0.5, 'center_y': 0.5}
+		self.POPUP.auto_dismiss=False
+		self.POPUP.open()
+
+	def DESC(self, instance):
+		if self.CHECKER == 1:
+			self.remove_widget(self.ids.GL)
+			self.add_widget(self.LABEL)
+			self.POPUP.dismiss()
+			self.LABEL.text += str(self.SOMA)
+			self.CHECKER=0
+		else:
+			self.POPUP.dismiss()
+
+	def DISMISS(self, instance):
+		if self.CHECKER == 1:
+			self.POPUP.dismiss()
+			for x in ['BRT1','BRT2','BRT3','VRT1','BRDZ','VRDZ','BRMD','VRMD']:
+				OVO.E[x]=0.0
+		else:
+			self.POPUP.dismiss()
+
+	def WRITER(self, instance):
+		if self.CHECKER == 1:
+			self.POPUP.dismiss()
+		else:
+			self.LABEL.text = ''
+			self.POPUP.dismiss()
+			self.remove_widget(self.LABEL)
+			self.add_widget(self.ids.GL)
 
 		H=getattr(DATA, DATA._W)
 
@@ -855,7 +929,7 @@ class Editar(Screen):
 				CARGA[x]=A
 
 		H.pop(Output.I)
-		H.insert(Output.I, O)
+		H.insert(Output.I, self.O)
 		P=open(D)
 		PR=P.read()
 		PS=re.sub('{}=\[.*\]'.format(DATA._W), '{}={}'.format(DATA._W, H), PR)
@@ -865,8 +939,8 @@ class Editar(Screen):
 		P1.close()
 
 		for x in ['BRT1','BRT2','BRT3','VRT1','BRDZ','VRDZ','BRMD','VRMD']:
-			if x in O:
-				A=CARGA[x]-O[x]
+			if x in self.O:
+				A=CARGA[x]-self.O[x]
 				CARGA[x]=A
 
 		P=open(D)
