@@ -24,22 +24,22 @@ L=['BRT1', 'BRT1_DZ', 'BRT1_VLR', 'BRT2', 'BRT2_DZ', 'BRT2_VLR', 'BRT3', 'BRT3_D
 L1=['BRT1','VRT1','BRT2','BRT3','BRDZ','VRDZ','BRMD','VRMD']
 NOME=None
 
-BRT1=''
-VRT1=''
-BRT2=''
-BRT3=''
-BRDZ=''
-VRDZ=''
-BRMD=''
-VRMD=''
-BRT1_VALOR=DATA._CV['V1']
-VRT1_VALOR=DATA._CV['V2']
-BRT2_VALOR=DATA._CV['V3']
-BRT3_VALOR=DATA._CV['V4']
-BRDZ_VALOR=DATA._CV['V5']
-VRDZ_VALOR=DATA._CV['V6']
-BRMD_VALOR=DATA._CV['V7']
-VRMD_VALOR=DATA._CV['V8']
+BRT1=None
+VRT1=None
+BRT2=None
+BRT3=None
+BRDZ=None
+VRDZ=None
+BRMD=None
+VRMD=None
+BRT1_VALOR=None
+VRT1_VALOR=None
+BRT2_VALOR=None
+BRT3_VALOR=None
+BRDZ_VALOR=None
+VRDZ_VALOR=None
+BRMD_VALOR=None
+VRMD_VALOR=None
 
 class Menu(Screen):
 
@@ -479,8 +479,19 @@ class Catcher(Screen):
 	POPUP=Popup()
 
 	def on_pre_enter(self, *args):
+
+		def FILL(W, X, Y):
+			for x in DATA._H:
+				H=getattr(DATA, x)
+				if H[0].get('WEEK') == W:
+					for y in H:
+						if y['CLIENTE'] == NOME:
+							if X in y:
+								self.ids[Y].text=str(y[X+'_DZ'])
+
 		reload(DATA)
 		self.CHECKER=1
+
 		self.ids['inpt1'].text=''
 		self.ids['inpt2'].text=''
 		self.ids['inpt3'].text=''
@@ -497,6 +508,36 @@ class Catcher(Screen):
 		self.ids['inp6'].text=DATA._V['V6']
 		self.ids['inp7'].text=DATA._V['V7']
 		self.ids['inp8'].text=DATA._V['V8']
+
+		S=str.split(str.strip(DATA._W, 'H'), '_')
+		if date.weekday(date(int(S[2]), int(S[1]), int(S[0]))) == 1:
+			FILL(1, 'BRT1', 'inp1')
+			FILL(1, 'VRT1', 'inp2')
+			FILL(1, 'BRT2', 'inp3')
+			FILL(1, 'BRT3', 'inp4')
+			FILL(1, 'BRDZ', 'inp5')
+			FILL(1, 'VRDZ', 'inp6')
+			FILL(1, 'BRMD', 'inp7')
+			FILL(1, 'VRMD', 'inp8')
+		elif date.weekday(date(int(S[2]), int(S[1]), int(S[0]))) == 2:
+			FILL(2, 'BRT1', 'inp1')
+			FILL(2, 'VRT1', 'inp2')
+			FILL(2, 'BRT2', 'inp3')
+			FILL(2, 'BRT3', 'inp4')
+			FILL(2, 'BRDZ', 'inp5')
+			FILL(2, 'VRDZ', 'inp6')
+			FILL(2, 'BRMD', 'inp7')
+			FILL(2, 'VRMD', 'inp8')
+		elif date.weekday(date(int(S[2]), int(S[1]), int(S[0]))) == 3:
+			FILL(3, 'BRT1', 'inp1')
+			FILL(3, 'VRT1', 'inp2')
+			FILL(3, 'BRT2', 'inp3')
+			FILL(3, 'BRT3', 'inp4')
+			FILL(3, 'BRDZ', 'inp5')
+			FILL(3, 'VRDZ', 'inp6')
+			FILL(3, 'BRMD', 'inp7')
+			FILL(3, 'VRMD', 'inp8')
+
 		self.ids['NC'].text='CLIENTE: {}'.format(NOME)
 
 		Catcher.TEXTFOCUS='inpt1'
@@ -633,7 +674,7 @@ class Catcher(Screen):
 			self.POPUP.dismiss()
 			self.remove_widget(self.LABEL)
 			self.add_widget(self.ids.GL)
-			
+
 		DATA._C[NOME]=0
 		P=open(D)
 		PR=P.read()
