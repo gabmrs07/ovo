@@ -15,6 +15,7 @@ _QUINTA=['RICCI', 'JOEL', 'DAIANE', 'PARANÁ', 'JULIANO', 'MARLI', 'ANTÔNIO', '
 ## ENTRADA
 
 _C={}
+_W=None
 
 ## CARGA
 
