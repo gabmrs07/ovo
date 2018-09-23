@@ -5,6 +5,7 @@ import kivy
 import re
 import socket
 import time
+from datetime import date
 from kivy.app import App
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
@@ -16,7 +17,6 @@ from kivy.base import runTouchApp
 if socket.gethostname()=='josley' or socket.gethostname()=='lamettrie3':
 	from importlib import reload
 
-DIAVAR=time.strftime('H%d_%m_%y')
 D='DATA.py'
 L=['BRT1', 'BRT1_DZ', 'BRT1_VLR', 'BRT2', 'BRT2_DZ', 'BRT2_VLR', 'BRT3', 'BRT3_DZ', 'BRT3_VLR',\
 		'VRT1', 'VRT1_DZ', 'VRT1_VLR', 'BRDZ', 'BRDZ_DZ', 'BRDZ_VLR', 'VRDZ', 'VRDZ_DZ', 'VRDZ_VLR',\
@@ -74,77 +74,77 @@ class Menu(Screen):
 		T7=0.0
 		T8=0.0
 
-		try:
-			H=getattr(DATA, DATA._H[0])
-			D=str.strip(DATA._H[0], 'H')
-			O='EXTRATO DIA {}\n\n'.format(str.replace(D, '_', '/'))
-			for x in H:
-				O+='--------------------------------------------------------------------------'
-				if x['CLIENTE']=='CARGA':
-					O+='\nCARGA\n'
-					for y in L1:
-						if y in x:
-							O+='{}: {}\t\tPREÇO: R$ {}\t\tSUBTOTAL: R$ {}\n'.format(y,x[y],x[y+'_DZ'],x[y+'_VLR'])
-					O+='TOTAL: R$ {}\n'.format(x['TOTAL'])
-					SOMACARGA=x['TOTAL']
-				else:
-					O+='\n{}\n'.format(x['CLIENTE'])
-					for y in L1:
-						if y in x:
-							O+='{}: {}\t\tPREÇO: R$ {}\t\tSUBTOTAL: R$ {}\n'.format(y,x[y],x[y+'_DZ'],x[y+'_VLR'])
-							if y=='BRT1':
-								D1+=x[y]
-								T1+=x[y+'_VLR']
-							elif y=='VRT1':
-								D2+=x[y]
-								T2+=x[y+'_VLR']
-							elif y=='BRT2':
-								D3+=x[y]
-								T3+=x[y+'_VLR']
-							elif y=='BRT3':
-								D4+=x[y]
-								T4+=x[y+'_VLR']
-							elif y=='BRDZ':
-								D5+=x[y]
-								T5+=x[y+'_VLR']
-							elif y=='VRDZ':
-								D6+=x[y]
-								T6+=x[y+'_VLR']
-							elif y=='BRMD':
-								D7+=x[y]
-								T7+=x[y+'_VLR']
-							elif y=='VRMD':
-								D8+=x[y]
-								T8+=x[y+'_VLR']
-					O+='TOTAL: R$ {}\n'.format(x['TOTAL'])
-					SOMA+=x['TOTAL']
-			O+='--------------------------------------------------------------------------\nBALANÇO\n'
-			O+='BRT1: {}; R$ {}\nVRT1: {}; R$ {}\nBRT2: {}; R$ {}\nBRT3: {}; R$ {}\nBRDZ: {}; R$ {}\nVRDZ: {}; R$ {}\nBRMD: {}; R$ {}\nVRMD: {}; R$ {}\n'.format(D1, T1, D2, T2, D3, T3, D4, T4, D5, T5, D6, T6, D7, T7, D8, T8)
+		#try:
+		H=getattr(DATA, DATA._W)
+		D=str.strip(DATA._W, 'H')
+		O='EXTRATO DIA {}\n\n'.format(str.replace(D, '_', '/'))
+		for x in H:
 			O+='--------------------------------------------------------------------------'
-			O+='\nTOTAL COMPRADO: R$ {}\nTOTAL VENDIDO: R$ {}\nLUCRO: R$ {}'.format(SOMACARGA, SOMA, SOMA-SOMACARGA)
+			if x['CLIENTE']=='CARGA':
+				O+='\nCARGA\n'
+				for y in L1:
+					if y in x:
+						O+='{}: {}\t\tPREÇO: R$ {}\t\tSUBTOTAL: R$ {}\n'.format(y,x[y],x[y+'_DZ'],x[y+'_VLR'])
+				O+='TOTAL: R$ {}\n'.format(x['TOTAL'])
+				SOMACARGA=x['TOTAL']
+			else:
+				O+='\n{}\n'.format(x['CLIENTE'])
+				for y in L1:
+					if y in x:
+						O+='{}: {}\t\tPREÇO: R$ {}\t\tSUBTOTAL: R$ {}\n'.format(y,x[y],x[y+'_DZ'],x[y+'_VLR'])
+						if y=='BRT1':
+							D1+=x[y]
+							T1+=x[y+'_VLR']
+						elif y=='VRT1':
+							D2+=x[y]
+							T2+=x[y+'_VLR']
+						elif y=='BRT2':
+							D3+=x[y]
+							T3+=x[y+'_VLR']
+						elif y=='BRT3':
+							D4+=x[y]
+							T4+=x[y+'_VLR']
+						elif y=='BRDZ':
+							D5+=x[y]
+							T5+=x[y+'_VLR']
+						elif y=='VRDZ':
+							D6+=x[y]
+							T6+=x[y+'_VLR']
+						elif y=='BRMD':
+							D7+=x[y]
+							T7+=x[y+'_VLR']
+						elif y=='VRMD':
+							D8+=x[y]
+							T8+=x[y+'_VLR']
+				O+='TOTAL: R$ {}\n'.format(x['TOTAL'])
+				SOMA+=x['TOTAL']
+		O+='--------------------------------------------------------------------------\nBALANÇO\n'
+		O+='BRT1: {}; R$ {}\nVRT1: {}; R$ {}\nBRT2: {}; R$ {}\nBRT3: {}; R$ {}\nBRDZ: {}; R$ {}\nVRDZ: {}; R$ {}\nBRMD: {}; R$ {}\nVRMD: {}; R$ {}\n'.format(D1, T1, D2, T2, D3, T3, D4, T4, D5, T5, D6, T6, D7, T7, D8, T8)
+		O+='--------------------------------------------------------------------------'
+		O+='\nTOTAL COMPRADO: R$ {}\nTOTAL VENDIDO: R$ {}\nLUCRO: R$ {}'.format(SOMACARGA, SOMA, SOMA-SOMACARGA)
 
-			P=open('EXTRATO{}.txt'.format(time.strftime('%d%m%y')), 'w')
-			P.write(O)
-			P.close()
+		P=open('EXTRATO{}.txt'.format(str.replace(D, '_', '')), 'w')
+		P.write(O)
+		P.close()
 
-			BX=BoxLayout(orientation='vertical')
-			BXT=BoxLayout(size_hint=(1, 0.3))
-			BT1=Button(text='Sim', background_color=(0, 0.8, 0, 1))
-			BT2=Button(text='Não', background_color=(0.8, 0, 0, 1))
-			BT1.bind(on_press=self.CLEAN)
-			BT2.bind(on_press=self.POPUP.dismiss)
-			BXT.add_widget(BT1)
-			BXT.add_widget(BT2)
-			BX.add_widget(Label(text='Deseja encerrar a praça?', size_hint=(1, 0.7), pos_hint={'top':1}))
-			BX.add_widget(BXT)
-			self.POPUP.title='ENCERRAMENTO DE PRAÇA'
-			self.POPUP.content=BX
-			self.POPUP.size_hint=(0.8, 0.5)
-			self.POPUP.pos_hint={'center_x': 0.5, 'center_y': 0.5}
-			self.POPUP.auto_dismiss=False
-			self.POPUP.open()
-		except:
-			pass
+		BX=BoxLayout(orientation='vertical')
+		BXT=BoxLayout(size_hint=(1, 0.3))
+		BT1=Button(text='Sim', background_color=(0, 0.8, 0, 1))
+		BT2=Button(text='Não', background_color=(0.8, 0, 0, 1))
+		BT1.bind(on_press=self.CLEAN)
+		BT2.bind(on_press=self.POPUP.dismiss)
+		BXT.add_widget(BT1)
+		BXT.add_widget(BT2)
+		BX.add_widget(Label(text='Deseja encerrar a praça?', size_hint=(1, 0.7), pos_hint={'top':1}))
+		BX.add_widget(BXT)
+		self.POPUP.title='ENCERRAMENTO DE PRAÇA'
+		self.POPUP.content=BX
+		self.POPUP.size_hint=(0.8, 0.5)
+		self.POPUP.pos_hint={'center_x': 0.5, 'center_y': 0.5}
+		self.POPUP.auto_dismiss=False
+		self.POPUP.open()
+		#except:
+		#	print('errro')
 
 	def CLEAN(self, instance):
 		self.POPUP.dismiss()
@@ -156,8 +156,24 @@ class Menu(Screen):
 		P1.close()
 		P.close()
 		reload(DATA)
+		P=open(D)
+		PR=P.read()
+		PS=re.sub('_W=.*', '_W=None', PR)
+		P1=open(D, 'w')
+		P1.write(PS)
+		P1.close()
+		P.close()
+		reload(DATA)
 
 class Rota(Screen):
+
+	WEEK=None
+	DA=int(round(float(time.strftime('%d'))))
+	M=int(round(float(time.strftime('%m'))))
+	Y=int(time.strftime('%y'))
+
+	def on_pre_enter(self, *args):
+		Rota.WEEK=None
 
 	def SB(self, ROTA):
 		C=dict()
@@ -172,8 +188,23 @@ class Rota(Screen):
 		P.close()
 		P1.close()
 
+		P=open(D)
+		PR=P.read()
+		if not Dia.S:
+			PS=re.sub('_W=None', '_W=\'H{}_{}_{}\''.format(self.DA, self.M, self.Y), PR)
+		else:
+			PS=re.sub('_W=None', '_W=\'H{}_{}_{}\''.format(Dia.S[0], Dia.S[1], Dia.S[2]), PR)
+		P1=open(D, 'w')
+		P1.write(PS)
+		P.close()
+		P1.close()
+		reload(DATA)
+
 		H=getattr(DATA, '_H')
-		H.insert(0, DIAVAR)
+		if not Dia.S:
+			H.insert(0, 'H{}_{}_{}'.format(self.DA, self.M, self.Y))
+		else:
+			H.insert(0, 'H{}_{}_{}'.format(Dia.S[0], Dia.S[1], Dia.S[2]))
 		P=open(D)
 		PR=P.read()
 		PS=re.sub('_H=\[.*\]', '_H={}'.format(H), PR)
@@ -185,18 +216,73 @@ class Rota(Screen):
 		self.manager.current='carga'
 
 	def RS_T(self):
-		self.SB(DATA._TERCA)
+		if date.weekday(date(self.Y, self.M, self.DA))==1:
+			self.SB(DATA._TERCA)
+		else:
+			self.manager.current='dia'
+		Rota.WEEK=1
 
 	def RS_QUA(self):
-		self.SB(DATA._QUARTA)
+		if date.weekday(date(self.Y, self.M, self.DA))==2:
+			self.SB(DATA._QUARTA)
+		else:
+			self.manager.current='dia'
+		Rota.WEEK=2
 
 	def RS_QUI(self):
-		self.SB(DATA._QUINTA)
+		if date.weekday(date(self.Y, self.M, self.DA))==3:
+			self.SB(DATA._QUINTA)
+		else:
+			self.manager.current='dia'
+		Rota.WEEK=3
+
+class Dia(Screen):
+
+	S=None
+
+	def on_pre_enter(self, *args):
+		self.ids.DMY.text=time.strftime('%d/%m/%y')
+
+	def KEY(self, INSERT):
+		self.ids['DMY'].text += INSERT
+
+	def BACKSPACE(self):
+		self.ids.DMY.text = self.ids.DMY.text[:len(self.ids.DMY.text)-1]
+
+	def FCLEAR(self):
+		self.ids.DMY.text = ''
+
+	def OK(self):
+		if re.search('[0-3][0-9]/[0-1][0-9]/[0-9][0-9]', self.ids.DMY.text):
+			Dia.S=str.split(self.ids.DMY.text, '/')
+			DA=int(Dia.S[0])
+			M=int(Dia.S[1])
+			Y=int(Dia.S[2])
+			if DA not in range(1, 32):
+				return 0
+			elif M not in range(1, 13):
+				return 0
+			elif Y not in range(1, 100):
+				return 0
+			if Rota.WEEK==1:
+				if date.weekday(date(Y, M, DA)) != 1:
+					return 0
+				else:
+					Rota.SB(self, DATA._TERCA)
+			elif Rota.WEEK==2:
+				if date.weekday(date(Y, M, DA)) != 2:
+					return 0
+				else:
+					Rota.SB(self, DATA._QUARTA)
+			elif Rota.WEEK==3:
+				if date.weekday(date(Y, M, DA)) != 3:
+					return 0
+				else:
+					Rota.SB(self, DATA._QUINTA)
 
 class Carga(Screen):
 
 	TEXTFOCUS=None
-	INSERT=None
 
 	def on_pre_enter(self, *args):
 		reload(DATA)
@@ -284,6 +370,7 @@ class Carga(Screen):
 			VRMD(VMD)
 
 		C=dict()
+		C['WEEK']=Rota.WEEK
 		C['CLIENTE']='CARGA'
 		for x in ['BRT1','BRT2','BRT3','VRT1','BRDZ','VRDZ','BRMD','VRMD']:
 			if 0.0!=OVO.E[x]:
@@ -294,7 +381,7 @@ class Carga(Screen):
 		C['TOTAL']=SOMA
 
 		W=open(D, 'a')
-		W.write('\n{}=[{}]'.format(DIAVAR, C))
+		W.write('\n{}=[{}]'.format(DATA._W, C))
 		W.close()
 
 		CARGA=getattr(DATA, '_CARGA')
@@ -319,7 +406,6 @@ class Carga(Screen):
 
 class Entry(Screen):
 
-	INSERT=None
 	OUTRO=None
 
 	def on_pre_enter(self, *args):
@@ -386,7 +472,6 @@ class Entry(Screen):
 class Catcher(Screen):
 
 	TEXTFOCUS=None
-	INSERT=None
 	O=None
 	SOMA=0.0
 	LABEL=Label(size_hint=(1, 0.45), pos_hint={'top':0.95}, font_size=60)
@@ -404,7 +489,6 @@ class Catcher(Screen):
 		self.ids['inpt8'].text=''
 		self.ids['inp1'].text=DATA._V['V1']
 		self.ids['inp2'].text=DATA._V['V2']
-
 		self.ids['inp3'].text=DATA._V['V3']
 		self.ids['inp4'].text=DATA._V['V4']
 		self.ids['inp5'].text=DATA._V['V5']
@@ -554,11 +638,11 @@ class Catcher(Screen):
 		P1.close()
 		P.close()
 
-		H=getattr(DATA, DATA._H[0])
+		H=getattr(DATA, DATA._W)
 		H.append(self.O)
 		P=open(D)
 		PR=P.read()
-		PS=re.sub('{}=\[.*\]'.format(DATA._H[0]), '{}={}'.format(DATA._H[0], H), PR)
+		PS=re.sub('{}=\[.*\]'.format(DATA._W), '{}={}'.format(DATA._W, H), PR)
 		P1=open(D, 'w')
 		P1.write(PS)
 		P.close()
@@ -591,8 +675,8 @@ class Output(Screen):
 	S=None
 
 	def on_pre_enter(self, *args):
-		if DATA._H:
-			Output.S=getattr(DATA, DATA._H[0])
+		if DATA._W:
+			Output.S=getattr(DATA, DATA._W)
 		B=self.ids.EDIT
 		O=self.ids.outspin
 		S_LIST=list()
@@ -607,7 +691,7 @@ class Output(Screen):
 		try:
 			if DATA._C:
 				S_LIST.append('CARGA')
-				self.ids.DIA.text=str.replace(str.strip(DATA._H[0], 'H'), '_', '/')
+				self.ids.DIA.text=str.replace(str.strip(DATA._W, 'H'), '_', '/')
 				for x in Output.S:
 					if DATA._C.get(x['CLIENTE'])==0:
 						S_LIST.append(x['CLIENTE'])
@@ -648,7 +732,6 @@ class Output(Screen):
 class Editar(Screen):
 
 	TEXTFOCUS=None
-	INSERT=None
 
 	def on_pre_enter(self, *args):
 		def FILL(X, Y):
@@ -762,7 +845,7 @@ class Editar(Screen):
 				O[x+'_VLR']=OVO.E_VLR[x+'_VLR']
 		O['TOTAL']=SOMA
 
-		H=getattr(DATA, DATA._H[0])
+		H=getattr(DATA, DATA._W)
 
 		CARGA=getattr(DATA, '_CARGA')
 
@@ -775,7 +858,7 @@ class Editar(Screen):
 		H.insert(Output.I, O)
 		P=open(D)
 		PR=P.read()
-		PS=re.sub('{}=\[.*\]'.format(DATA._H[0]), '{}={}'.format(DATA._H[0], H), PR)
+		PS=re.sub('{}=\[.*\]'.format(DATA._W), '{}={}'.format(DATA._W, H), PR)
 		P1=open(D, 'w')
 		P1.write(PS)
 		P.close()
@@ -928,6 +1011,14 @@ class Settings(Screen):
 		P1.close()
 		P.close()
 		reload(DATA)
+		P=open(D)
+		PR=P.read()
+		PS=re.sub('_W=.*', '_W=None', PR)
+		P1=open(D, 'w')
+		P1.write(PS)
+		P1.close()
+		P.close()
+		reload(DATA)
 
 class Crg(Screen):
 
@@ -943,7 +1034,6 @@ class Crg(Screen):
 
 class Setc(Screen):
 
-	INSERT=None
 	TEXTFOCUS=None
 
 	def on_pre_enter(self, *args):
@@ -1097,7 +1187,6 @@ class Setr(Screen):
 class Setv(Screen):
 
 	TEXTFOCUS=None
-	INSERT=None
 
 	def on_pre_enter(self, *args):
 		def FILL(X):
@@ -1141,7 +1230,6 @@ class Setv(Screen):
 class Setcv(Screen):
 
 	TEXTFOCUS=None
-	INSERT=None
 
 	def on_pre_enter(self, *args):
 		def FILL(X):
@@ -1189,6 +1277,7 @@ class MapaApp(App):
 		self.sm=ScreenManager()
 		self.sm.add_widget(Menu(name='menu'))
 		self.sm.add_widget(Rota(name='rota'))
+		self.sm.add_widget(Dia(name='dia'))
 		self.sm.add_widget(Carga(name='carga'))
 		self.sm.add_widget(Entry(name='entry'))
 		self.sm.add_widget(Catcher(name='catcher'))
@@ -1226,8 +1315,8 @@ class OVO:
 class BRT1(OVO):
 	def __init__(self, dz):
 		OVO.__init__(self, dz)
-		self.valor=float(BRT1_VALOR)
-		self.soma=self.valor*self.dz
+		self.valor=round(float(BRT1_VALOR), 1)
+		self.soma=round(self.valor*self.dz,2)
 		OVO.E['BRT1']=self.dz
 		OVO.E_DZ['BRT1_DZ']=self.valor
 		OVO.E_VLR['BRT1_VLR']=self.soma
@@ -1235,8 +1324,8 @@ class BRT1(OVO):
 class BRT2(OVO):
 	def __init__(self, dz):
 		OVO.__init__(self, dz)
-		self.valor=float(BRT2_VALOR)
-		self.soma=self.valor*self.dz
+		self.valor=round(float(BRT2_VALOR), 1)
+		self.soma=round(self.valor*self.dz,2)
 		OVO.E['BRT2']=self.dz
 		OVO.E_DZ['BRT2_DZ']=self.valor
 		OVO.E_VLR['BRT2_VLR']=self.soma
@@ -1244,8 +1333,8 @@ class BRT2(OVO):
 class BRT3(OVO):
 	def __init__(self, dz):
 		OVO.__init__(self, dz)
-		self.valor=float(BRT3_VALOR)
-		self.soma=self.valor*self.dz
+		self.valor=round(float(BRT3_VALOR), 1)
+		self.soma=round(self.valor*self.dz,2)
 		OVO.E['BRT3']=self.dz
 		OVO.E_DZ['BRT3_DZ']=self.valor
 		OVO.E_VLR['BRT3_VLR']=self.soma
@@ -1253,8 +1342,8 @@ class BRT3(OVO):
 class VRT1(OVO):
 	def __init__(self, dz):
 		OVO.__init__(self, dz)
-		self.valor=float(VRT1_VALOR)
-		self.soma=self.valor*self.dz
+		self.valor=round(float(VRT1_VALOR), 1)
+		self.soma=round(self.valor*self.dz,2)
 		OVO.E['VRT1']=self.dz
 		OVO.E_DZ['VRT1_DZ']=self.valor
 		OVO.E_VLR['VRT1_VLR']=self.soma
@@ -1262,8 +1351,8 @@ class VRT1(OVO):
 class BRDZ(OVO):
 	def __init__(self, dz):
 		OVO.__init__(self, dz)
-		self.valor=float(BRDZ_VALOR)
-		self.soma=self.valor*self.dz
+		self.valor=round(float(BRDZ_VALOR), 1)
+		self.soma=round(self.valor*self.dz,2)
 		OVO.E['BRDZ']=self.dz
 		OVO.E_DZ['BRDZ_DZ']=self.valor
 		OVO.E_VLR['BRDZ_VLR']=self.soma
@@ -1271,8 +1360,8 @@ class BRDZ(OVO):
 class VRDZ(OVO):
 	def __init__(self, dz):
 		OVO.__init__(self, dz)
-		self.valor=float(VRDZ_VALOR)
-		self.soma=self.valor*self.dz
+		self.valor=round(float(VRDZ_VALOR), 1)
+		self.soma=round(self.valor*self.dz,2)
 		OVO.E['VRDZ']=self.dz
 		OVO.E_DZ['VRDZ_DZ']=self.valor
 		OVO.E_VLR['VRDZ_VLR']=self.soma
@@ -1280,8 +1369,8 @@ class VRDZ(OVO):
 class BRMD(OVO):
 	def __init__(self, dz):
 		OVO.__init__(self, dz)
-		self.valor=float(BRMD_VALOR)
-		self.soma=self.valor*self.dz
+		self.valor=round(float(BRMD_VALOR), 1)
+		self.soma=round(self.valor*self.dz,2)
 		OVO.E['BRMD']=self.dz
 		OVO.E_DZ['BRMD_DZ']=self.valor
 		OVO.E_VLR['BRMD_VLR']=self.soma
@@ -1289,8 +1378,8 @@ class BRMD(OVO):
 class VRMD(OVO):
 	def __init__(self, dz):
 		OVO.__init__(self, dz)
-		self.valor=float(VRMD_VALOR)
-		self.soma=self.valor*self.dz
+		self.valor=round(float(VRMD_VALOR), 1)
+		self.soma=round(self.valor*self.dz,2)
 		OVO.E['VRMD']=self.dz
 		OVO.E_DZ['VRMD_DZ']=self.valor
 		OVO.E_VLR['VRMD_VLR']=self.soma
