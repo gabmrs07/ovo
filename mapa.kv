@@ -22,8 +22,8 @@
 			text: 'Histórico'
 			on_press: root.manager.current='histsel'
 		Button:
-			text: 'Gerar extrato'
-			on_press: root.EXT()
+			text: 'Extratos'
+			on_press: root.manager.current='extrato'
 		Button:
 			text: 'Configurações'
 			on_press: root.manager.current='set'
@@ -642,7 +642,7 @@
 					id: inpt8
 				Label:
 					id: inp8
-					
+
 	BoxLayout
 		orientation: 'vertical'
 		size_hint:0.25, 0.5
@@ -1662,6 +1662,44 @@
 					pos: self.pos
 					size: self.size
 			id: TOTAL
+
+<Extrato>
+	BoxLayout:
+		size_hint: 1, 0.1
+		pos_hint:{'top':1}
+		Button:
+			size_hint: 0.3, 1
+			text: '<'
+			on_press: root.manager.current='menu'
+		Label:
+			text: 'EXTRATO'
+			canvas.before:
+				Color:
+					rgba: 0.3, 0.3, 0.3, 1
+				Rectangle:
+					pos: self.pos
+					size: self.size
+
+	Label:
+		text: 'Escolha o dia:'
+		size_hint: 1, 0.1
+		pos_hint: {'top':0.9}
+
+	Spinner:
+		id: ESPIN
+		size_hint: 1, 0.1
+		pos_hint: {'top': 0.8}
+	GridLayout:
+		size_hint: 1, 0.7
+		pos_hint: {'top':0.7}
+		cols: 1
+		rows: 3
+		Button:
+			text: 'Gerar extrato'
+			on_press: root.EXT()
+		Button:
+			text: 'Email'
+			on_press: root.EMAIL()
 
 <Settings>
 	BoxLayout:

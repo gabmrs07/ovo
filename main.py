@@ -43,13 +43,7 @@ VRMD_VALOR=None
 
 class Menu(Screen):
 
-	POPUP=Popup()
-	L=None
-	SL=0.0
-
 	def on_pre_enter(self, *args):
-		self.L=None
-		self.SL=0.0
 		reload(DATA)
 
 	def CHECKER(self):
@@ -57,142 +51,6 @@ class Menu(Screen):
 			self.manager.current='entry'
 		else:
 			self.manager.current='rota'
-
-	def EXT(self):
-
-		SOMA=0.0
-		D1=0.0
-		D2=0.0
-		D3=0.0
-		D4=0.0
-		D5=0.0
-		D6=0.0
-		D7=0.0
-		D8=0.0
-		T1=0.0
-		T2=0.0
-		T3=0.0
-		T4=0.0
-		T5=0.0
-		T6=0.0
-		T7=0.0
-		T8=0.0
-
-		try:
-			H=getattr(DATA, DATA._W)
-			D=str.strip(DATA._W, 'H')
-			O='EXTRATO DIA {}\n\n'.format(str.replace(D, '_', '/'))
-			for x in H:
-				O+='--------------------------------------------------------------------------'
-				if x['CLIENTE']=='CARGA':
-					O+='\nCARGA\n'
-					for y in L1:
-						if y in x:
-							O+='{}: {}\t\tPREÇO: R$ {}\t\tSUBTOTAL: R$ {}\n'.format(y,x[y],x[y+'_DZ'],x[y+'_VLR'])
-					O+='TOTAL: R$ {}\n'.format(x['TOTAL'])
-					SOMACARGA=x['TOTAL']
-				else:
-					O+='\n{}\n'.format(x['CLIENTE'])
-					for y in L1:
-						if y in x:
-							O+='{}: {}\t\tPREÇO: R$ {}\t\tSUBTOTAL: R$ {}\n'.format(y,x[y],x[y+'_DZ'],x[y+'_VLR'])
-							if y=='BRT1':
-								D1+=x[y]
-								T1+=x[y+'_VLR']
-							elif y=='VRT1':
-								D2+=x[y]
-								T2+=x[y+'_VLR']
-							elif y=='BRT2':
-								D3+=x[y]
-								T3+=x[y+'_VLR']
-							elif y=='BRT3':
-								D4+=x[y]
-								T4+=x[y+'_VLR']
-							elif y=='BRDZ':
-								D5+=x[y]
-								T5+=x[y+'_VLR']
-							elif y=='VRDZ':
-								D6+=x[y]
-								T6+=x[y+'_VLR']
-							elif y=='BRMD':
-								D7+=x[y]
-								T7+=x[y+'_VLR']
-							elif y=='VRMD':
-								D8+=x[y]
-								T8+=x[y+'_VLR']
-					O+='TOTAL: R$ {}\n'.format(x['TOTAL'])
-					SOMA+=x['TOTAL']
-			O+='--------------------------------------------------------------------------\nBALANÇO\n'
-
-			def LP(CV, X, Y, Z):
-				CX=round(Y/30, 2)
-				CP=round(CX*float(DATA._CV[CV]), 2)
-				self.L='{}: {} cx\tCOMPRADO: R$ {}\tVENDIDO: R$ {}\t LUCRO: R$ {}\n'.format(X, CX, CP, Z, round(Z-CP, 2))
-				self.SL+=round(Z-CP, 2)
-
-			if T1 != 0.0:
-				LP('V1', 'BRT1', D1, T1)
-				O+=self.L
-			if T2 != 0.0:
-				LP('V2', 'VRT1', D2, T2)
-				O+=self.L
-			if T3 != 0.0:
-				LP('V3', 'BRT2', D3, T3)
-				O+=self.L
-			if T4 != 0.0:
-				LP('V4', 'BRT3', D4, T4)
-				O+=self.L
-			if T5 != 0.0:
-				LP('V5', 'BRDZ', D5, T5)
-				O+=self.L
-			if T6 != 0.0:
-				LP('V6', 'VRDZ', D6, T6)
-				O+=self.L
-			if T7 != 0.0:
-				LP('V7', 'BRMD', D7, T7)
-				O+=self.L
-			if T8 != 0.0:
-				LP('V8', 'VRMD', D8, T8)
-				O+=self.L
-
-			O+='LUCRO TOTAL: R$ {}\n'.format(self.SL)
-			O+='--------------------------------------------------------------------------'
-			O+='\nTOTAL COMPRADO: R$ {}\nTOTAL VENDIDO: R$ {}\nLUCRO: R$ {}'.format(SOMACARGA, SOMA, round(SOMA-SOMACARGA, 2))
-
-			P=open('EXTRATO{}.txt'.format(str.replace(D, '_', '')), 'w')
-			P.write(O)
-			P.close()
-
-			BX=BoxLayout(orientation='vertical')
-			BXT=BoxLayout(size_hint=(1, 0.3))
-			BT1=Button(text='Sim', background_color=(0, 0.8, 0, 1))
-			BT2=Button(text='Não', background_color=(0.8, 0, 0, 1))
-			BT1.bind(on_press=self.CLEAN)
-			BT2.bind(on_press=self.POPUP.dismiss)
-			BXT.add_widget(BT1)
-			BXT.add_widget(BT2)
-			BX.add_widget(Label(text='Deseja encerrar a praça?', size_hint=(1, 0.7), pos_hint={'top':1}))
-			BX.add_widget(BXT)
-			self.POPUP.title='ENCERRAMENTO DE PRAÇA'
-			self.POPUP.content=BX
-			self.POPUP.size_hint=(0.8, 0.5)
-			self.POPUP.pos_hint={'center_x': 0.5, 'center_y': 0.5}
-			self.POPUP.auto_dismiss=False
-			self.POPUP.open()
-		except:
-			pass
-
-	def CLEAN(self, instance):
-		self.POPUP.dismiss()
-		P=open(D)
-		PR=P.read()
-		PS1=re.sub('_C={.*}', '_C={}', PR)
-		PS=re.sub('_W=.*', '_W=None', PS1)
-		P1=open(D, 'w')
-		P1.write(PS)
-		P1.close()
-		P.close()
-		reload(DATA)
 
 class Rota(Screen):
 
@@ -1104,8 +962,7 @@ class History(Screen):
 			self.ids[x].text=''
 		self.ids.UN.text='Unidade'
 		self.ids.DIA.text=HistSel.D
-		H='H'+str.replace(HistSel.D, '/', '_')
-		History.H=getattr(DATA, H)
+		History.H=getattr(DATA, 'H'+str.replace(HistSel.D, '/', '_'))
 		History.L=list()
 		for x in History.H:
 			History.L.append(x['CLIENTE'])
@@ -1124,6 +981,171 @@ class History(Screen):
 				self.ids[x].text=str(History.H[I][x])
 			except:
 				self.ids[x].text='-'
+
+class Extrato(Screen):
+
+	POPUP=Popup()
+	L=None
+	SL=0.0
+
+	def on_pre_enter(self, *args):
+		self.L=None
+		self.SL=0.0
+		reload(DATA)
+		H=list()
+		if DATA._H:
+			for x in DATA._H:
+				X=str.strip(x, 'H')
+				S=str.replace(X, '_', '/')
+				H.append(S)
+			self.ids.ESPIN.text=H[0]
+			self.ids.ESPIN.values=H
+
+	def EXT(self):
+
+		SOMA=0.0
+		D1=0.0
+		D2=0.0
+		D3=0.0
+		D4=0.0
+		D5=0.0
+		D6=0.0
+		D7=0.0
+		D8=0.0
+		T1=0.0
+		T2=0.0
+		T3=0.0
+		T4=0.0
+		T5=0.0
+		T6=0.0
+		T7=0.0
+		T8=0.0
+
+		try:
+			H=getattr(DATA, 'H'+str.replace(self.ids.ESPIN.text, '/', '_'))
+			O='EXTRATO DIA {}\n'.format(self.ids.ESPIN.text)
+			for x in H:
+				O+='--------------------------------------------------------------------------'
+				if x['CLIENTE']=='CARGA':
+					O+='\n--------------------------------------------------------------------------\nCARGA\n'
+					for y in L1:
+						if y in x:
+							O+='{}: {}\t\tPREÇO: R$ {}\t\tSUBTOTAL: R$ {}\n'.format(y,x[y],x[y+'_DZ'],x[y+'_VLR'])
+					O+='TOTAL: R$ {}\n'.format(x['TOTAL'])
+					SOMACARGA=x['TOTAL']
+					O+='--------------------------------------------------------------------------\n'
+				else:
+					O+='\n{}\n'.format(x['CLIENTE'])
+					for y in L1:
+						if y in x:
+							O+='{}: {}\t\tPREÇO: R$ {}\t\tSUBTOTAL: R$ {}\n'.format(y,x[y],x[y+'_DZ'],x[y+'_VLR'])
+							if y=='BRT1':
+								D1+=x[y]
+								T1+=x[y+'_VLR']
+							elif y=='VRT1':
+								D2+=x[y]
+								T2+=x[y+'_VLR']
+							elif y=='BRT2':
+								D3+=x[y]
+								T3+=x[y+'_VLR']
+							elif y=='BRT3':
+								D4+=x[y]
+								T4+=x[y+'_VLR']
+							elif y=='BRDZ':
+								D5+=x[y]
+								T5+=x[y+'_VLR']
+							elif y=='VRDZ':
+								D6+=x[y]
+								T6+=x[y+'_VLR']
+							elif y=='BRMD':
+								D7+=x[y]
+								T7+=x[y+'_VLR']
+							elif y=='VRMD':
+								D8+=x[y]
+								T8+=x[y+'_VLR']
+					O+='TOTAL: R$ {}\n'.format(x['TOTAL'])
+					SOMA+=x['TOTAL']
+			O+='--------------------------------------------------------------------------\n'
+			O+='--------------------------------------------------------------------------\nBALANÇO BRUTO\n'
+
+			def LP(CV, X, Y, Z):
+				CX=round(Y/30, 2)
+				CP=round(CX*float(DATA._CV[CV]), 2)
+				self.L='{}: {} cx\t\t\tCOMPRADO: R$ {}\nLUCRO: R$ {}\t\t\tVENDIDO: R$ {}\n'.format(X, CX, CP, round(Z-CP, 2), Z)
+				self.SL+=round(Z-CP, 2)
+				self.L+='--------------------------------------------------------------------------\n'
+
+			if T1 != 0.0:
+				LP('V1', 'BRT1', D1, T1)
+				O+=self.L
+			if T2 != 0.0:
+				LP('V2', 'VRT1', D2, T2)
+				O+=self.L
+			if T3 != 0.0:
+				LP('V3', 'BRT2', D3, T3)
+				O+=self.L
+			if T4 != 0.0:
+				LP('V4', 'BRT3', D4, T4)
+				O+=self.L
+			if T5 != 0.0:
+				LP('V5', 'BRDZ', D5, T5)
+				O+=self.L
+			if T6 != 0.0:
+				LP('V6', 'VRDZ', D6, T6)
+				O+=self.L
+			if T7 != 0.0:
+				LP('V7', 'BRMD', D7, T7)
+				O+=self.L
+			if T8 != 0.0:
+				LP('V8', 'VRMD', D8, T8)
+				O+=self.L
+
+			O+='LUCRO BRUTO: R$ {}\n'.format(self.SL)
+			O+='--------------------------------------------------------------------------\n'
+			O+='--------------------------------------------------------------------------\nBALANÇO LÍQUIDO\n'
+			O+='TOTAL COMPRADO: R$ {}\nTOTAL VENDIDO: R$ {}\n--------------------------------------------------------------------------\nLUCRO LÍQUIDO: R$ {}'.format(SOMACARGA, SOMA, round(SOMA-SOMACARGA, 2))
+			O+='\n--------------------------------------------------------------------------'
+
+			P=open('EXTRATO{}.txt'.format(str.replace(self.ids.ESPIN.text, '/', '')), 'w')
+			P.write(O)
+			P.close()
+
+			if DATA._W and 'H'+str.replace(self.ids.ESPIN.text, '/', '_') == DATA._W:
+				BX=BoxLayout(orientation='vertical')
+				BXT=BoxLayout(size_hint=(1, 0.3))
+				BT1=Button(text='Sim', background_color=(0, 0.8, 0, 1))
+				BT2=Button(text='Não', background_color=(0.8, 0, 0, 1))
+				BT1.bind(on_press=self.CLEAN)
+				BT2.bind(on_press=self.POPUP.dismiss)
+				BXT.add_widget(BT1)
+				BXT.add_widget(BT2)
+				BX.add_widget(Label(text='Deseja encerrar a praça?', size_hint=(1, 0.7), pos_hint={'top':1}))
+				BX.add_widget(BXT)
+				self.POPUP.title='ENCERRAMENTO DE PRAÇA'
+				self.POPUP.content=BX
+				self.POPUP.size_hint=(0.8, 0.5)
+				self.POPUP.pos_hint={'center_x': 0.5, 'center_y': 0.5}
+				self.POPUP.auto_dismiss=False
+				self.POPUP.open()
+
+			self.manager.current='menu'
+		except:
+			pass
+
+	def CLEAN(self, instance):
+		self.POPUP.dismiss()
+		P=open(D)
+		PR=P.read()
+		PS1=re.sub('_C={.*}', '_C={}', PR)
+		PS=re.sub('_W=.*', '_W=None', PS1)
+		P1=open(D, 'w')
+		P1.write(PS)
+		P1.close()
+		P.close()
+		reload(DATA)
+
+	def EMAIL(self):
+		pass
 
 class Settings(Screen):
 
@@ -1425,6 +1447,7 @@ class MapaApp(App):
 		self.sm.add_widget(Editar(name='editar'))
 		self.sm.add_widget(HistSel(name='histsel'))
 		self.sm.add_widget(History(name='history'))
+		self.sm.add_widget(Extrato(name='extrato'))
 		self.sm.add_widget(Settings(name='set'))
 		self.sm.add_widget(Crg(name='crg'))
 		self.sm.add_widget(Setc(name='setc'))
