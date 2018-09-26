@@ -7,12 +7,12 @@ import socket
 import time
 from datetime import date
 from kivy.app import App
+from kivy.base import runTouchApp, ExceptionHandler, ExceptionManager
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
 from kivy.uix.label import Label
 from kivy.uix.popup import Popup
 from kivy.uix.screenmanager import ScreenManager, Screen
-from kivy.base import runTouchApp
 
 if socket.gethostname()=='josley' or socket.gethostname()=='lamettrie3':
 	from importlib import reload
@@ -41,6 +41,12 @@ VRDZ_VALOR=None
 BRMD_VALOR=None
 VRMD_VALOR=None
 
+class E(ExceptionHandler):
+	def handle_exception(self, inst):
+		return ExceptionManager.PASS
+
+ExceptionManager.add_handler(E())
+
 class Menu(Screen):
 
 	def on_pre_enter(self, *args):
@@ -55,8 +61,8 @@ class Menu(Screen):
 class Rota(Screen):
 
 	WEEK=None
-	DA=int(round(float(time.strftime('%d'))))
-	M=int(round(float(time.strftime('%m'))))
+	DA=int(time.strftime('%d'))
+	M=int(time.strftime('%m'))
 	Y=int(time.strftime('%y'))
 
 	def on_pre_enter(self, *args):
@@ -131,7 +137,7 @@ class Dia(Screen):
 	S=None
 
 	def on_pre_enter(self, *args):
-		self.ids.DMY.text=time.strftime('%d/%m/%y')
+		self.ids.DMY.text='{}/{}/{}'.format(Rota.DA, Rota.M, Rota.Y)
 
 	def KEY(self, INSERT):
 		self.ids['DMY'].text += INSERT
@@ -291,7 +297,7 @@ class Carga(Screen):
 		C['TOTAL']=SOMA
 
 		W=open(D, 'a')
-		W.write('{}=[{}]'.format(DATA._W, C))
+		W.write('\n{}=[{}]'.format(DATA._W, C))
 		W.close()
 
 		CARGA=getattr(DATA, '_CARGA')
@@ -1567,7 +1573,6 @@ class VRMD(OVO):
 		OVO.E['VRMD']=self.dz
 		OVO.E_DZ['VRMD_DZ']=self.valor
 		OVO.E_VLR['VRMD_VLR']=self.soma
-
 
 if __name__ == '__main__':
 	MapaApp().run()
