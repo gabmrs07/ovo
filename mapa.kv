@@ -6,11 +6,11 @@
 		pos_hint:{'top':1}
 		padding: 1
 		Label:
-			text: 'MAPA APP v0.2'
+			text: 'MAPA APP v1.3'
 	GridLayout:
 		id: MENU
 		cols: 1
-		rows: 6
+		rows: 5
 		size_hint: 1, 0.9
 		Button:
 			text: 'Entrada'
@@ -27,9 +27,6 @@
 		Button:
 			text: 'Configurações'
 			on_press: root.manager.current='set'
-		Button:
-			text: 'Sair'
-			on_press: exit()
 
 <Rota>
 
@@ -456,7 +453,7 @@
 				on_press: root.KEY(self.text)
 			Button:
 				text: '_'
-				on_press: root.KEY(self.text)
+				on_press: root.KEY(' ')
 			Button:
 				text: 'Z'
 				on_press: root.KEY(self.text)
@@ -1697,9 +1694,7 @@
 		Button:
 			text: 'Gerar extrato'
 			on_press: root.EXT()
-		Button:
-			text: 'Email'
-			on_press: root.EMAIL()
+			background_color: 0, 0.8, 0, 1
 
 <Settings>
 	BoxLayout:
@@ -2584,7 +2579,7 @@
 				on_press: root.KEY(self.text)
 			Button:
 				text: '_'
-				on_press: root.KEY(self.text)
+				on_press: root.KEY(' ')
 			Button:
 				text: 'Z'
 				on_press: root.KEY(self.text)

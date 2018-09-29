@@ -149,6 +149,7 @@ class Dia(Screen):
 		self.ids.DMY.text = ''
 
 	def OK(self):
+
 		if re.search('[0-3][0-9]/[0-1][0-9]/[0-9][0-9]', self.ids.DMY.text):
 			Dia.S=str.split(self.ids.DMY.text, '/')
 			DA=int(Dia.S[0])
@@ -812,6 +813,26 @@ class Editar(Screen):
 			self.SOMA=0.0
 			self.O=dict()
 			self.O['CLIENTE']=NOME
+			if NOME == 'CARGA':
+				H=getattr(DATA, DATA._W)
+				self.O['WEEK']=H[0]['WEEK']
+				for x in ['BRT1','BRT2','BRT3','VRT1','BRDZ','VRDZ','BRMD','VRMD']:
+					if x == 'BRT1':
+						self.O[x+'_DZ']=BRT1_VALOR
+					if x == 'VRT1':
+						self.O[x+'_DZ']=VRT1_VALOR
+					if x == 'BRT2':
+						self.O[x+'_DZ']=BRT2_VALOR
+					if x == 'BRT3':
+						self.O[x+'_DZ']=BRT3_VALOR
+					if x == 'BRDZ':
+						self.O[x+'_DZ']=BRDZ_VALOR
+					if x == 'VRDZ':
+						self.O[x+'_DZ']=VRDZ_VALOR
+					if x == 'BRMD':
+						self.O[x+'_DZ']=BRMD_VALOR
+					if x == 'VRMD':
+						self.O[x+'_DZ']=VRMD_VALOR
 			for x in ['BRT1','BRT2','BRT3','VRT1','BRDZ','VRDZ','BRMD','VRMD']:
 				if 0.0!=OVO.E[x]:
 					self.SOMA+=OVO.E_VLR[x+'_VLR']
@@ -822,6 +843,26 @@ class Editar(Screen):
 		else:
 			self.O=dict()
 			self.O['CLIENTE']=NOME
+			if NOME == 'CARGA':
+				H=getattr(DATA, DATA._W)
+				self.O['WEEK']=H[0]['WEEK']
+				for x in ['BRT1','BRT2','BRT3','VRT1','BRDZ','VRDZ','BRMD','VRMD']:
+					if x == 'BRT1':
+						self.O[x+'_DZ']=BRT1_VALOR
+					if x == 'VRT1':
+						self.O[x+'_DZ']=VRT1_VALOR
+					if x == 'BRT2':
+						self.O[x+'_DZ']=BRT2_VALOR
+					if x == 'BRT3':
+						self.O[x+'_DZ']=BRT3_VALOR
+					if x == 'BRDZ':
+						self.O[x+'_DZ']=BRDZ_VALOR
+					if x == 'VRDZ':
+						self.O[x+'_DZ']=VRDZ_VALOR
+					if x == 'BRMD':
+						self.O[x+'_DZ']=BRMD_VALOR
+					if x == 'VRMD':
+						self.O[x+'_DZ']=VRMD_VALOR
 			for x in ['BRT1','BRT2','BRT3','VRT1','BRDZ','VRDZ','BRMD','VRMD']:
 				if 0.0!=OVO.E[x]:
 					self.O[x]=OVO.E[x]
@@ -881,10 +922,24 @@ class Editar(Screen):
 
 		CARGA=getattr(DATA, '_CARGA')
 
-		for x in ['BRT1','BRT2','BRT3','VRT1','BRDZ','VRDZ','BRMD','VRMD']:
-			if x in H[Output.I]:
-				A=CARGA[x]+H[Output.I][x]
-				CARGA[x]=A
+		if NOME == 'CARGA':
+			for x in ['BRT1','BRT2','BRT3','VRT1','BRDZ','VRDZ','BRMD','VRMD']:
+				if x in self.O:
+					A=CARGA[x]+(self.O[x]*30)
+					if x in H[Output.I]:
+						CARGA[x]=A-(H[Output.I][x]*30)
+					else:
+						CARGA[x]=A
+		else:
+			for x in ['BRT1','BRT2','BRT3','VRT1','BRDZ','VRDZ','BRMD','VRMD']:
+				if x in self.O:
+					if x in H[Output.I]:
+						A=CARGA[x]+H[Output.I][x]
+						CARGA[x]=A-self.O[x]
+					else:
+						CARGA[x]=CARGA[x]-self.O[x]
+				elif x in H[Output.I]:
+					CARGA[x]=CARGA[x]+H[Output.I][x]
 
 		H.pop(Output.I)
 		H.insert(Output.I, self.O)
@@ -895,11 +950,6 @@ class Editar(Screen):
 		P1.write(PS)
 		P.close()
 		P1.close()
-
-		for x in ['BRT1','BRT2','BRT3','VRT1','BRDZ','VRDZ','BRMD','VRMD']:
-			if x in self.O:
-				A=CARGA[x]-self.O[x]
-				CARGA[x]=A
 
 		P=open(D)
 		PR=P.read()
