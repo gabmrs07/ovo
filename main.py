@@ -818,21 +818,21 @@ class Editar(Screen):
 				self.O['WEEK']=H[0]['WEEK']
 				for x in ['BRT1','BRT2','BRT3','VRT1','BRDZ','VRDZ','BRMD','VRMD']:
 					if x == 'BRT1':
-						self.O[x+'_DZ']=BRT1_VALOR
+						self.O[x+'_DZ']=float(BRT1_VALOR)
 					if x == 'VRT1':
-						self.O[x+'_DZ']=VRT1_VALOR
+						self.O[x+'_DZ']=float(VRT1_VALOR)
 					if x == 'BRT2':
-						self.O[x+'_DZ']=BRT2_VALOR
+						self.O[x+'_DZ']=float(BRT2_VALOR)
 					if x == 'BRT3':
-						self.O[x+'_DZ']=BRT3_VALOR
+						self.O[x+'_DZ']=float(BRT3_VALOR)
 					if x == 'BRDZ':
-						self.O[x+'_DZ']=BRDZ_VALOR
+						self.O[x+'_DZ']=float(BRDZ_VALOR)
 					if x == 'VRDZ':
-						self.O[x+'_DZ']=VRDZ_VALOR
+						self.O[x+'_DZ']=float(VRDZ_VALOR)
 					if x == 'BRMD':
-						self.O[x+'_DZ']=BRMD_VALOR
+						self.O[x+'_DZ']=float(BRMD_VALOR)
 					if x == 'VRMD':
-						self.O[x+'_DZ']=VRMD_VALOR
+						self.O[x+'_DZ']=float(VRMD_VALOR)
 			for x in ['BRT1','BRT2','BRT3','VRT1','BRDZ','VRDZ','BRMD','VRMD']:
 				if 0.0!=OVO.E[x]:
 					self.SOMA+=OVO.E_VLR[x+'_VLR']
@@ -848,21 +848,21 @@ class Editar(Screen):
 				self.O['WEEK']=H[0]['WEEK']
 				for x in ['BRT1','BRT2','BRT3','VRT1','BRDZ','VRDZ','BRMD','VRMD']:
 					if x == 'BRT1':
-						self.O[x+'_DZ']=BRT1_VALOR
+						self.O[x+'_DZ']=float(BRT1_VALOR)
 					if x == 'VRT1':
-						self.O[x+'_DZ']=VRT1_VALOR
+						self.O[x+'_DZ']=float(VRT1_VALOR)
 					if x == 'BRT2':
-						self.O[x+'_DZ']=BRT2_VALOR
+						self.O[x+'_DZ']=float(BRT2_VALOR)
 					if x == 'BRT3':
-						self.O[x+'_DZ']=BRT3_VALOR
+						self.O[x+'_DZ']=float(BRT3_VALOR)
 					if x == 'BRDZ':
-						self.O[x+'_DZ']=BRDZ_VALOR
+						self.O[x+'_DZ']=float(BRDZ_VALOR)
 					if x == 'VRDZ':
-						self.O[x+'_DZ']=VRDZ_VALOR
+						self.O[x+'_DZ']=float(VRDZ_VALOR)
 					if x == 'BRMD':
-						self.O[x+'_DZ']=BRMD_VALOR
+						self.O[x+'_DZ']=float(BRMD_VALOR)
 					if x == 'VRMD':
-						self.O[x+'_DZ']=VRMD_VALOR
+						self.O[x+'_DZ']=float(VRMD_VALOR)
 			for x in ['BRT1','BRT2','BRT3','VRT1','BRDZ','VRDZ','BRMD','VRMD']:
 				if 0.0!=OVO.E[x]:
 					self.O[x]=OVO.E[x]
