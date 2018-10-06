@@ -1,10 +1,8 @@
 Tarefas
 
-1- espaço teclado
 2- popups Data
 3- try/except nos botoes 'ok' e outros que possam geram exceptions (ExceptionHandle)
 4- except popups
 5- cloud upload
 6- back button
-7- extrato do HISTORICO
 8- output do balanço

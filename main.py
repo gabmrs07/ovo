@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+#!/usr/bin/python2
 
 import DATA
 import kivy
@@ -86,7 +87,7 @@ class Rota(Screen):
 		if not Dia.S:
 			PS=re.sub('_W=None', '_W=\'H{}_{}_{}\''.format(Rota.DA, Rota.M, Rota.Y), PR)
 		else:
-			PS=re.sub('_W=None', '_W=\'H{}_{}_{}\''.format(Dia.S[0], Dia.S[1], Dia.S[2]), PR)
+			PS=re.sub('_W=None', '_W=\'H{}_{}_{}\''.format(int(Dia.S[0]), int(Dia.S[1]), int(Dia.S[2])), PR)
 		P1=open(D, 'w')
 		P1.write(PS)
 		P.close()
