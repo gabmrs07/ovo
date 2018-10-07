@@ -4,7 +4,7 @@
 import DATA
 import kivy
 import re
-import socket
+import sys
 import time
 from datetime import date
 from kivy.app import App
@@ -15,7 +15,7 @@ from kivy.uix.label import Label
 from kivy.uix.popup import Popup
 from kivy.uix.screenmanager import ScreenManager, Screen
 
-if socket.gethostname()=='josley' or socket.gethostname()=='lamettrie3':
+if sys.version_info[0] == 3:
 	from importlib import reload
 
 D='DATA.py'
@@ -98,7 +98,7 @@ class Rota(Screen):
 		if not Dia.S:
 			H.insert(0, 'H{}_{}_{}'.format(Rota.DA, Rota.M, Rota.Y))
 		else:
-			H.insert(0, 'H{}_{}_{}'.format(Dia.S[0], Dia.S[1], Dia.S[2]))
+			H.insert(0, 'H{}_{}_{}'.format(int(Dia.S[0]), int(Dia.S[1]), int(Dia.S[2])))
 		P=open(D)
 		PR=P.read()
 		PS=re.sub('_H=\[.*\]', '_H={}'.format(H), PR)
@@ -977,13 +977,29 @@ class HistSel(Screen):
 			for x in DATA._H:
 				X=str.strip(x, 'H')
 				S=str.replace(X, '_', '/')
-				H.append(S)
+				X=str.split(S, '/')
+				DA=int(X[0])
+				M=int(X[1])
+				Y=int(X[2])
+				if date.weekday(date(Y, M, DA))==1:
+					X='TER - {}'.format(S)
+				elif date.weekday(date(Y, M, DA))==2:
+					X='QUA - {}'.format(S)
+				else:
+					X='QUI - {}'.format(S)
+				H.append(X)
 			self.ids.hspin.text=H[0]
 			self.ids.hspin.values=H
 
 	def HSEL(self):
 		if self.ids.hspin.text!='':
-			HistSel.D=self.ids.hspin.text
+			if re.search('TER', self.ids.hspin.text):
+				X=self.ids.hspin.text.strip('TER - ')
+			elif re.search('QUA', self.ids.hspin.text):
+				X=self.ids.hspin.text.strip('QUA - ')
+			elif re.search('QUI', self.ids.hspin.text):
+				X=self.ids.hspin.text.strip('QUI - ')
+			HistSel.D=X
 			self.manager.current='history'
 
 	def CLEAR(self):
