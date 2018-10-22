@@ -138,7 +138,7 @@ class Dia(Screen):
 	S=None
 
 	def on_pre_enter(self, *args):
-		self.ids.DMY.text='{}/{}/{}'.format(Rota.DA, Rota.M, Rota.Y)
+		self.ids.DMY.text='dd/mm/yy'
 
 	def KEY(self, INSERT):
 		self.ids['DMY'].text += INSERT
@@ -151,35 +151,44 @@ class Dia(Screen):
 
 	def OK(self):
 
-		if re.search('[0-3][0-9]/[0-1][0-9]/[0-9][0-9]', self.ids.DMY.text):
+		if re.search('[0-9][0-9]/[0-9][0-9]/[0-9][0-9]', self.ids.DMY.text):
 			Dia.S=str.split(self.ids.DMY.text, '/')
 			DA=int(Dia.S[0])
 			M=int(Dia.S[1])
 			Y=int(Dia.S[2])
 			if DA not in range(1, 32):
+				CALLP('ERRO: DIA INEXISTENTE', 'Os dias vão de 01 a 31!')
 				return 0
 			elif M not in range(1, 13):
+				CALLP('ERRO: MÊS INEXISTENTE', 'Os meses vão de 01 a 12!')
 				return 0
 			elif Y not in range(1, 100):
+				CALLP('ERRO: ANO INEXISTENTE', 'Os anos vão de 01 a 99!')
 				return 0
 			INSTANCE=Rota()
 			if Rota.WEEK==1:
 				if date.weekday(date(Y, M, DA)) != 1:
+					CALLP('ERRO: DIA DA SEMANA', 'O dia inserido não é uma terça.')
 					return 0
 				else:
 					INSTANCE.SB(DATA._TERCA)
 			elif Rota.WEEK==2:
 				if date.weekday(date(Y, M, DA)) != 2:
+					CALLP('ERRO: DIA DA SEMANA', 'O dia inserido não é uma quarta.')
 					return 0
 				else:
 					INSTANCE.SB(DATA._QUARTA)
 			elif Rota.WEEK==3:
 				if date.weekday(date(Y, M, DA)) != 3:
+					CALLP('ERRO: DIA DA SEMANA', 'O dia inserido não é uma quinta.')
 					return 0
 				else:
 					INSTANCE.SB(DATA._QUINTA)
 			reload(DATA)
 			self.manager.current='carga'
+		else:
+			CALLP('ERRO: FORMATO EQUIVOCADO', '\'dd/mm/yy\' ou \'07/03/96\'')
+			return 0
 
 class Carga(Screen):
 
@@ -350,32 +359,10 @@ class Entry(Screen):
 			NOME=self.ids.inpt0.text
 			Entry.OUTRO=0
 			if NOME=='':
-				POPUP=Popup()
-				BX=BoxLayout(orientation='vertical')
-				BT=Button(text='OK', background_color=(0, 0.8, 0, 1), size_hint=(1, 0.3))
-				BT.bind(on_press=POPUP.dismiss)
-				BX.add_widget(Label(text='Insira o nome do cliente.', size_hint=(1, 0.7), pos_hint={'top':1}))
-				BX.add_widget(BT)
-				POPUP.title='ERRO: NOME EM BRANCO!'
-				POPUP.content=BX
-				POPUP.size_hint=(0.8, 0.5)
-				POPUP.pos_hint={'center_x': 0.5, 'center_y': 0.5}
-				POPUP.auto_dismiss=False
-				POPUP.open()
+				CALLP('ERRO: NOME EM BRANCO', 'Insira o nome do cliente.')
 				return 0
 			elif NOME in DATA._C:
-				POPUP=Popup()
-				BX=BoxLayout(orientation='vertical')
-				BT=Button(text='OK', background_color=(0, 0.8, 0, 1), size_hint=(1, 0.3))
-				BT.bind(on_press=POPUP.dismiss)
-				BX.add_widget(Label(text='Insira outro nome para o cliente.', size_hint=(1, 0.7), pos_hint={'top':1}))
-				BX.add_widget(BT)
-				POPUP.title='ERRO: NOME JÁ UTILIZADO!'
-				POPUP.content=BX
-				POPUP.size_hint=(0.8, 0.5)
-				POPUP.pos_hint={'center_x': 0.5, 'center_y': 0.5}
-				POPUP.auto_dismiss=False
-				POPUP.open()
+				CALLP('ERRO: NOME JÁ UTILIZADO', 'Insira outro nome para o cliente.')
 				return 0
 		else:
 			NOME=S.text
@@ -1640,6 +1627,20 @@ class VRMD(OVO):
 		OVO.E['VRMD']=self.dz
 		OVO.E_DZ['VRMD_DZ']=self.valor
 		OVO.E_VLR['VRMD_VLR']=self.soma
+
+def CALLP(TITLE, MSG):
+	POPUP=Popup()
+	BX=BoxLayout(orientation='vertical')
+	BT=Button(text='OK', background_color=(0, 0.8, 0, 1), size_hint=(1, 0.3))
+	BT.bind(on_press=POPUP.dismiss)
+	BX.add_widget(Label(text=MSG, size_hint=(1, 0.7), pos_hint={'top':1}))
+	BX.add_widget(BT)
+	POPUP.title=TITLE
+	POPUP.content=BX
+	POPUP.size_hint=(0.8, 0.5)
+	POPUP.pos_hint={'center_x': 0.5, 'center_y': 0.5}
+	POPUP.auto_dismiss=False
+	POPUP.open()
 
 if __name__ == '__main__':
 	MapaApp().run()
