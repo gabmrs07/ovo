@@ -5,3 +5,5 @@ Tarefas
 5- cloud upload
 6- back button
 8- output do balanço
+
+10- add em config alteração do font_size dos popups
