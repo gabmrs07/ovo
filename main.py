@@ -380,7 +380,7 @@ class Catcher(Screen):
 	TEXTFOCUS=None
 	O=None
 	SOMA=0.0
-	LABEL=Label(size_hint=(1, 0.45), pos_hint={'top':0.95}, font_size=60)
+	LABEL=Label(size_hint=(1, 0.45), pos_hint={'top':0.95}, font_size=DATA._F)
 	POPUP=Popup()
 
 	def on_pre_enter(self, *args):
@@ -544,7 +544,7 @@ class Catcher(Screen):
 		BXT.add_widget(BT1)
 		BXT.add_widget(BT2)
 		BXT.add_widget(BT3)
-		BX.add_widget(Label(text='R$ {}'.format(self.SOMA), size_hint=(1, 0.7), pos_hint={'top':1}, font_size=40))
+		BX.add_widget(Label(text='R$ {}'.format(self.SOMA), size_hint=(1, 0.7), pos_hint={'top':1}, font_size=DATA._F))
 		BX.add_widget(BXT)
 		self.POPUP.title='CONFIRMAÇÃO DO VALOR'
 		self.POPUP.content=BX
@@ -684,7 +684,7 @@ class Output(Screen):
 class Editar(Screen):
 
 	CHECKER=1
-	LABEL=Label(size_hint=(1, 0.45), pos_hint={'top':0.95}, font_size=60)
+	LABEL=Label(size_hint=(1, 0.45), pos_hint={'top':0.95}, font_size=DATA._F)
 	TEXTFOCUS=None
 	POPUP=Popup()
 	O=None
@@ -870,7 +870,7 @@ class Editar(Screen):
 		BXT.add_widget(BT1)
 		BXT.add_widget(BT2)
 		BXT.add_widget(BT3)
-		BX.add_widget(Label(text='R$ {}'.format(self.SOMA), size_hint=(1, 0.7), pos_hint={'top':1}, font_size=40))
+		BX.add_widget(Label(text='R$ {}'.format(self.SOMA), size_hint=(1, 0.7), pos_hint={'top':1}, font_size=DATA._F))
 		BX.add_widget(BXT)
 		self.POPUP.title='CONFIRMAÇÃO DO VALOR'
 		self.POPUP.content=BX
@@ -1262,6 +1262,7 @@ class Settings(Screen):
 		P1.close()
 		P.close()
 		reload(DATA)
+		self.manager.current='menu'
 
 class Crg(Screen):
 
@@ -1514,6 +1515,54 @@ class Setcv(Screen):
 		except:
 			pass
 
+class Fonte(Screen):
+
+	POPUP=Popup()
+
+	def on_pre_enter(self, *args):
+		self.ids['BOX'].text = str(DATA._F)
+
+	def KEY(self, INSERT):
+		self.ids['BOX'].text += INSERT
+
+	def BACKSPACE(self):
+		self.ids['BOX'].text = ''
+
+	def OK(self, instance):
+		self.POPUP.dismiss()
+		P=open('DATA.py')
+		PR=P.read()
+		PS=re.sub('_F=.*', '_F={}'.format(int(self.ids.BOX.text)), PR)
+		P1=open('DATA.py', 'w')
+		P1.write(PS)
+		P1.close()
+		P.close()
+		self.manager.current='menu'
+
+	def TEST(self):
+		BOX=self.ids['BOX'].text
+
+		if int(BOX) < 1 or int(BOX) > 100:
+			CALLP('ERRO DE TAMANHO', 'Use valores entre \'1 > x < 100\'.')
+			return 0
+
+		BX=BoxLayout(orientation='vertical')
+		BXT=BoxLayout(size_hint=(1, 0.3))
+		BT1=Button(text='Confirmar', background_color=(0, 0.8, 0, 1))
+		BT2=Button(text='Modificar', background_color=(0.8, 0, 0, 1))
+		BT1.bind(on_press=self.OK)
+		BT2.bind(on_press=self.POPUP.dismiss)
+		BXT.add_widget(BT1)
+		BXT.add_widget(BT2)
+		BX.add_widget(Label(text='Este é um teste.', size_hint=(1, 0.7), pos_hint={'top':1}, font_size=int(BOX)))
+		BX.add_widget(BXT)
+		self.POPUP.title='EXEMPLO DO TAMANHO ESCOLHIDO'
+		self.POPUP.content=BX
+		self.POPUP.size_hint=(0.8, 0.6)
+		self.POPUP.pos_hint={'center_x': 0.5, 'center_y': 0.5}
+		self.POPUP.auto_dismiss=False
+		self.POPUP.open()
+
 class MapaApp(App):
 	sm=None
 	def build(self):
@@ -1536,6 +1585,7 @@ class MapaApp(App):
 		self.sm.add_widget(Setr(name='setr'))
 		self.sm.add_widget(Setv(name='valor'))
 		self.sm.add_widget(Setcv(name='setcv'))
+		self.sm.add_widget(Fonte(name='fonte'))
 		self.sm.current='menu'
 		return self.sm
 
@@ -1633,7 +1683,7 @@ def CALLP(TITLE, MSG):
 	BX=BoxLayout(orientation='vertical')
 	BT=Button(text='OK', background_color=(0, 0.8, 0, 1), size_hint=(1, 0.3))
 	BT.bind(on_press=POPUP.dismiss)
-	BX.add_widget(Label(text=MSG, size_hint=(1, 0.7), pos_hint={'top':1}))
+	BX.add_widget(Label(text=MSG, size_hint=(1, 0.7), pos_hint={'top':1}, font_size=DATA._F))
 	BX.add_widget(BT)
 	POPUP.title=TITLE
 	POPUP.content=BX

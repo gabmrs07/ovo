@@ -1,9 +1,10 @@
 Tarefas
 
 1 - help str.encode
-2- popups Data
 5- cloud upload
 6- back button
 8- output do balanço
 
-10- add em config alteração do font_size dos popups
+11- reprogramar preços do historico no catcher
+12- acentos
+13- *args e *kargs
