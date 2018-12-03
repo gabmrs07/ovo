@@ -1,10 +1,5 @@
 Tarefas
 
-1 - help str.encode
-5- cloud upload
-6- back button
-8- output do balanço
-
-11- reprogramar preços do historico no catcher
-12- acentos
-13- *args e *kargs
+1 - DOCS
+2 - GOOGLE cloud API PYTHON
+3 - EMAIL

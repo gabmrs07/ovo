@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 #!/usr/bin/python2
 
+start = 'menu'
+
 import DATA
 import kivy
 import re
@@ -8,39 +10,27 @@ import sys
 import time
 from datetime import date
 from kivy.app import App
-from kivy.base import runTouchApp, ExceptionHandler, ExceptionManager
+from kivy.base import runTouchApp, EventLoop, ExceptionHandler, ExceptionManager
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
 from kivy.uix.label import Label
 from kivy.uix.popup import Popup
+from kivy.uix.spinner import Spinner
+from kivy.uix.togglebutton import ToggleButton
 from kivy.uix.screenmanager import ScreenManager, Screen
+from threading import Thread
+from time import sleep
 
 if sys.version_info[0] == 3:
 	from importlib import reload
 
-D='DATA.py'
-L=['BRT1', 'BRT1_DZ', 'BRT1_VLR', 'BRT2', 'BRT2_DZ', 'BRT2_VLR', 'BRT3', 'BRT3_DZ', 'BRT3_VLR',\
-		'VRT1', 'VRT1_DZ', 'VRT1_VLR', 'BRDZ', 'BRDZ_DZ', 'BRDZ_VLR', 'VRDZ', 'VRDZ_DZ', 'VRDZ_VLR',\
-		'BRMD', 'BRMD_DZ', 'BRMD_VLR', 'VRMD', 'VRMD_DZ', 'VRMD_VLR','TOTAL']
-L1=['BRT1','VRT1','BRT2','BRT3','BRDZ','VRDZ','BRMD','VRMD']
-NOME=None
+d = 'DATA.py'
 
-BRT1=None
-VRT1=None
-BRT2=None
-BRT3=None
-BRDZ=None
-VRDZ=None
-BRMD=None
-VRMD=None
-BRT1_VALOR=None
-VRT1_VALOR=None
-BRT2_VALOR=None
-BRT3_VALOR=None
-BRDZ_VALOR=None
-VRDZ_VALOR=None
-BRMD_VALOR=None
-VRMD_VALOR=None
+tipos = [
+	'BRT1','VRT1','BRT2',
+	'BRT3','BRDZ','VRDZ',
+	'BRMD','VRMD'
+	]
 
 class E(ExceptionHandler):
 	def handle_exception(self, inst):
@@ -48,1546 +38,1039 @@ class E(ExceptionHandler):
 
 ExceptionManager.add_handler(E())
 
+
 class Menu(Screen):
 
 	def on_pre_enter(self, *args):
 		reload(DATA)
 
-	def CHECKER(self):
-		if DATA._C:
-			self.manager.current='entry'
+	def checker(self):
+		if DATA._current_day:
+			self.manager.current = 'entry'
 		else:
-			self.manager.current='rota'
+			self.manager.current = 'rota'
+
 
 class Rota(Screen):
 
-	WEEK=None
-	DA=int(time.strftime('%d'))
-	M=int(time.strftime('%m'))
-	Y=int(time.strftime('%y'))
+	week = None
 
 	def on_pre_enter(self, *args):
-		Rota.WEEK=None
+		Rota.week = None
 
-	def SB(self, ROTA):
-		C=dict()
-		C['ROTA']=ROTA
-		for x in ROTA:
-			C[x]=1
-		P=open(D)
-		PR=P.read()
-		PS=re.sub('_C={}', '_C={}'.format(C), PR)
-		P1=open(D, 'w')
-		P1.write(PS)
-		P.close()
-		P1.close()
-
-		P=open(D)
-		PR=P.read()
-		if not Dia.S:
-			PS=re.sub('_W=None', '_W=\'H{}_{}_{}\''.format(Rota.DA, Rota.M, Rota.Y), PR)
+	def day_checker(self, day_int):
+		self.d = int(time.strftime('%d'))
+		self.m = int(time.strftime('%m'))
+		self.y = int(time.strftime('%y'))
+		if date.weekday(date(self.y, self.m, self.d)) == day_int:
+			if 'H{}_{}_{}'.format(self.d, self.m, self.y) in DATA._reported_list:
+				call_popup('ERRO: DATA EXISTENTE', 'Já existe um registro\ncomo "{}/{}/{}".'.format(self.d, self.m, self.y))
+				return 1
+			else:
+				Rota.week = day_int
+				self.day = 'H{}_{}_{}'.format(self.d, self.m, self.y)
+				Writer().day_writer(self.day)
+				self.manager.current = 'catcher'
 		else:
-			PS=re.sub('_W=None', '_W=\'H{}_{}_{}\''.format(int(Dia.S[0]), int(Dia.S[1]), int(Dia.S[2])), PR)
-		P1=open(D, 'w')
-		P1.write(PS)
-		P.close()
-		P1.close()
-		reload(DATA)
+			Rota.week = day_int
+			self.manager.current = 'dia'
 
-		H=getattr(DATA, '_H')
-		if not Dia.S:
-			H.insert(0, 'H{}_{}_{}'.format(Rota.DA, Rota.M, Rota.Y))
-		else:
-			H.insert(0, 'H{}_{}_{}'.format(int(Dia.S[0]), int(Dia.S[1]), int(Dia.S[2])))
-		P=open(D)
-		PR=P.read()
-		PS=re.sub('_H=\[.*\]', '_H={}'.format(H), PR)
-		P1=open(D, 'w')
-		P1.write(PS)
-		P.close()
-		P1.close()
-
-		try:
-			self.manager.current='carga'
-		except:
-			pass
-
-	def RS_T(self):
-		if date.weekday(date(self.Y, self.M, self.DA))==1:
-			self.SB(DATA._TERCA)
-		else:
-			self.manager.current='dia'
-		Rota.WEEK=1
-
-	def RS_QUA(self):
-		if date.weekday(date(self.Y, self.M, self.DA))==2:
-			self.SB(DATA._QUARTA)
-		else:
-			self.manager.current='dia'
-		Rota.WEEK=2
-
-	def RS_QUI(self):
-		if date.weekday(date(self.Y, self.M, self.DA))==3:
-			self.SB(DATA._QUINTA)
-		else:
-			self.manager.current='dia'
-		Rota.WEEK=3
 
 class Dia(Screen):
 
-	S=None
-
 	def on_pre_enter(self, *args):
-		self.ids.DMY.text='dd/mm/yy'
+		self.ids.DMY.text = 'dd/mm/yy'
 
-	def KEY(self, INSERT):
-		self.ids['DMY'].text += INSERT
+	def key(self, insert):
+		self.ids.DMY.text += insert
 
-	def BACKSPACE(self):
+	def backspace(self):
 		self.ids.DMY.text = self.ids.DMY.text[:len(self.ids.DMY.text)-1]
 
-	def FCLEAR(self):
+	def full_clear(self):
 		self.ids.DMY.text = ''
 
-	def OK(self):
-
+	def ok(self):
 		if re.search('[0-9][0-9]/[0-9][0-9]/[0-9][0-9]', self.ids.DMY.text):
-			Dia.S=str.split(self.ids.DMY.text, '/')
-			DA=int(Dia.S[0])
-			M=int(Dia.S[1])
-			Y=int(Dia.S[2])
-			if DA not in range(1, 32):
-				CALLP('ERRO: DIA INEXISTENTE', 'Os dias vão de 01 a 31!')
-				return 0
-			elif M not in range(1, 13):
-				CALLP('ERRO: MÊS INEXISTENTE', 'Os meses vão de 01 a 12!')
-				return 0
-			elif Y not in range(1, 100):
-				CALLP('ERRO: ANO INEXISTENTE', 'Os anos vão de 01 a 99!')
-				return 0
-			INSTANCE=Rota()
-			if Rota.WEEK==1:
-				if date.weekday(date(Y, M, DA)) != 1:
-					CALLP('ERRO: DIA DA SEMANA', 'O dia inserido não é uma terça.')
-					return 0
-				else:
-					INSTANCE.SB(DATA._TERCA)
-			elif Rota.WEEK==2:
-				if date.weekday(date(Y, M, DA)) != 2:
-					CALLP('ERRO: DIA DA SEMANA', 'O dia inserido não é uma quarta.')
-					return 0
-				else:
-					INSTANCE.SB(DATA._QUARTA)
-			elif Rota.WEEK==3:
-				if date.weekday(date(Y, M, DA)) != 3:
-					CALLP('ERRO: DIA DA SEMANA', 'O dia inserido não é uma quinta.')
-					return 0
-				else:
-					INSTANCE.SB(DATA._QUINTA)
-			reload(DATA)
-			self.manager.current='carga'
+			self.data_split = str.split(self.ids.DMY.text, '/')
+			self.d = int(self.data_split[0])
+			self.m = int(self.data_split[1])
+			self.y = int(self.data_split[2])
+
+			if self.d not in range(1, 32):
+				call_popup('ERRO: DIA INEXISTENTE', 'Os dias vão de 01 a 31!')
+				return 1
+			elif self.m not in range(1, 13):
+				call_popup('ERRO: MÊS INEXISTENTE', 'Os meses vão de 01 a 12!')
+				return 1
+			elif self.y not in range(1, 100):
+				call_popup('ERRO: ANO INEXISTENTE', 'Os anos vão de 01 a 99!')
+				return 1
+			elif 'H{}_{}_{}'.format(self.d, self.m, self.y) in DATA._reported_list:
+				call_popup('ERRO: DATA EXISTENTE', 'Já existe um registro\ncomo "{}/{}/{}".'.format(self.d, self.m, self.y))
+				return 1
+			else:
+				self.day = 'H{}_{}_{}'.format(self.d, self.m, self.y)
+				self.morfologia()
 		else:
-			CALLP('ERRO: FORMATO EQUIVOCADO', '\'dd/mm/yy\' ou \'07/03/96\'')
-			return 0
+			call_popup('ERRO: FORMATO EQUIVOCADO', 'Exemplo: "07/03/96".')
+			return 1
 
-class Carga(Screen):
+	def morfologia(self):
+		day_name = {
+			0: 'segunda', 1: 'terça', 2: 'quarta',
+			3: 'quinta', 4: 'sexta', 5: 'sábado',
+			6: 'domingo'
+			}
 
-	TEXTFOCUS=None
-
-	def on_pre_enter(self, *args):
-		reload(DATA)
-		self.ids['inpt1'].text=''
-		self.ids['inpt2'].text=''
-		self.ids['inpt3'].text=''
-		self.ids['inpt4'].text=''
-		self.ids['inpt5'].text=''
-		self.ids['inpt6'].text=''
-		self.ids['inpt7'].text=''
-		self.ids['inpt8'].text=''
-		self.ids['inp1'].text=DATA._CV['V1']
-		self.ids['inp2'].text=DATA._CV['V2']
-		self.ids['inp3'].text=DATA._CV['V3']
-		self.ids['inp4'].text=DATA._CV['V4']
-		self.ids['inp5'].text=DATA._CV['V5']
-		self.ids['inp6'].text=DATA._CV['V6']
-		self.ids['inp7'].text=DATA._CV['V7']
-		self.ids['inp8'].text=DATA._CV['V8']
-
-		Rota.TEXTFOCUS='inpt1'
-
-	def FOCUS(self, IDS='inpt1'):
-		Rota.TEXTFOCUS=IDS
-
-	def KEY(self, INSERT):
-		self.ids[Rota.TEXTFOCUS].text += INSERT
-
-	def BACKSPACE(self):
-		self.ids[Rota.TEXTFOCUS].text = ''
-
-	def MEIA(self):
-		TEXT=self.ids[Rota.TEXTFOCUS].text
-		if TEXT!='':
-			FLT=float(self.ids[Rota.TEXTFOCUS].text)
-			self.ids[Rota.TEXTFOCUS].text = str(FLT+0.5)
+		if Rota.week == date.weekday(date(self.y, self.m, self.d)):
+			Writer().day_writer(self.day)
+			self.manager.current = 'catcher'
 		else:
-			self.ids[Rota.TEXTFOCUS].text += '0.5'
+			day_int = date.weekday(date(self.y, self.m, self.d))
+			self.popup_confirm(day_name[Rota.week], day_name[day_int])
 
-	def OK(self):
+	def popup_confirm(self, day_name1, day_name2):
+		self.popup = Popup()
+		bx = BoxLayout(orientation='vertical')
+		bxt = BoxLayout(size_hint=(1, 0.3))
+		bt1 = Button(text='Sim', background_color=(0, 0.8, 0, 1))
+		bt2 = Button(text='Não', background_color=(0.8, 0, 0, 1))
+		bt1.bind(on_press=self.day_writer)
+		bt2.bind(on_press=self.popup.dismiss)
+		bxt.add_widget(bt1)
+		bxt.add_widget(bt2)
+		msg = '"{}/{}/{}" não é {}, mas {}.\n\nDeseja continuar?'.format(self.d, self.m, self.y, day_name1, day_name2)
+		bx.add_widget(Label(text=msg, size_hint=(1, 0.7), pos_hint={'top':1}))
+		bx.add_widget(bxt)
+		self.popup.title = 'ERRO: DIA DA PRAÇA EQUIVOCADO'
+		self.popup.content = bx
+		self.popup.size_hint = (0.8, 0.5)
+		self.popup.pos_hint = {'center_x': 0.5, 'center_y': 0.5}
+		self.popup.auto_dismiss = False
+		self.popup.open()
 
-		global BRT1_VALOR
-		global VRT1_VALOR
-		global BRT2_VALOR
-		global BRT3_VALOR
-		global BRDZ_VALOR
-		global VRDZ_VALOR
-		global BRMD_VALOR
-		global VRMD_VALOR
+	def day_writer(self, instance):
+		self.popup.dismiss()
+		Writer().day_writer(self.day)
+		self.manager.current = 'catcher'
 
-		B1=self.ids.inpt1.text
-		V1=self.ids.inpt2.text
-		B2=self.ids.inpt3.text
-		B3=self.ids.inpt4.text
-		BDZ=self.ids.inpt5.text
-		VDZ=self.ids.inpt6.text
-		BMD=self.ids.inpt7.text
-		VMD=self.ids.inpt8.text
-		BRT1_VALOR=self.ids.inp1.text
-		VRT1_VALOR=self.ids.inp2.text
-		BRT2_VALOR=self.ids.inp3.text
-		BRT3_VALOR=self.ids.inp4.text
-		BRDZ_VALOR=self.ids.inp5.text
-		VRDZ_VALOR=self.ids.inp6.text
-		BRMD_VALOR=self.ids.inp7.text
-		VRMD_VALOR=self.ids.inp8.text
-
-		SOMA=0.0
-
-		C=dict()
-		C['WEEK']=Rota.WEEK
-		C['CLIENTE']='CARGA'
-
-		if B1!='':
-			BRT1(B1)
-		else:
-			C['BRT1_DZ']=float(BRT1_VALOR)
-		if B2!='':
-			BRT2(B2)
-		else:
-			C['BRT2_DZ']=float(BRT2_VALOR)
-		if B3!='':
-			BRT3(B3)
-		else:
-			C['BRT3_DZ']=float(BRT3_VALOR)
-		if V1!='':
-			VRT1(V1)
-		else:
-			C['VRT1_DZ']=float(VRT1_VALOR)
-		if BDZ!='':
-			BRDZ(BDZ)
-		else:
-			C['BRDZ_DZ']=float(BRDZ_VALOR)
-		if VDZ!='':
-			VRDZ(VDZ)
-		else:
-			C['VRDZ_DZ']=float(VRDZ_VALOR)
-		if BMD!='':
-			BRMD(BMD)
-		else:
-			C['BRMD_DZ']=float(BRMD_VALOR)
-		if VMD!='':
-			VRMD(VMD)
-		else:
-			C['VRMD_DZ']=float(VRMD_VALOR)
-
-		for x in ['BRT1','BRT2','BRT3','VRT1','BRDZ','VRDZ','BRMD','VRMD']:
-			if 0.0!=OVO.E[x]:
-				SOMA+=OVO.E_VLR[x+'_VLR']
-				C[x]=OVO.E[x]
-				C[x+'_DZ']=OVO.E_DZ[x+'_DZ']
-				C[x+'_VLR']=OVO.E_VLR[x+'_VLR']
-		C['TOTAL']=SOMA
-
-		W=open(D, 'a')
-		W.write('\n{}=[{}]'.format(DATA._W, C))
-		W.close()
-
-		CARGA=getattr(DATA, '_CARGA')
-
-		for x in ['BRT1','BRT2','BRT3','VRT1','BRDZ','VRDZ','BRMD','VRMD']:
-			if x in C:
-				A=CARGA[x]+C[x]*30.0
-				CARGA[x]=A
-
-		P=open(D)
-		PR=P.read()
-		PS=re.sub('_CARGA={.*}', '_CARGA={}'.format(CARGA), PR)
-		P1=open(D, 'w')
-		P1.write(PS)
-		P1.close()
-		P.close()
-
-		for x in ['BRT1','BRT2','BRT3','VRT1','BRDZ','VRDZ','BRMD','VRMD']:
-				OVO.E[x]=0.0
-
-		self.manager.current='entry'
 
 class Entry(Screen):
 
-	OUTRO=None
+	nome = None
 
 	def on_pre_enter(self, *args):
 		reload(DATA)
-		self.ids.inpt0.text=''
-		Entry.OUTRO=None
-		S=self.ids.spinner
-		S.text='OUTRO'
-		for x in DATA._C['ROTA']:
-			if DATA._C.get(x)==1:
-				S.text=x
-				break
-		R=list()
-		for x in DATA._C['ROTA']:
-			if DATA._C.get(x)==1:
-				R.append(x)
-		R.insert(0, 'OUTRO')
-		S.values=R
+		self.ids.LINE.text = ''
+		Entry.nome = None
+		self.spinner_values()
 
-	def NOME_TEXT(self):
-		global NOME
-		S=self.ids.spinner
-		if S.text=='OUTRO':
-			NOME=self.ids.inpt0.text
-			Entry.OUTRO=0
-			if NOME=='':
-				CALLP('ERRO: NOME EM BRANCO', 'Insira o nome do cliente.')
-				return 0
-			elif NOME in DATA._C:
-				CALLP('ERRO: NOME JÁ UTILIZADO', 'Insira outro nome para o cliente.')
-				return 0
+	def spinner_values(self):
+		self.clientes = DATA._current_route
+		self.clientes.insert(0, 'OUTRO')
+		self.ids.BOOK.values = self.clientes
+		self.nome = self.ids.BOOK
+		self.line = self.ids.LINE
+		self.values = self.ids.BOOK.values
+		self.line.font_size = DATA._font_size
+
+		if len(self.clientes) > 1:
+			self.nome.text = self.values[1]
 		else:
-			NOME=S.text
-		self.manager.current='catcher'
+			self.nome.text = self.values[0]
 
-	def KEY(self, INSERT):
-		self.ids['inpt0'].text += INSERT
+	def definition(self):
+		if self.nome.text == 'OUTRO':
+			if self.line.text == '':
+				call_popup('ERRO: AUSÊNCIA DE CLIENTE', 'Insira um nome.')
+				return 0
+			elif self.line.text in DATA._current_route:
+				call_popup('ERRO: CLIENTE EXISTENTE', 'Insira outro nome.')
+				return 0
+			else:
+				Entry.nome = self.line.text
+		elif self.line.text != '':
+			call_popup('ERRO: INDEFINIÇÃO DE OPERAÇÃO', 'Selecione "OUTRO" ou\napague o texto.')
+			return 0
+		else:
+			Entry.nome = self.nome.text
 
-	def BACKSPACE(self):
-		self.ids.inpt0.text = self.ids.inpt0.text[:len(self.ids.inpt0.text)-1]
+		self.manager.current = 'catcher'
+
+	def nothing(self):
+		if self.line.text != '':
+			call_popup('ERRO: INDEFINIÇÃO DE OPERAÇÃO', 'Apague o texto.')
+			return 1
+		attr = getattr(DATA, DATA._current_day)
+		attr.append({'NOME': self.nome.text, 'TOTAL': 0.0})
+		self.clientes.remove('OUTRO')
+		if self.nome.text in self.clientes:
+			self.clientes.remove(self.nome.text)
+			Writer().replace('_current_route=\[.*\]', '_current_route={}'.format(self.clientes))
+			Writer().replace('{}=\[.*\]'.format(DATA._current_day),
+							'{}={}'.format(DATA._current_day, attr))
+		self.on_pre_enter()
+
+	def key(self, insert):
+		self.ids.LINE.text += insert
+
+	def backspace(self):
+		self.ids.LINE.text = self.ids.LINE.text[:len(self.ids.LINE.text)-1]
+
 
 class Catcher(Screen):
 
-	CHECKER=1
-	TEXTFOCUS=None
-	O=None
-	SOMA=0.0
-	LABEL=Label(size_hint=(1, 0.45), pos_hint={'top':0.95}, font_size=DATA._F)
-	POPUP=Popup()
-
-	def on_pre_enter(self, *args):
-
-		def FILL(W, X, Y):
-			for x in DATA._H:
-				H=getattr(DATA, x)
-				if H[0].get('WEEK') == W:
-					for y in H:
-						if y['CLIENTE'] == NOME:
-							if X in y:
-								self.ids[Y].text=str(y[X+'_DZ'])
-								return 0
-
-		reload(DATA)
-		self.CHECKER=1
-
-		self.ids['inpt1'].text=''
-		self.ids['inpt2'].text=''
-		self.ids['inpt3'].text=''
-		self.ids['inpt4'].text=''
-		self.ids['inpt5'].text=''
-		self.ids['inpt6'].text=''
-		self.ids['inpt7'].text=''
-		self.ids['inpt8'].text=''
-		self.ids['inp1'].text=DATA._V['V1']
-		self.ids['inp2'].text=DATA._V['V2']
-		self.ids['inp3'].text=DATA._V['V3']
-		self.ids['inp4'].text=DATA._V['V4']
-		self.ids['inp5'].text=DATA._V['V5']
-		self.ids['inp6'].text=DATA._V['V6']
-		self.ids['inp7'].text=DATA._V['V7']
-		self.ids['inp8'].text=DATA._V['V8']
-
-		S=str.split(str.strip(DATA._W, 'H'), '_')
-		if date.weekday(date(int(S[2]), int(S[1]), int(S[0]))) == 1:
-			FILL(1, 'BRT1', 'inp1')
-			FILL(1, 'VRT1', 'inp2')
-			FILL(1, 'BRT2', 'inp3')
-			FILL(1, 'BRT3', 'inp4')
-			FILL(1, 'BRDZ', 'inp5')
-			FILL(1, 'VRDZ', 'inp6')
-			FILL(1, 'BRMD', 'inp7')
-			FILL(1, 'VRMD', 'inp8')
-		elif date.weekday(date(int(S[2]), int(S[1]), int(S[0]))) == 2:
-			FILL(2, 'BRT1', 'inp1')
-			FILL(2, 'VRT1', 'inp2')
-			FILL(2, 'BRT2', 'inp3')
-			FILL(2, 'BRT3', 'inp4')
-			FILL(2, 'BRDZ', 'inp5')
-			FILL(2, 'VRDZ', 'inp6')
-			FILL(2, 'BRMD', 'inp7')
-			FILL(2, 'VRMD', 'inp8')
-		elif date.weekday(date(int(S[2]), int(S[1]), int(S[0]))) == 3:
-			FILL(3, 'BRT1', 'inp1')
-			FILL(3, 'VRT1', 'inp2')
-			FILL(3, 'BRT2', 'inp3')
-			FILL(3, 'BRT3', 'inp4')
-			FILL(3, 'BRDZ', 'inp5')
-			FILL(3, 'VRDZ', 'inp6')
-			FILL(3, 'BRMD', 'inp7')
-			FILL(3, 'VRMD', 'inp8')
-
-		self.ids['NC'].text='CLIENTE: {}'.format(NOME)
-
-		Catcher.TEXTFOCUS='inpt1'
-		self.SOMA=0.0
-
-	def FOCUS(self, IDS='inpt1'):
-		Catcher.TEXTFOCUS=IDS
-
-	def KEY(self, INSERT):
-		if self.CHECKER == 1:
-			self.ids[Catcher.TEXTFOCUS].text += INSERT
-		else:
-			self.LABEL.text += INSERT
-
-	def BACKSPACE(self):
-		if self.CHECKER == 1:
-			self.ids[Catcher.TEXTFOCUS].text = ''
-		else:
-			self.LABEL.text = self.LABEL.text[:len(self.LABEL.text)-1]
-
-	def MEIA(self):
-		TEXT=self.ids[Catcher.TEXTFOCUS].text
-		if TEXT!='':
-			FLT=float(self.ids[Catcher.TEXTFOCUS].text)
-			self.ids[Catcher.TEXTFOCUS].text = str(FLT+2.5)
-		else:
-			self.ids[Catcher.TEXTFOCUS].text += '2.5'
-
-	def OK(self):
-
-		if self.CHECKER == 1:
-
-			global BRT1_VALOR
-			global VRT1_VALOR
-			global BRT2_VALOR
-			global BRT3_VALOR
-			global BRDZ_VALOR
-			global VRDZ_VALOR
-			global BRMD_VALOR
-			global VRMD_VALOR
-
-			B1=self.ids.inpt1.text
-			V1=self.ids.inpt2.text
-			B2=self.ids.inpt3.text
-			B3=self.ids.inpt4.text
-			BDZ=self.ids.inpt5.text
-			VDZ=self.ids.inpt6.text
-			BMD=self.ids.inpt7.text
-			VMD=self.ids.inpt8.text
-			BRT1_VALOR=self.ids.inp1.text
-			VRT1_VALOR=self.ids.inp2.text
-			BRT2_VALOR=self.ids.inp3.text
-			BRT3_VALOR=self.ids.inp4.text
-			BRDZ_VALOR=self.ids.inp5.text
-			VRDZ_VALOR=self.ids.inp6.text
-			BRMD_VALOR=self.ids.inp7.text
-			VRMD_VALOR=self.ids.inp8.text
-
-			if B1!='':
-				BRT1(B1)
-			if B2!='':
-				BRT2(B2)
-			if B3!='':
-				BRT3(B3)
-			if V1!='':
-				VRT1(V1)
-			if BDZ!='':
-				BRDZ(BDZ)
-			if VDZ!='':
-				VRDZ(VDZ)
-			if BMD!='':
-				BRMD(BMD)
-			if VMD!='':
-				VRMD(VMD)
-
-			self.O=dict()
-			self.O['CLIENTE']=NOME
-			for x in ['BRT1','BRT2','BRT3','VRT1','BRDZ','VRDZ','BRMD','VRMD']:
-				if 0.0!=OVO.E[x]:
-					self.SOMA+=OVO.E_VLR[x+'_VLR']
-					self.O[x]=OVO.E[x]
-					self.O[x+'_DZ']=OVO.E_DZ[x+'_DZ']
-					self.O[x+'_VLR']=OVO.E_VLR[x+'_VLR']
-			self.O['TOTAL']=self.SOMA
-
-		else:
-			self.SOMA=str(float(self.LABEL.text))
-			self.O['TOTAL']=float(self.LABEL.text)
-
-		BX=BoxLayout(orientation='vertical')
-		BXT=BoxLayout(size_hint=(1, 0.3))
-		BT1=Button(text='Sim', background_color=(0, 0.8, 0, 1))
-		BT2=Button(text='Trocar', background_color=(0, 0, 1, 1))
-		BT3=Button(text='Não', background_color=(0.8, 0, 0, 1))
-		BT1.bind(on_press=self.WRITER)
-		BT2.bind(on_press=self.DESC)
-		BT3.bind(on_press=self.DISMISS)
-		BXT.add_widget(BT1)
-		BXT.add_widget(BT2)
-		BXT.add_widget(BT3)
-		BX.add_widget(Label(text='R$ {}'.format(self.SOMA), size_hint=(1, 0.7), pos_hint={'top':1}, font_size=DATA._F))
-		BX.add_widget(BXT)
-		self.POPUP.title='CONFIRMAÇÃO DO VALOR'
-		self.POPUP.content=BX
-		self.POPUP.size_hint=(0.8, 0.6)
-		self.POPUP.pos_hint={'center_x': 0.5, 'center_y': 0.5}
-		self.POPUP.auto_dismiss=False
-		self.POPUP.open()
-
-	def DESC(self, instance):
-		if self.CHECKER == 1:
-			self.remove_widget(self.ids.GL)
-			self.add_widget(self.LABEL)
-			self.POPUP.dismiss()
-			self.LABEL.text = str(self.SOMA)
-			self.CHECKER=0
-		else:
-			self.POPUP.dismiss()
-
-	def DISMISS(self, instance):
-		if self.CHECKER == 1:
-			self.POPUP.dismiss()
-			self.SOMA=0.0
-			for x in ['BRT1','BRT2','BRT3','VRT1','BRDZ','VRDZ','BRMD','VRMD']:
-				OVO.E[x]=0.0
-		else:
-			self.POPUP.dismiss()
-
-	def WRITER(self, instance):
-		if self.CHECKER == 1:
-			self.POPUP.dismiss()
-		else:
-			self.LABEL.text = ''
-			self.POPUP.dismiss()
-			self.remove_widget(self.LABEL)
-			self.add_widget(self.ids.GL)
-
-		DATA._C[NOME]=0
-		P=open(D)
-		PR=P.read()
-		PS=re.sub('_C={.*}', '_C={}'.format(DATA._C), PR)
-		P1=open(D, 'w')
-		P1.write(PS)
-		P1.close()
-		P.close()
-
-		H=getattr(DATA, DATA._W)
-		H.append(self.O)
-		P=open(D)
-		PR=P.read()
-		PS=re.sub('{}=\[.*\]'.format(DATA._W), '{}={}'.format(DATA._W, H), PR)
-		P1=open(D, 'w')
-		P1.write(PS)
-		P.close()
-		P1.close()
-
-		CARGA=getattr(DATA, '_CARGA')
-
-		for x in ['BRT1','BRT2','BRT3','VRT1','BRDZ','VRDZ','BRMD','VRMD']:
-			if x in self.O:
-				A=CARGA[x]-self.O[x]
-				CARGA[x]=A
-
-		P=open(D)
-		PR=P.read()
-		PS=re.sub('_CARGA={.*}', '_CARGA={}'.format(CARGA), PR)
-		P1=open(D, 'w')
-		P1.write(PS)
-		P1.close()
-		P.close()
-
-		for x in ['BRT1','BRT2','BRT3','VRT1','BRDZ','VRDZ','BRMD','VRMD']:
-				OVO.E[x]=0.0
-
-		self.manager.current='menu'
-
-class Output(Screen):
-
-	E=None
-	I=None
-	S=None
-
-	def on_pre_enter(self, *args):
-		if DATA._W:
-			Output.S=getattr(DATA, DATA._W)
-		B=self.ids.EDIT
-		O=self.ids.outspin
-		S_LIST=list()
-		if O.text!='':
-			O.text=''
-			self.ids.UN.text='Unidade'
-			self.ids.DIA.text=''
-			B.text=''
-			B.background_color=(0, 0, 0, 1)
-			for x in L:
-				self.ids[x].text=''
-		try:
-			if DATA._C:
-				S_LIST.append('CARGA')
-				self.ids.DIA.text=str.replace(str.strip(DATA._W, 'H'), '_', '/')
-				for x in Output.S:
-					if DATA._C.get(x['CLIENTE'])==0:
-						S_LIST.append(x['CLIENTE'])
-			O.values=S_LIST
-		except:
-			pass
-
-	def SELECT(self):
-		ST=self.ids.outspin.text
-		if ST=='':
-			return 0
-		elif ST=='CARGA':
-			self.ids.UN.text='Caixa'
-		else:
-			self.ids.UN.text='Dúzia'
-		B=self.ids.EDIT
-		for x in range(len(Output.S)):
-			if Output.S[x]['CLIENTE']==ST:
-				I=x
-		Output.E=Output.S[I]
-		Output.I=I
-		B.text='EDITAR'
-		B.background_color=(0.8, 0, 0, 1)
-		for x in L:
-			if x in Output.S[I]:
-				self.ids[x].text=str(Output.S[I][x])
-			else:
-				self.ids[x].text='-'
-
-	def EDITING(self):
-		global NOME
-		if self.ids.outspin.text=='':
-			pass
-		else:
-			NOME=self.ids.outspin.text
-			self.manager.current='editar'
-
-class Editar(Screen):
-
-	CHECKER=1
-	LABEL=Label(size_hint=(1, 0.45), pos_hint={'top':0.95}, font_size=DATA._F)
-	TEXTFOCUS=None
-	POPUP=Popup()
-	O=None
-	SOMA=0.0
-
-	def on_pre_enter(self, *args):
-		self.CHECKER=1
-		def FILL(X, Y):
-			if Y in Output.E:
-				self.ids[X].text=str(Output.E[Y])
-			else:
-				self.ids[X].text=''
-		def FILLPILAS(X, Y, Z):
-			if Y in Output.E:
-				self.ids[X].text=str(Output.E[Y])
-			else:
-				self.ids[X].text=DATA._V[Z]
-
-		FILL('t1', 'BRT1')
-		FILL('t2', 'VRT1')
-		FILL('t3', 'BRT2')
-		FILL('t4', 'BRT3')
-		FILL('t5', 'BRDZ')
-		FILL('t6', 'VRDZ')
-		FILL('t7', 'BRMD')
-		FILL('t8', 'VRMD')
-		FILLPILAS('p1', 'BRT1_DZ', 'V1')
-		FILLPILAS('p2', 'VRT1_DZ', 'V2')
-		FILLPILAS('p3', 'BRT2_DZ', 'V3')
-		FILLPILAS('p4', 'BRT3_DZ', 'V4')
-		FILLPILAS('p5', 'BRDZ_DZ', 'V5')
-		FILLPILAS('p6', 'VRDZ_DZ', 'V6')
-		FILLPILAS('p7', 'BRMD_DZ', 'V7')
-		FILLPILAS('p8', 'VRMD_DZ', 'V8')
-		self.ids['NCL'].text='CLIENTE: {}'.format(NOME)
-
-		Editar.TEXTFOCUS='t1'
-
-		for x in range(1,9):
-			if NOME=='CARGA':
-				self.ids['UN'+str(x)].text='CX'
-			else:
-				self.ids['UN'+str(x)].text='DZ'
-
-	def FOCUS(self, IDS='t1'):
-		Editar.TEXTFOCUS=IDS
-
-	def KEY(self, INSERT):
-		if self.CHECKER == 1:
-			self.ids[Editar.TEXTFOCUS].text += INSERT
-		else:
-			self.LABEL.text += INSERT
-
-	def BACKSPACE(self):
-		if self.CHECKER == 1:
-			self.ids[Editar.TEXTFOCUS].text = ''
-		else:
-			self.LABEL.text = self.LABEL.text[:len(self.LABEL.text)-1]
-
-	def MEIA(self):
-		TEXT=self.ids[Editar.TEXTFOCUS].text
-		if TEXT!='':
-			FLT=float(self.ids[Editar.TEXTFOCUS].text)
-			self.ids[Editar.TEXTFOCUS].text = str(FLT+2.5)
-		else:
-			self.ids[Editar.TEXTFOCUS].text += '2.5'
-
-	def OK(self):
-
-		global BRT1_VALOR
-		global VRT1_VALOR
-		global BRT2_VALOR
-		global BRT3_VALOR
-		global BRDZ_VALOR
-		global VRDZ_VALOR
-		global BRMD_VALOR
-		global VRMD_VALOR
-
-		B1=self.ids.t1.text
-		V1=self.ids.t2.text
-		B2=self.ids.t3.text
-		B3=self.ids.t4.text
-		BDZ=self.ids.t5.text
-		VDZ=self.ids.t6.text
-		BMD=self.ids.t7.text
-		VMD=self.ids.t8.text
-		BRT1_VALOR=self.ids.p1.text
-		VRT1_VALOR=self.ids.p2.text
-		BRT2_VALOR=self.ids.p3.text
-		BRT3_VALOR=self.ids.p4.text
-		BRDZ_VALOR=self.ids.p5.text
-		VRDZ_VALOR=self.ids.p6.text
-		BRMD_VALOR=self.ids.p7.text
-		VRMD_VALOR=self.ids.p8.text
-
-		if B1!='':
-			BRT1(B1)
-		if B2!='':
-			BRT2(B2)
-		if B3!='':
-			BRT3(B3)
-		if V1!='':
-			VRT1(V1)
-		if BDZ!='':
-			BRDZ(BDZ)
-		if VDZ!='':
-			VRDZ(VDZ)
-		if BMD!='':
-			BRMD(BMD)
-		if VMD!='':
-			VRMD(VMD)
-
-		if self.CHECKER == 1:
-			self.SOMA=0.0
-			self.O=dict()
-			self.O['CLIENTE']=NOME
-			if NOME == 'CARGA':
-				H=getattr(DATA, DATA._W)
-				self.O['WEEK']=H[0]['WEEK']
-				for x in ['BRT1','BRT2','BRT3','VRT1','BRDZ','VRDZ','BRMD','VRMD']:
-					if x == 'BRT1':
-						self.O[x+'_DZ']=float(BRT1_VALOR)
-					if x == 'VRT1':
-						self.O[x+'_DZ']=float(VRT1_VALOR)
-					if x == 'BRT2':
-						self.O[x+'_DZ']=float(BRT2_VALOR)
-					if x == 'BRT3':
-						self.O[x+'_DZ']=float(BRT3_VALOR)
-					if x == 'BRDZ':
-						self.O[x+'_DZ']=float(BRDZ_VALOR)
-					if x == 'VRDZ':
-						self.O[x+'_DZ']=float(VRDZ_VALOR)
-					if x == 'BRMD':
-						self.O[x+'_DZ']=float(BRMD_VALOR)
-					if x == 'VRMD':
-						self.O[x+'_DZ']=float(VRMD_VALOR)
-			for x in ['BRT1','BRT2','BRT3','VRT1','BRDZ','VRDZ','BRMD','VRMD']:
-				if 0.0!=OVO.E[x]:
-					self.SOMA+=OVO.E_VLR[x+'_VLR']
-					self.O[x]=OVO.E[x]
-					self.O[x+'_DZ']=OVO.E_DZ[x+'_DZ']
-					self.O[x+'_VLR']=OVO.E_VLR[x+'_VLR']
-			self.O['TOTAL']=self.SOMA
-		else:
-			self.O=dict()
-			self.O['CLIENTE']=NOME
-			if NOME == 'CARGA':
-				H=getattr(DATA, DATA._W)
-				self.O['WEEK']=H[0]['WEEK']
-				for x in ['BRT1','BRT2','BRT3','VRT1','BRDZ','VRDZ','BRMD','VRMD']:
-					if x == 'BRT1':
-						self.O[x+'_DZ']=float(BRT1_VALOR)
-					if x == 'VRT1':
-						self.O[x+'_DZ']=float(VRT1_VALOR)
-					if x == 'BRT2':
-						self.O[x+'_DZ']=float(BRT2_VALOR)
-					if x == 'BRT3':
-						self.O[x+'_DZ']=float(BRT3_VALOR)
-					if x == 'BRDZ':
-						self.O[x+'_DZ']=float(BRDZ_VALOR)
-					if x == 'VRDZ':
-						self.O[x+'_DZ']=float(VRDZ_VALOR)
-					if x == 'BRMD':
-						self.O[x+'_DZ']=float(BRMD_VALOR)
-					if x == 'VRMD':
-						self.O[x+'_DZ']=float(VRMD_VALOR)
-			for x in ['BRT1','BRT2','BRT3','VRT1','BRDZ','VRDZ','BRMD','VRMD']:
-				if 0.0!=OVO.E[x]:
-					self.O[x]=OVO.E[x]
-					self.O[x+'_DZ']=OVO.E_DZ[x+'_DZ']
-					self.O[x+'_VLR']=OVO.E_VLR[x+'_VLR']
-			self.SOMA=str(float(self.LABEL.text))
-			self.O['TOTAL']=float(self.LABEL.text)
-
-		BX=BoxLayout(orientation='vertical')
-		BXT=BoxLayout(size_hint=(1, 0.3))
-		BT1=Button(text='Sim', background_color=(0, 0.8, 0, 1))
-		BT2=Button(text='Trocar', background_color=(0, 0, 1, 1))
-		BT3=Button(text='Não', background_color=(0.8, 0, 0, 1))
-		BT1.bind(on_press=self.WRITER)
-		BT2.bind(on_press=self.DESC)
-		BT3.bind(on_press=self.DISMISS)
-		BXT.add_widget(BT1)
-		BXT.add_widget(BT2)
-		BXT.add_widget(BT3)
-		BX.add_widget(Label(text='R$ {}'.format(self.SOMA), size_hint=(1, 0.7), pos_hint={'top':1}, font_size=DATA._F))
-		BX.add_widget(BXT)
-		self.POPUP.title='CONFIRMAÇÃO DO VALOR'
-		self.POPUP.content=BX
-		self.POPUP.size_hint=(0.8, 0.6)
-		self.POPUP.pos_hint={'center_x': 0.5, 'center_y': 0.5}
-		self.POPUP.auto_dismiss=False
-		self.POPUP.open()
-
-	def DESC(self, instance):
-		if self.CHECKER == 1:
-			self.remove_widget(self.ids.GL)
-			self.add_widget(self.LABEL)
-			self.POPUP.dismiss()
-			self.LABEL.text += str(self.SOMA)
-			self.CHECKER=0
-		else:
-			self.POPUP.dismiss()
-
-	def DISMISS(self, instance):
-		if self.CHECKER == 1:
-			self.POPUP.dismiss()
-			for x in ['BRT1','BRT2','BRT3','VRT1','BRDZ','VRDZ','BRMD','VRMD']:
-				OVO.E[x]=0.0
-		else:
-			self.POPUP.dismiss()
-
-	def WRITER(self, instance):
-		if self.CHECKER == 1:
-			self.POPUP.dismiss()
-		else:
-			self.LABEL.text = ''
-			self.POPUP.dismiss()
-			self.remove_widget(self.LABEL)
-			self.add_widget(self.ids.GL)
-
-		H=getattr(DATA, DATA._W)
-
-		CARGA=getattr(DATA, '_CARGA')
-
-		if NOME == 'CARGA':
-			for x in ['BRT1','BRT2','BRT3','VRT1','BRDZ','VRDZ','BRMD','VRMD']:
-				if x in self.O:
-					A=CARGA[x]+(self.O[x]*30)
-					if x in H[Output.I]:
-						CARGA[x]=A-(H[Output.I][x]*30)
-					else:
-						CARGA[x]=A
-		else:
-			for x in ['BRT1','BRT2','BRT3','VRT1','BRDZ','VRDZ','BRMD','VRMD']:
-				if x in self.O:
-					if x in H[Output.I]:
-						A=CARGA[x]+H[Output.I][x]
-						CARGA[x]=A-self.O[x]
-					else:
-						CARGA[x]=CARGA[x]-self.O[x]
-				elif x in H[Output.I]:
-					CARGA[x]=CARGA[x]+H[Output.I][x]
-
-		H.pop(Output.I)
-		H.insert(Output.I, self.O)
-		P=open(D)
-		PR=P.read()
-		PS=re.sub('{}=\[.*\]'.format(DATA._W), '{}={}'.format(DATA._W, H), PR)
-		P1=open(D, 'w')
-		P1.write(PS)
-		P.close()
-		P1.close()
-
-		P=open(D)
-		PR=P.read()
-		PS=re.sub('_CARGA={.*}', '_CARGA={}'.format(CARGA), PR)
-		P1=open(D, 'w')
-		P1.write(PS)
-		P1.close()
-		P.close()
-
-		for x in ['BRT1','BRT2','BRT3','VRT1','BRDZ','VRDZ','BRMD','VRMD']:
-				OVO.E[x]=0.0
-
-		self.manager.current='menu'
-
-class HistSel(Screen):
-
-	D=None
-	POPUP=Popup()
-
 	def on_pre_enter(self, *args):
 		reload(DATA)
-		H=list()
-		if DATA._H:
-			for x in DATA._H:
-				X=str.strip(x, 'H')
-				S=str.replace(X, '_', '/')
-				X=str.split(S, '/')
-				DA=int(X[0])
-				M=int(X[1])
-				Y=int(X[2])
-				if date.weekday(date(Y, M, DA))==1:
-					X='TER - {}'.format(S)
-				elif date.weekday(date(Y, M, DA))==2:
-					X='QUA - {}'.format(S)
+		self.text_focus = 'BRT1'
+		self.ids.BRT1_BTN.state = 'down'
+
+		if Entry.nome:
+			self.modus = 'client'
+		elif isinstance(History.data, int):		# isinstance serve para reconhecer
+			self.index = History.data			# 0 como True, o que não acontece
+			if self.index == 0:					# porque 0 e 1 são instâncias do
+				self.modus = 'edit_load'		# built-in bool; cf. pep-0285
+			else:
+				self.modus = 'edit'
+		else:
+			self.modus = 'load'
+
+		self.builder()
+
+	def on_leave(self, *args):
+		if self.modus == 'client':
+			Entry.nome = None
+		elif self.modus == 'edit' or self.modus == 'edit_load':
+			History.data = None
+		if self.text_focus == 'LINE':
+			self.ids.LINE.text = ''
+			self.add_widget(self.ids.PAINEL)
+		else:
+			self.ids[self.text_focus + '_BTN'].state = 'normal'
+
+	def builder(self):
+		if self.modus != 'load':
+			attr = getattr(DATA, DATA._current_day)
+		if self.modus == 'client' or self.modus == 'edit':
+			self.ids.PLUS.text = '2.5'
+			if self.modus == 'client':
+				self.ids.CLIENTE.text = 'CLIENTE: {}'.format(Entry.nome)
+			else:
+				self.ids.CLIENTE.text = 'CLIENTE: {}'.format(attr[self.index]['NOME'])
+		elif self.modus == 'load' or self.modus == 'edit_load':
+			self.ids.CLIENTE.text = 'CARGA'
+			self.ids.PLUS.text = '0.5'
+
+		for item in tipos:
+			if self.modus == 'client' or self.modus == 'edit':
+				unidade = 'DZ'
+			else:
+				unidade = 'CX'
+
+			self.ids[item + '_DZ_BTN'].text = unidade
+
+			if self.modus == 'client' or self.modus == 'load':
+				self.ids[item].text = ''
+				if self.modus == 'client':
+					datas = DATA._reported_list
+					if self.last_price(datas, item, attr[0]['WEEK']) == 1:
+						self.ids[item + '_DZ'].text = str(DATA._dozen_price[item])
 				else:
-					X='QUI - {}'.format(S)
-				H.append(X)
-			self.ids.hspin.text=H[0]
-			self.ids.hspin.values=H
+					self.ids[item + '_DZ'].text = str(DATA._box_price[item])
+			elif self.modus == 'edit':
+				if item in attr[self.index]:
+					self.ids[item].text = str(attr[self.index][item])
+					self.ids[item + '_DZ'].text = str(attr[self.index][item + '_DZ'])
+				else:
+					self.ids[item].text = ''
+					self.ids[item + '_DZ'].text = str(DATA._dozen_price[item])
+			else:
+				if item in attr[self.index]:
+					self.ids[item].text = str(attr[self.index][item] / 30)
+				else:
+					self.ids[item].text = ''
+				self.ids[item + '_DZ'].text = str(attr[self.index][item + '_DZ'])
 
-	def HSEL(self):
-		if self.ids.hspin.text!='':
-			if re.search('TER', self.ids.hspin.text):
-				X=self.ids.hspin.text.strip('TER - ')
-			elif re.search('QUA', self.ids.hspin.text):
-				X=self.ids.hspin.text.strip('QUA - ')
-			elif re.search('QUI', self.ids.hspin.text):
-				X=self.ids.hspin.text.strip('QUI - ')
-			HistSel.D=X
-			self.manager.current='history'
 
-	def CLEAR(self):
-		BX=BoxLayout(orientation='vertical')
-		BXT=BoxLayout(size_hint=(1, 0.3))
-		BT1=Button(text='Sim', background_color=(0, 0.8, 0, 1))
-		BT2=Button(text='Não', background_color=(0.8, 0, 0, 1))
-		BT1.bind(on_press=self.KILL)
-		BT2.bind(on_press=self.POPUP.dismiss)
-		BXT.add_widget(BT1)
-		BXT.add_widget(BT2)
-		BX.add_widget(Label(text='Deseja excluir \'{}\'?'.format(self.ids.hspin.text), size_hint=(1, 0.7), pos_hint={'top':1}))
-		BX.add_widget(BXT)
-		self.POPUP.title='LIMPEZA DO HISTÓRICO'
-		self.POPUP.content=BX
-		self.POPUP.size_hint=(0.8, 0.5)
-		self.POPUP.pos_hint={'center_x': 0.5, 'center_y': 0.5}
-		self.POPUP.auto_dismiss=False
-		self.POPUP.open()
 
-	def KILL(self, instance):
-		self.POPUP.dismiss()
-		G='H'+str.replace(self.ids.hspin.text, '/', '_')
-		R=getattr(DATA, G)
-		DATA._H.remove(G)
-		P=open(D)
-		PR=P.read()
-		PS=re.sub('_H=\[.*\]', '_H={}'.format(DATA._H), PR)
-		PS1=re.sub('{}=\[.*\]'.format(G), '', PS)
-		P1=open(D, 'w')
-		P1.write(PS1)
-		P1.close()
-		P.close()
-		reload(DATA)
-		self.ids.hspin.text=''
-		self.ids.hspin.values=''
-		H=list()
-		if DATA._H:
-			for x in DATA._H:
-				X=str.strip(x, 'H')
-				S=str.replace(X, '_', '/')
-				H.append(S)
-			self.ids.hspin.text=H[0]
-			self.ids.hspin.values=H
+	def last_price(self, list, tipo, week):
+		for dia in list:
+			if dia == DATA._current_day:
+				continue
+			else:
+				attr = getattr(DATA, dia)
+				if attr[0].get('WEEK') == week:
+					for dict in attr:
+						if 'NOME' in dict and dict['NOME'] == Entry.nome:
+							if tipo in dict:
+								self.ids[tipo + '_DZ'].text =  str(dict[tipo + '_DZ'])
+								return 0
+							else:
+								return 1
+						else:
+							continue
+				else:
+					continue
+		else:
+			return 1
+
+	def focus(self, ids):
+		self.text_focus = ids
+
+	def key(self, insert):
+		self.ids[self.text_focus].text += insert
+
+	def backspace(self):
+		self.ids[self.text_focus].text = ''
+
+	def plus(self):
+		number = self.ids.PLUS
+		if self.ids[self.text_focus].text != '':
+			old = float(self.ids[self.text_focus].text)
+			self.ids[self.text_focus].text = str(old + float(number.text))
+		else:
+			self.ids[self.text_focus].text += number.text
+
+	def pre_ok(self):
+		if self.text_focus == 'LINE' and self.ids.LINE.text != '':
+			self.popup_confirm(float(self.ids.LINE.text))
+		elif self.text_focus == 'LINE' and self.ids.LINE.text == '':
+			call_popup('ERRO: AUSÊNCIA DE PREÇO', 'Insira o valor cobrado.')
+			return 1
+		else:
+			self.ok()
+
+	def ok(self):
+		prime = {}
+		for item in tipos:
+			if not self.ids[item + '_DZ'].text:
+				call_popup('ERRO: AUSÊNCIA DE PREÇO', 'Insira todos os preços.')
+				return 1
+			elif self.ids[item].text:
+				prime[item] = self.ids[item].text
+				prime[item + '_DZ'] = self.ids[item + '_DZ'].text
+			else:
+				if self.modus == 'load' or self.modus == 'edit_load':
+					prime[item + '_DZ'] = self.ids[item + '_DZ'].text
+
+		self.instance = Ovo(prime)
+		if self.modus == 'client' or self.modus == 'edit':
+			if self.instance.total == 0.0:
+				self.instance.client_edit_write()
+				self.manager.current = 'menu'
+			else:
+				self.popup_confirm(self.instance.total)
+		elif self.modus == 'edit_load':
+			self.instance.client_edit_write()
+			self.manager.current = 'menu'
+		else:
+			self.instance.load_write()
+			self.manager.current = 'entry'
+
+	def popup_confirm(self, money):
+		self.popup = Popup()
+		bx = BoxLayout(orientation='vertical')
+		bxt = BoxLayout(size_hint=(1, 0.3))
+		bt1 = Button(text='Sim', background_color=(0, 0.8, 0, 1))
+		bt2 = Button(text='Trocar', background_color=(0, 0, 1, 1))
+		bt3 = Button(text='Não', background_color=(0.8, 0, 0, 1))
+		bt1.bind(on_press=self.yes)
+		bt2.bind(on_press=self.maybe)
+		bt3.bind(on_press=self.no)
+		bxt.add_widget(bt1)
+		bxt.add_widget(bt2)
+		bxt.add_widget(bt3)
+		msg = 'R$ {}'.format(str(money))
+		bx.add_widget(Label(text=msg, size_hint=(1, 0.7), pos_hint={'top':1}, font_size=DATA._font_size*3))
+		bx.add_widget(bxt)
+		self.popup.title = 'CONFIRMAÇÃO DO VALOR'
+		self.popup.content = bx
+		self.popup.size_hint = (0.8, 0.6)
+		self.popup.pos_hint = {'center_x': 0.5, 'center_y': 0.5}
+		self.popup.auto_dismiss = False
+		self.popup.open()
+
+	def yes(self, instance, variation = None):
+		if self.text_focus == 'LINE':
+			chasm = float(self.ids.LINE.text)
+			if self.instance.total != chasm:
+				if self.instance.total > chasm:
+					variation = chasm - self.instance.total
+					self.instance.dict['TOTAL'] = chasm
+				elif self.instance.total < chasm:
+					variation = chasm - self.instance.total
+					self.instance.dict['TOTAL'] = chasm
+
+		if variation:
+			self.instance.client_edit_write(variation)
+		else:
+			self.instance.client_edit_write()
+
+		self.popup.dismiss()
+		self.manager.current='menu'
+
+	def no(self, instance):
+		if self.text_focus == 'LINE':
+			self.ids.LINE.text = str(self.instance.total)
+		self.popup.dismiss()
+
+	def maybe(self, instance):
+		if self.text_focus != 'LINE':
+			self.remove_widget(self.ids.PAINEL)
+			self.ids.LINE.font_size = 100
+			self.ids[self.text_focus + '_BTN'].state = 'normal'
+			self.text_focus = 'LINE'
+		self.ids.LINE.text = str(self.instance.total)
+		self.popup.dismiss()
+
 
 class History(Screen):
 
-	L=None
-	H=None
+	data = None
 
 	def on_pre_enter(self, *args):
-		self.ids.hhspin.text=''
-		for x in L:
-			self.ids[x].text=''
-		self.ids.UN.text='Unidade'
-		self.ids.DIA.text=HistSel.D
-		History.H=getattr(DATA, 'H'+str.replace(HistSel.D, '/', '_'))
-		History.L=list()
-		for x in History.H:
-			History.L.append(x['CLIENTE'])
-		self.ids.hhspin.values=History.L
+		day_builder = {
+			1: 'TER - ',
+			2: 'QUA - ',
+			3: 'QUI - '
+			}
 
-	def SEL(self):
+		reload(DATA)
+		self.raw_list = []
+		History.data = None
+		lista = DATA._reported_list
+		self.book = self.ids.BOOK
+		self.book.values = []
 
-		HT=self.ids.hhspin.text
-		I=History.L.index(HT)
-		if HT=='CARGA':
-			self.ids.UN.text='Caixa'
+		for dia in lista:
+			self.raw_list.append(dia)
+
+		if lista:
+			for dia in lista:
+				data = str.replace(str.strip(dia, 'H'), '_', '/')
+				attr = getattr(DATA, dia)
+				day_int = attr[0]['WEEK']
+				elemento = '{}{}'.format(day_builder[day_int], data)
+				self.book.values.append(elemento)
+				self.book.text = self.book.values[0]
+
+	def popup_confirm(self, msg, title, func):
+		self.popup = Popup()
+		bx = BoxLayout(orientation='vertical')
+		bxt = BoxLayout(size_hint=(1, 0.3))
+		bt1 = Button(text='Sim', background_color=(0, 0.8, 0, 1))
+		bt2 = Button(text='Não', background_color=(0.8, 0, 0, 1))
+		bt1.bind(on_press=func)
+		bt2.bind(on_press=self.popup.dismiss)
+		bxt.add_widget(bt1)
+		bxt.add_widget(bt2)
+		bx.add_widget(Label(text=msg, size_hint=(1, 0.7), pos_hint={'top':1}))
+		bx.add_widget(bxt)
+		self.popup.title = title
+		self.popup.content = bx
+		self.popup.size_hint = (0.8, 0.5)
+		self.popup.pos_hint = {'center_x': 0.5, 'center_y': 0.5}
+		self.popup.auto_dismiss=False
+		self.popup.open()
+
+	def output(self, modo):
+		if self.book.text:
+			History.data = modo, self.raw_list[self.book.values.index(self.book.text)]
+			self.manager.current = 'output'
+
+	def extract_text(self):
+		instance = Extract(self.raw_list[self.book.values.index(self.book.text)])
+		instance.parser()
+
+		if self.raw_list[self.book.values.index(self.book.text)] == DATA._current_day:
+			self.popup_confirm(
+					'Deseja encerrar a praça?', 'FINALIZAÇÃO DE PRAÇA', self.finisher)
 		else:
-			self.ids.UN.text='Dúzia'
-		for x in L:
-			try:
-				self.ids[x].text=str(History.H[I][x])
-			except:
-				self.ids[x].text='-'
+			self.manager.current = 'menu'
 
-class Extrato(Screen):
+	def finisher(self, *args):
+		Writer().clean()
+		self.popup.dismiss()
+		self.manager.current = 'menu'
 
-	POPUP=Popup()
-	L=None
-	SL=0.0
+	def remove_data(self):
+		msg = 'Deseja remover "{}"?'.format(
+							str.replace(str.strip(self.book.text, 'H'), '_', '/')[5:])
+		self.popup_confirm(msg, 'LIMPEZA DO HISTÓRICO', self.remover)
+
+	def remover(self, *args):
+		Writer().remove(self.raw_list[self.book.values.index(self.book.text)])
+		self.popup.dismiss()
+		self.on_pre_enter()
+
+class Output(Screen):
 
 	def on_pre_enter(self, *args):
-		self.L=None
-		self.SL=0.0
 		reload(DATA)
-		H=list()
-		if DATA._H:
-			for x in DATA._H:
-				X=str.strip(x, 'H')
-				S=str.replace(X, '_', '/')
-				H.append(S)
-			self.ids.ESPIN.text=H[0]
-			self.ids.ESPIN.values=H
+		modo, raw_day = History.data
+		data = str.replace(str.strip(raw_day, 'H'), '_', '/')
+		self.ids.DIA.text = data
+		self.attr = getattr(DATA, raw_day)
+		if modo == 'launch':
+			self.launch(raw_day)
+		elif modo == 'number':
+			self.instance = Extract(raw_day)
+			self.numbers()
 
-	def EXT(self):
+	def on_leave(self, *args):
+		self.ids.BXL.clear_widgets()
+		for key in ['TOTAL', 'TOTAL_1', 'TOTAL_2', 'TOTAL_3']:
+			self.ids[key].text = ''
 
-		SOMA=0.0
-		D1=0.0
-		D2=0.0
-		D3=0.0
-		D4=0.0
-		D5=0.0
-		D6=0.0
-		D7=0.0
-		D8=0.0
-		T1=0.0
-		T2=0.0
-		T3=0.0
-		T4=0.0
-		T5=0.0
-		T6=0.0
-		T7=0.0
-		T8=0.0
+	def launch(self, day):
+		book_elements = []
+		for dict in self.attr:
+			if 'NOME' in dict:
+				book_elements.append(dict['NOME'])
 
-		try:
-			H=getattr(DATA, 'H'+str.replace(self.ids.ESPIN.text, '/', '_'))
-			O='EXTRATO DIA {}\n'.format(self.ids.ESPIN.text)
-			for x in H:
-				O+='--------------------------------------------------------------------------'
-				if x['CLIENTE']=='CARGA':
-					O+='\n--------------------------------------------------------------------------\nCARGA\n'
-					for y in L1:
-						if y in x:
-							O+='{}: {}\t\tPREÇO: R$ {}\t\tSUBTOTAL: R$ {}\n'.format(y,x[y],x[y+'_DZ'],x[y+'_VLR'])
-					O+='TOTAL: R$ {}\n'.format(x['TOTAL'])
-					SOMACARGA=x['TOTAL']
-					O+='--------------------------------------------------------------------------\n'
+		self.ids.TITLE.text = 'LANÇAMENTOS'
+		self.ids.SUBTITLE_2.text = 'Preço'
+		self.ids.SUBTITLE_3.text = 'Total'
+		self.BOOK = Spinner(size_hint = (0.75, 1))
+		self.BOOK.values = book_elements
+		self.ids.BXL.add_widget(self.BOOK)
+
+		if day == DATA._current_day:
+			self.BOOK.text = self.BOOK.values[-1]
+			self.EDIT_BTN = Button()
+			self.EDIT_BTN.text = 'Editar'
+			self.EDIT_BTN.size_hint = 0.25, 1
+			self.EDIT_BTN.background_color = 0.8, 0, 0, 1
+			self.EDIT_BTN.bind(on_press = self.edit)
+			self.ids.BXL.add_widget(self.EDIT_BTN)
+		else:
+			self.BOOK.text = self.BOOK.values[0]
+			self.EDIT_BTN = None
+
+		self.selected()
+
+	def edit(self, instance):
+		History.data = self.index
+		self.manager.current = 'catcher'
+
+	def selected(self):
+		key_chain = [
+		'BRT1', 'BRT1_DZ', 'BRT1_VLR',
+		'BRT2', 'BRT2_DZ', 'BRT2_VLR',
+		'BRT3', 'BRT3_DZ', 'BRT3_VLR',
+		'VRT1', 'VRT1_DZ', 'VRT1_VLR',
+		'BRDZ', 'BRDZ_DZ', 'BRDZ_VLR',
+		'VRDZ', 'VRDZ_DZ', 'VRDZ_VLR',
+		'BRMD', 'BRMD_DZ', 'BRMD_VLR',
+		'VRMD', 'VRMD_DZ', 'VRMD_VLR',
+		'TOTAL'
+		]
+
+		self.diff = self.BOOK.text
+		if self.diff == 'CARGA':
+			self.index = self.BOOK.values.index(self.BOOK.text)
+		else:
+			self.index = self.BOOK.values.index(self.BOOK.text) + 1
+
+		if self.BOOK.text == 'CARGA':
+			self.ids.SUBTITLE_1.text = 'Caixa'
+		else:
+			self.ids.SUBTITLE_1.text = 'Dúzia'
+
+		for key in key_chain:
+			if key in self.attr[self.index]:
+				if key == 'TOTAL':
+					self.ids[key + '_3'].text = str(self.attr[self.index][key])
+				elif self.BOOK.text == 'CARGA' and key in tipos:
+					self.ids[key].text = str(self.attr[self.index][key] / 30)
 				else:
-					O+='\n{}\n'.format(x['CLIENTE'])
-					for y in L1:
-						if y in x:
-							O+='{}: {}\t\tPREÇO: R$ {}\t\tSUBTOTAL: R$ {}\n'.format(y,x[y],x[y+'_DZ'],x[y+'_VLR'])
-							if y=='BRT1':
-								D1+=x[y]
-								T1+=x[y+'_VLR']
-							elif y=='VRT1':
-								D2+=x[y]
-								T2+=x[y+'_VLR']
-							elif y=='BRT2':
-								D3+=x[y]
-								T3+=x[y+'_VLR']
-							elif y=='BRT3':
-								D4+=x[y]
-								T4+=x[y+'_VLR']
-							elif y=='BRDZ':
-								D5+=x[y]
-								T5+=x[y+'_VLR']
-							elif y=='VRDZ':
-								D6+=x[y]
-								T6+=x[y+'_VLR']
-							elif y=='BRMD':
-								D7+=x[y]
-								T7+=x[y+'_VLR']
-							elif y=='VRMD':
-								D8+=x[y]
-								T8+=x[y+'_VLR']
-					O+='TOTAL: R$ {}\n'.format(x['TOTAL'])
-					SOMA+=x['TOTAL']
-			O+='--------------------------------------------------------------------------\n'
-			O+='--------------------------------------------------------------------------\nBALANÇO BRUTO\n'
+					self.ids[key].text = str(self.attr[self.index][key])
+			else:
+				self.ids[key].text = '-'
 
-			def LP(X, Y, Z):
-				CX=round(Y/30, 2)
-				CP=round(CX*float(H[0][X+'_DZ']), 2)
-				self.L='{}: {} cx\t\t\tCOMPRADO: R$ {}\nLUCRO: R$ {}\t\t\tVENDIDO: R$ {}\n'.format(X, CX, CP, round(Z-CP, 2), Z)
-				self.SL+=round(Z-CP, 2)
-				self.L+='--------------------------------------------------------------------------\n'
+		self.process = Thread(target = self.loop)
+		self.process.setDaemon(True)	# Daemon encerra o loop assim
+		self.process.start()			# que o app se fecha totalmente.
 
-			if T1 != 0.0:
-				LP('BRT1', D1, T1)
-				O+=self.L
-			if T2 != 0.0:
-				LP('VRT1', D2, T2)
-				O+=self.L
-			if T3 != 0.0:
-				LP('BRT2', D3, T3)
-				O+=self.L
-			if T4 != 0.0:
-				LP('BRT3', D4, T4)
-				O+=self.L
-			if T5 != 0.0:
-				LP('BRDZ', D5, T5)
-				O+=self.L
-			if T6 != 0.0:
-				LP('VRDZ', D6, T6)
-				O+=self.L
-			if T7 != 0.0:
-				LP('BRMD', D7, T7)
-				O+=self.L
-			if T8 != 0.0:
-				LP('VRMD', D8, T8)
-				O+=self.L
+	def loop(self):
+		while self.BOOK.text == self.diff:
+			if self.manager.current != 'output':
+				break
+			else:
+				sleep(0.05)
+		else:
+			self.selected()
 
-			O+='LUCRO BRUTO: R$ {}\n'.format(self.SL)
-			O+='--------------------------------------------------------------------------\n'
-			O+='--------------------------------------------------------------------------\nBALANÇO LÍQUIDO\n'
-			O+='TOTAL COMPRADO: R$ {}\nTOTAL VENDIDO: R$ {}\n--------------------------------------------------------------------------\nLUCRO LÍQUIDO: R$ {}'.format(SOMACARGA, SOMA, round(SOMA-SOMACARGA, 2))
-			O+='\n--------------------------------------------------------------------------'
+	def numbers(self):
+		self.ids.TITLE.text = 'ESTATÍSTICAS'
+		self.BALANCE_BTN1 = ToggleButton(group='numbers', text='Bruto', state='down')
+		self.BALANCE_BTN2 = ToggleButton(group='numbers', text='Líquido')
+		self.BALANCE_BTN3 = ToggleButton(group='numbers', text='Números')
+		self.BALANCE_BTN1.allow_no_selection = False
+		self.BALANCE_BTN2.allow_no_selection = False
+		self.BALANCE_BTN3.allow_no_selection = False
+		self.BALANCE_BTN1.bind(on_press=self.balance_1)
+		self.BALANCE_BTN2.bind(on_press=self.balance_2)
+		self.BALANCE_BTN3.bind(on_press=self.balance_3)
+		self.ids.BXL.add_widget(self.BALANCE_BTN1)
+		self.ids.BXL.add_widget(self.BALANCE_BTN2)
+		self.ids.BXL.add_widget(self.BALANCE_BTN3)
+		self.balance_1()
 
-			P=open('EXTRATO{}.txt'.format(str.replace(self.ids.ESPIN.text, '/', '')), 'w')
-			P.write(O)
-			P.close()
+	def filler_balance_1(self, dict, text_suffix = '', dict_suffix = ''):
+		for item in tipos:
+			if item in dict and dict[item] != 0.0:
+				self.ids[item + text_suffix].text = str(dict[item + dict_suffix])
+			else:
+				self.ids[item + text_suffix].text = '-'
 
-			if DATA._W and 'H'+str.replace(self.ids.ESPIN.text, '/', '_') == DATA._W:
-				BX=BoxLayout(orientation='vertical')
-				BXT=BoxLayout(size_hint=(1, 0.3))
-				BT1=Button(text='Sim', background_color=(0, 0.8, 0, 1))
-				BT2=Button(text='Não', background_color=(0.8, 0, 0, 1))
-				BT1.bind(on_press=self.CLEAN)
-				BT2.bind(on_press=self.POPUP.dismiss)
-				BXT.add_widget(BT1)
-				BXT.add_widget(BT2)
-				BX.add_widget(Label(text='Deseja encerrar a praça?', size_hint=(1, 0.7), pos_hint={'top':1}))
-				BX.add_widget(BXT)
-				self.POPUP.title='ENCERRAMENTO DE PRAÇA'
-				self.POPUP.content=BX
-				self.POPUP.size_hint=(0.8, 0.5)
-				self.POPUP.pos_hint={'center_x': 0.5, 'center_y': 0.5}
-				self.POPUP.auto_dismiss=False
-				self.POPUP.open()
+		if not text_suffix:
+			total = 'TOTAL_1'
+		elif text_suffix == '_DZ':
+			total = 'TOTAL_2'
+		else:
+			total = 'TOTAL_3'
 
-			self.manager.current='menu'
-		except:
-			pass
+		if total == 'TOTAL_3':
+			text = self.instance.worked_dict['TOTAL'] - self.instance.bought_dict['TOTAL']
+		else:
+			text = dict['TOTAL']
 
-	def CLEAN(self, instance):
-		self.POPUP.dismiss()
-		P=open(D)
-		PR=P.read()
-		PS1=re.sub('_C={.*}', '_C={}', PR)
-		PS=re.sub('_W=.*', '_W=None', PS1)
-		P1=open(D, 'w')
-		P1.write(PS)
-		P1.close()
-		P.close()
-		reload(DATA)
+		self.ids[total].text = str(text)
 
-	def EMAIL(self):
-		pass
+	def filler_balance_2(self, dict, text_suffix = '', dict_suffix = ''):
+		for item in tipos:
+			if item in dict and dict[item] != 0.0:
+				self.ids[item + text_suffix].text = str(dict[item + dict_suffix])
+			else:
+				self.ids[item + text_suffix].text = '-'
+
+		if not text_suffix:
+			total = 'TOTAL_1'
+		elif text_suffix == '_DZ':
+			total = 'TOTAL_2'
+		else:
+			total = 'TOTAL_3'
+
+		self.ids[total].text = str(dict['TOTAL'])
+
+	def filler_balance_3(self, dict, text_suffix = '', total = 'TOTAL_1'):
+		total_value = 0.0
+		for item in tipos:
+			if item in dict and dict[item] != 0.0:
+				self.ids[item + text_suffix].text = str(dict[item])
+				total_value += dict[item]
+			else:
+				self.ids[item + text_suffix].text = '-'
+
+			self.ids[total].text = str(total_value)
+
+	def balance_1(self, *args):
+		self.ids.SUBTITLE_1.text = 'Comprado'
+		self.ids.SUBTITLE_2.text = 'Vendido'
+		self.ids.SUBTITLE_3.text = 'Lucro'
+		self.ids.TOTAL.text = 'Total'
+
+		self.filler_balance_1(self.instance.bought_dict)
+		self.filler_balance_1(self.instance.worked_dict, '_DZ', '_VLR')
+		self.filler_balance_1(self.instance.profit_dict, '_VLR')
+
+	def balance_2(self, *args):
+		self.ids.SUBTITLE_1.text = 'Comprado'
+		self.ids.SUBTITLE_2.text = 'Vendido'
+		self.ids.SUBTITLE_3.text = 'Lucro'
+		self.ids.TOTAL.text = 'Total'
+
+		self.filler_balance_2(self.instance.load_dict, dict_suffix = '_VLR')
+		self.filler_balance_2(self.instance.worked_dict, '_DZ', '_VLR')
+		self.filler_balance_2(self.instance.net_dict, '_VLR')
+
+	def balance_3(self, *args):
+		self.ids.SUBTITLE_1.text = 'Dz. Comp.'
+		self.ids.SUBTITLE_2.text = 'Dz. Vend.'
+		self.ids.SUBTITLE_3.text = 'Restante'
+		self.ids.TOTAL.text = 'Total'
+
+		self.filler_balance_3(self.instance.load_dict)
+		self.filler_balance_3(self.instance.worked_dict, '_DZ', 'TOTAL_2')
+		self.filler_balance_3(self.instance.surplus_load, '_VLR', 'TOTAL_3')
+
 
 class Settings(Screen):
 
-	POPUP=Popup()
+	unidade = None
 
-	def PUP(self):
-		if DATA._C:
-			BX=BoxLayout(orientation='vertical')
-			BXT=BoxLayout(size_hint=(1, 0.3))
-			BT1=Button(text='Sim', background_color=(0, 0.8, 0, 1))
-			BT2=Button(text='Não', background_color=(0.8, 0, 0, 1))
-			BT1.bind(on_press=self.CLEAN)
-			BT2.bind(on_press=self.POPUP.dismiss)
-			BXT.add_widget(BT1)
-			BXT.add_widget(BT2)
-			BX.add_widget(Label(text='Deseja encerrar a praça?', size_hint=(1, 0.7), pos_hint={'top':1}))
-			BX.add_widget(BXT)
-			self.POPUP.title='ENCERRAMENTO DE PRAÇA'
-			self.POPUP.content=BX
-			self.POPUP.size_hint=(0.8, 0.5)
-			self.POPUP.pos_hint={'center_x': 0.5, 'center_y': 0.5}
-			self.POPUP.auto_dismiss=False
-			self.POPUP.open()
+	def on_pre_enter(self):
+		Settings.modo = None
 
-	def CLEAN(self, instance):
-		self.POPUP.dismiss()
-		P=open(D)
-		PR=P.read()
-		PS1=re.sub('_C={.*}', '_C={}', PR)
-		PS=re.sub('_W=.*', '_W=None', PS1)
-		P1=open(D, 'w')
-		P1.write(PS)
-		P1.close()
-		P.close()
+	def price_modus(self, value):
+		Settings.modo = value
+		self.manager.current = 'price_setter'
+
+	def remove_data(self):
+		self.popup = Popup()
+		bx = BoxLayout(orientation='vertical')
+		bxt = BoxLayout(size_hint=(1, 0.3))
+		bt1 = Button(text='Sim', background_color=(0, 0.8, 0, 1))
+		bt2 = Button(text='Não', background_color=(0.8, 0, 0, 1))
+		bt1.bind(on_press=self.finisher)
+		bt2.bind(on_press=self.popup.dismiss)
+		bxt.add_widget(bt1)
+		bxt.add_widget(bt2)
+		msg = 'Deseja encerrar a praça?'
+		bx.add_widget(Label(text=msg, size_hint=(1, 0.7), pos_hint={'top':1}))
+		bx.add_widget(bxt)
+		self.popup.title = 'FINALIZAÇÃO DE PRAÇA'
+		self.popup.content = bx
+		self.popup.size_hint = (0.8, 0.5)
+		self.popup.pos_hint = {'center_x': 0.5, 'center_y': 0.5}
+		self.popup.auto_dismiss=False
+		self.popup.open()
+
+	def finisher(self, *args):
+		Writer().clean()
+		self.popup.dismiss()
+		self.manager.current = 'menu'
+
+
+class Carga(Screen):
+
+	def on_pre_enter(self, *args):
 		reload(DATA)
-		self.manager.current='menu'
+		day = DATA._current_day
+		load = DATA._load
+		total = 0.0
 
-class Crg(Screen):
+		if DATA._current_day:
+			self.ids.DIA.text = str.replace(str.strip(day, 'H'), '_', '/')
+		else:
+			self.ids.DIA.text = time.strftime('%d/%m/%y')
+
+		for item in tipos:
+			if load[item] != 0.0:
+				box = load[item] / 30
+				total += load[item]
+				self.ids[item].text = str(load[item])
+				self.ids[item + '_BOX'].text = str(round(box, 2))
+			else:
+				self.ids[item].text = '-'
+				self.ids[item + '_BOX'].text = '-'
+
+		box_total = total / 30
+		self.ids.TOTAL_1.text = str(total)
+		self.ids.TOTAL_2.text = str(round(box_total, 2))
+
+
+class EditCarga(Screen):
 
 	def on_pre_enter(self, *args):
 		reload(DATA)
-		SOMA=0.0
-		self.ids.DIA.text=time.strftime('%d/%m/%y')
-		for x in ['BRT1','BRT2','BRT3','VRT1','BRDZ','VRDZ','BRMD','VRMD']:
-			self.ids[x].text=str(DATA._CARGA[x])
-			self.ids[x+'_C'].text=str(round(DATA._CARGA[x]/30, 2))
-			SOMA+=DATA._CARGA[x]/30
-		self.ids.CT.text=str(round(SOMA, 2))
+		self.text_focus = 'BRT1'
+		self.ids.BRT1_BTN.state = 'down'
+		self.ids.PLUS.text = '15'
+		self.load = DATA._load
 
-class Setc(Screen):
+		for item in tipos:
+			if self.load[item] != 0.0:
+				self.ids[item].text = str(self.load[item])
 
-	TEXTFOCUS=None
+		self.process = Thread(target = self.loop)
+		self.process.setDaemon(True)
+		self.process.start()
+
+	def on_leave(self, *args):
+		self.ids[self.text_focus + '_BTN'].state = 'normal'
+
+	def converter(self):
+		for item in tipos:
+			if self.ids[item].text:
+				box = float(self.ids[item].text) / 30
+				self.ids[item + '_BOX'].text = str(round(box, 2))
+			else:
+				self.ids[item + '_BOX'].text = ''
+
+	def loop(self):
+		while True:
+			if self.manager.current != 'edit_carga':
+				break
+			else:
+				self.converter()
+				sleep(0.05)
+
+	def focus(self, ids):
+		self.text_focus = ids
+
+	def key(self, insert):
+		self.ids[self.text_focus].text += insert
+
+	def backspace(self):
+		self.ids[self.text_focus].text = ''
+
+	def plus(self):
+		number = self.ids.PLUS
+		if self.ids[self.text_focus].text != '':
+			old = float(self.ids[self.text_focus].text)
+			self.ids[self.text_focus].text = str(old + float(number.text))
+		else:
+			self.ids[self.text_focus].text += number.text
+
+	def ok(self):
+		if DATA._current_day:
+			attr = getattr(DATA, DATA._current_day)
+			surplus = attr[1]
+		else:
+			surplus = None
+
+		for item in tipos:
+			if self.ids[item].text:
+				self.load[item] = float(self.ids[item].text)
+				if surplus:
+					surplus[item] = float(self.ids[item].text)
+
+		Writer().replace('_load={.*}', '_load={}'.format(self.load))
+		if surplus:
+			Writer().replace('{}=\[.*\]'.format(DATA._current_day), '{}={}'.format(
+															DATA._current_day, attr))
+		self.manager.current = 'carga'
+
+
+class PriceSetter(Screen):
 
 	def on_pre_enter(self, *args):
-		self.ids.CH.state='normal'
-		Setc.TEXTFOCUS='BRT1'
-		for x in ['BRT1','BRT2','BRT3','VRT1','BRDZ','VRDZ','BRMD','VRMD']:
-			self.ids[x].text=str(DATA._CARGA[x])
+		self.text_focus = 'BRT1'
+		self.ids.BRT1_BTN.state = 'down'
+		if Settings.modo == 'box':
+			self.box_price()
+		elif Settings.modo == 'dozen':
+			self.dozen_price()
 
-	def FOCUS(self, IDS):
-		Setc.TEXTFOCUS=IDS
+	def on_leave(self, *args):
+		self.ids[self.text_focus + '_BTN'].state = 'normal'
+		Settings.modo = None
 
-	def KEY(self, INSERT):
-		self.ids[Setc.TEXTFOCUS].text += INSERT
+	def box_price(self):
+		self.ids.TITLE.text = 'ALTERAÇÃO DE PREÇO DA CAIXA'
+		self.ids.PLUS.text = '5'
+		self.unit = DATA._box_price
+		self.filler()
 
-	def BACKSPACE(self):
-		self.ids[Setc.TEXTFOCUS].text = ''
+	def dozen_price(self):
+		self.ids.TITLE.text = 'ALTERAÇÃO DE PREÇO DA DÚZIA'
+		self.ids.PLUS.text = '0.2'
+		self.unit = DATA._dozen_price
+		self.filler()
 
-	def CHANGER(self):
-		try:
-			for x in ['BRT1','BRT2','BRT3','VRT1','BRDZ','VRDZ','BRMD','VRMD']:
-				if self.ids[x].text=='':
-					if self.ids.CH.state=='down':
-						self.ids.CH.state='normal'
-					else:
-						self.ids.CH.state='down'
-					return 0
-			for x in ['BRT1','BRT2','BRT3','VRT1','BRDZ','VRDZ','BRMD','VRMD']:
-				if self.ids.CH.state=='down':
-					self.ids[x].text=str(round(float(self.ids[x].text)/30, 2))
+	def filler(self):
+		for item in tipos:
+			if item != 0.0:
+				self.ids[item].text = str(self.unit[item])
+
+	def focus(self, ids):
+		self.text_focus = ids
+
+	def key(self, insert):
+		self.ids[self.text_focus].text += insert
+
+	def backspace(self):
+		self.ids[self.text_focus].text = ''
+
+	def plus(self):
+		number = self.ids.PLUS
+		if self.ids[self.text_focus].text != '':
+			old = float(self.ids[self.text_focus].text)
+			self.ids[self.text_focus].text = str(old + float(number.text))
+		else:
+			self.ids[self.text_focus].text += number.text
+
+	def ok(self):
+		for item in tipos:
+			if self.ids[item].text:
+				self.unit[item] = float(self.ids[item].text)
+			else:
+				call_popup('ERRO: AUSÊNCIA DE PREÇO', 'Insira todos os preços.')
+				return 1
+
+		if Settings.modo == 'box':
+			unit = '_box_price'
+		elif Settings.modo == 'dozen':
+			unit = '_dozen_price'
+
+		Writer().replace('{}={}'.format(unit, '{.*}'), '{}={}'.format(unit, self.unit))
+		self.manager.current = 'settings'
+
+
+class PreRouteSetter(Screen):
+
+	def transition(self, value):
+		Settings.modo = value
+		self.manager.current = 'route_setter'
+
+class RouteSetter(Screen):
+
+	def on_pre_enter(self, *args):
+		reload(DATA)
+		self.day = Settings.modo
+		self.route = getattr(DATA, self.day)
+		self.route.insert(0, '')
+		self.ids.BOOK_INDEX.values = self.route
+		self.ids.BOOK_INDEX.text = ''
+		self.ids.LINE.text = ''
+
+	def on_leave(self, *args):
+		Settings.modo = None
+
+	def key(self, insert):
+		self.ids.LINE.text += insert
+
+	def backspace(self):
+		self.ids.LINE.text = self.ids.LINE.text[:len(self.ids.LINE.text)-1]
+
+	def pre_ok(self, operation):
+		self.book_index = self.ids.BOOK_INDEX.text
+		self.nome = self.ids.LINE.text
+
+		if operation == 'sub':
+			if self.book_index:
+				if not self.nome:
+					text = 'Deseja remover "{}"?'.format(self.book_index)
+					self.popup_confirm(self.sub, text)
 				else:
-					self.ids[x].text=str(round(float(self.ids[x].text)*30, 2))
-		except:
-			pass
-
-
-	def OK(self):
-		try:
-			C=dict()
-			for x in ['BRT1','BRT2','BRT3','VRT1','BRDZ','VRDZ','BRMD','VRMD']:
-				if self.ids.CH.state=='down':
-					C[x]=round(float(self.ids[x].text)*30.0)
+					text = 'Apague "{}"\nou o adicione à rota.'.format(self.nome)
+					call_popup('ERRO: INDECISÃO DE OPERAÇÃO', text)
+					return 1
+			else:
+				text = 'Selecione um cliente\npara remoção.'
+				call_popup('ERRO: CLIENTE NÃO SELECIONADO', text)
+		elif operation == 'add':
+			if self.nome:
+				if self.nome in self.ids.BOOK_INDEX.values:
+					text = '"{}" já está\npresente na rota.'.format(self.nome)
+					call_popup('ERRO: CLIENTE EXISTENTE', text)
+					return 1
+				elif not self.book_index:
+					text = 'Adicionar "{}"\ncomo 1º da rota?'.format(self.nome)
+					self.popup_confirm(self.add, text)
 				else:
-					C[x]=float(self.ids[x].text)
+					text = 'Inserir "{}" após\n"{}" na rota?'.format(
+															self.nome, self.book_index)
+					self.popup_confirm(self.add, text)
+			else:
+				call_popup('ERRO: AUSÊNCIA DE CLIENTE', 'Digite um nome.')
+				return 1
 
-			P=open(D)
-			PR=P.read()
-			PS=re.sub('_CARGA={.*}', '_CARGA={}'.format(C), PR)
-			P1=open(D, 'w')
-			P1.write(PS)
-			P1.close()
-			P.close()
+	def sub(self, *args):
+		self.route.remove('')
+		self.route.remove(self.book_index)
+		self.writer()
 
-			self.manager.current='menu'
-		except:
-			pass
-
-class PreSetr(Screen):
-
-	MODO=None
-
-	def T(self):
-		PreSetr.MODO=1
-		self.manager.current='setr'
-
-	def Q(self):
-		PreSetr.MODO=2
-		self.manager.current='setr'
-
-	def QI(self):
-		PreSetr.MODO=3
-		self.manager.current='setr'
-
-class Setr(Screen):
-
-	def on_pre_enter(self, *args):
-		self.ids.adsubspin.text=''
-		if PreSetr.MODO==1:
-			self.ids.adsubspin.values=DATA._TERCA
-		elif PreSetr.MODO==2:
-			self.ids.adsubspin.values=DATA._QUARTA
-		elif PreSetr.MODO==3:
-			self.ids.adsubspin.values=DATA._QUINTA
-
-	def KEY(self, INSERT):
-		self.ids['cli'].text += INSERT
-
-	def BACKSPACE(self):
-		self.ids.cli.text = self.ids.cli.text[:len(self.ids.cli.text)-1]
-
-	def REMOVE(self):
-		if self.ids.adsubspin.text!='':
-			if PreSetr.MODO==1:
-				self.REMOVER('_TERCA')
-			elif PreSetr.MODO==2:
-				self.REMOVER('_QUARTA')
-			elif PreSetr.MODO==3:
-				self.REMOVER('_QUARTA')
-
-	def REMOVER(self, DIA):
-		R=getattr(DATA, DIA)
-		R.remove(self.ids.adsubspin.text)
-		P=open('DATA.py')
-		PR=P.read()
-		PS=re.sub('{}=\[.*\]'.format(DIA), '{}={}'.format(DIA, R), PR)
-		P1=open('DATA.py', 'w')
-		P1.write(PS)
-		P1.close()
-		P.close()
-		self.ids.adsubspin.text=''
-		reload(DATA)
-		if PreSetr.MODO==1:
-			self.ids.adsubspin.values=DATA._TERCA
-		elif PreSetr.MODO==2:
-			self.ids.adsubspin.values=DATA._QUARTA
-		elif PreSetr.MODO==3:
-			self.ids.adsubspin.values=DATA._QUINTA
-
-	def ADD(self):
-		if self.ids.cli.text!='':
-			if PreSetr.MODO==1:
-				self.ADDER('_TERCA')
-			elif PreSetr.MODO==2:
-				self.ADDER('_QUARTA')
-			elif PreSetr.MODO==3:
-				self.ADDER('_QUARTA')
-
-	def ADDER(self, DIA):
-		R=getattr(DATA, DIA)
-		if self.ids.adsubspin.text!='':
-			I=R.index(self.ids.adsubspin.text)
-			R.insert(I, self.ids.cli.text)
+	def add(self, *args):
+		self.route.remove('')
+		if self.book_index:
+			index = self.route.index(self.book_index) + 1
 		else:
-			R.append(self.ids.cli.text)
-		P=open('DATA.py')
-		PR=P.read()
-		PS=re.sub('{}=\[.*\]'.format(DIA), '{}={}'.format(DIA, R), PR)
-		P1=open('DATA.py', 'w')
-		P1.write(PS)
-		P1.close()
-		P.close()
-		self.ids.adsubspin.text=''
-		self.ids.cli.text=''
-		reload(DATA)
-		if PreSetr.MODO==1:
-			self.ids.adsubspin.values=DATA._TERCA
-		elif PreSetr.MODO==2:
-			self.ids.adsubspin.values=DATA._QUARTA
-		elif PreSetr.MODO==3:
-			self.ids.adsubspin.values=DATA._QUINTA
+			index = 0
 
-class Setv(Screen):
+		self.route.insert(index, self.nome)
+		self.writer()
 
-	TEXTFOCUS=None
+	def popup_confirm(self, func, msg):
+		self.popup = Popup()
+		bx = BoxLayout(orientation='vertical')
+		bxt = BoxLayout(size_hint=(1, 0.3))
+		bt1 = Button(text='Sim', background_color=(0, 0.8, 0, 1))
+		bt2 = Button(text='Não', background_color=(0.8, 0, 0, 1))
+		bt1.bind(on_press=func)
+		bt2.bind(on_press=self.popup.dismiss)
+		bxt.add_widget(bt1)
+		bxt.add_widget(bt2)
+		bx.add_widget(Label(text=msg, size_hint=(1, 0.7), pos_hint={'top':1}))
+		bx.add_widget(bxt)
+		self.popup.title = 'CONFIRMAR OPERAÇÃO NA ROTA'
+		self.popup.content = bx
+		self.popup.size_hint = (0.8, 0.5)
+		self.popup.pos_hint = {'center_x': 0.5, 'center_y': 0.5}
+		self.popup.auto_dismiss = False
+		self.popup.open()
+
+	def writer(self):
+		Writer().replace('{}=\[.*\]'.format(self.day), '{}={}'.format(
+																self.day, self.route))
+		self.popup.dismiss()
+		self.on_pre_enter()
+
+
+class FontSetter(Screen):
 
 	def on_pre_enter(self, *args):
-		def FILL(X):
-			self.ids[X].text=DATA._V[X]
-		for x in range(1,9):
-			FILL('V'+str(x))
+		self.ids.TEST_1.state = 'down'
+		self.ids.SIZE.text = str(DATA._font_size)
+		self.font_size = self.ids.SIZE
+		self.text('text 1')
 
-	def FOCUS(self, IDS='t1'):
-		Setv.TEXTFOCUS=IDS
+	def on_leave(self, *args):
+		self.ids[self.find_suffix()].state = 'normal'
 
-	def KEY(self, INSERT):
-		self.ids[Setv.TEXTFOCUS].text += INSERT
+	def find_suffix(self):
+		for suffix in ['_1', '_2']:
+			if self.ids['TEST' + suffix].state == 'down':
+				return 'TEST' + suffix
 
-	def BACKSPACE(self):
-		self.ids[Setv.TEXTFOCUS].text = ''
-
-	def MEIA(self):
-		TEXT=self.ids[Setv.TEXTFOCUS].text
-		if TEXT!='':
-			FLT=float(self.ids[Setv.TEXTFOCUS].text)
-			self.ids[Setv.TEXTFOCUS].text = str(FLT+2.5)
+	def test(self):
+		if self.ids.TEST_2.state == 'down':
+			size = int(self.font_size.text) * 3
 		else:
-			self.ids[Setv.TEXTFOCUS].text += '2.5'
+			size = int(self.font_size.text)
+		self.ids.LINE.font_size = size
 
-	def OK(self):
-		try:
-			V=dict()
-			for x in ['V1','V2','V3','V4','V5','V6','V7','V8']:
-				V[x]=str(float(self.ids[x].text))
-			P=open('DATA.py')
-			PR=P.read()
-			PS=re.sub('_V={.*}', '_V={}'.format(V), PR)
-			P1=open('DATA.py', 'w')
-			P1.write(PS)
-			P1.close()
-			P.close()
-			self.manager.current='menu'
-		except:
-			pass
+	def text(self, modo):
+		if modo == 'text 1':
+			self.ids.LINE.text = 'Este é o tamanho da fonte.'
+		elif modo == 'text 2':
+			self.ids.LINE.text = 'R$ 520.0'
+		self.test()
 
-class Setcv(Screen):
+	def plus(self, number):
+		self.font_size.text = str(int(self.font_size.text) + int(number))
+		self.test()
 
-	TEXTFOCUS=None
+	def ok(self):
+		new_value = int(self.font_size.text)
+		Writer().replace('_font_size=.*', '_font_size={}'.format(new_value))
+		self.manager.current = 'menu'
 
-	def on_pre_enter(self, *args):
-		def FILL(X):
-			self.ids[X].text=DATA._CV[X]
-		for x in range(1,9):
-			FILL('V'+str(x))
-
-	def FOCUS(self, IDS='t1'):
-		Setcv.TEXTFOCUS=IDS
-
-	def KEY(self, INSERT):
-		self.ids[Setcv.TEXTFOCUS].text += INSERT
-
-	def BACKSPACE(self):
-		self.ids[Setcv.TEXTFOCUS].text = ''
-
-	def MEIA(self):
-		TEXT=self.ids[Setcv.TEXTFOCUS].text
-		if TEXT!='':
-			FLT=float(self.ids[Setcv.TEXTFOCUS].text)
-			self.ids[Setcv.TEXTFOCUS].text = str(FLT+2.5)
-		else:
-			self.ids[Setcv.TEXTFOCUS].text += '2.5'
-
-	def OK(self):
-		try:
-			V=dict()
-			for x in ['V1','V2','V3','V4','V5','V6','V7','V8']:
-				V[x]=str(float(self.ids[x].text))
-			P=open('DATA.py')
-			PR=P.read()
-			PS=re.sub('_CV={.*}', '_CV={}'.format(V), PR)
-			P1=open('DATA.py', 'w')
-			P1.write(PS)
-			P1.close()
-			P.close()
-
-			self.manager.current='menu'
-		except:
-			pass
-
-class Fonte(Screen):
-
-	POPUP=Popup()
-
-	def on_pre_enter(self, *args):
-		self.ids['BOX'].text = str(DATA._F)
-
-	def KEY(self, INSERT):
-		self.ids['BOX'].text += INSERT
-
-	def BACKSPACE(self):
-		self.ids['BOX'].text = ''
-
-	def OK(self, instance):
-		self.POPUP.dismiss()
-		P=open('DATA.py')
-		PR=P.read()
-		PS=re.sub('_F=.*', '_F={}'.format(int(self.ids.BOX.text)), PR)
-		P1=open('DATA.py', 'w')
-		P1.write(PS)
-		P1.close()
-		P.close()
-		self.manager.current='menu'
-
-	def TEST(self):
-		BOX=self.ids['BOX'].text
-
-		if int(BOX) < 1 or int(BOX) > 100:
-			CALLP('ERRO DE TAMANHO', 'Use valores entre \'1 > x < 100\'.')
-			return 0
-
-		BX=BoxLayout(orientation='vertical')
-		BXT=BoxLayout(size_hint=(1, 0.3))
-		BT1=Button(text='Confirmar', background_color=(0, 0.8, 0, 1))
-		BT2=Button(text='Modificar', background_color=(0.8, 0, 0, 1))
-		BT1.bind(on_press=self.OK)
-		BT2.bind(on_press=self.POPUP.dismiss)
-		BXT.add_widget(BT1)
-		BXT.add_widget(BT2)
-		BX.add_widget(Label(text='Este é um teste.', size_hint=(1, 0.7), pos_hint={'top':1}, font_size=int(BOX)))
-		BX.add_widget(BXT)
-		self.POPUP.title='EXEMPLO DO TAMANHO ESCOLHIDO'
-		self.POPUP.content=BX
-		self.POPUP.size_hint=(0.8, 0.6)
-		self.POPUP.pos_hint={'center_x': 0.5, 'center_y': 0.5}
-		self.POPUP.auto_dismiss=False
-		self.POPUP.open()
 
 class MapaApp(App):
-	sm=None
+
+	sm = None
+
 	def build(self):
-		self.sm=ScreenManager()
-		self.sm.add_widget(Menu(name='menu'))
-		self.sm.add_widget(Rota(name='rota'))
-		self.sm.add_widget(Dia(name='dia'))
-		self.sm.add_widget(Carga(name='carga'))
-		self.sm.add_widget(Entry(name='entry'))
-		self.sm.add_widget(Catcher(name='catcher'))
-		self.sm.add_widget(Output(name='output'))
-		self.sm.add_widget(Editar(name='editar'))
-		self.sm.add_widget(HistSel(name='histsel'))
-		self.sm.add_widget(History(name='history'))
-		self.sm.add_widget(Extrato(name='extrato'))
-		self.sm.add_widget(Settings(name='set'))
-		self.sm.add_widget(Crg(name='crg'))
-		self.sm.add_widget(Setc(name='setc'))
-		self.sm.add_widget(PreSetr(name='presetr'))
-		self.sm.add_widget(Setr(name='setr'))
-		self.sm.add_widget(Setv(name='valor'))
-		self.sm.add_widget(Setcv(name='setcv'))
-		self.sm.add_widget(Fonte(name='fonte'))
-		self.sm.current='menu'
+		self.sm = ScreenManager()
+		self.sm.add_widget(Menu(name = 'menu'))
+		self.sm.add_widget(Rota(name = 'rota'))
+		self.sm.add_widget(Dia(name = 'dia'))
+		self.sm.add_widget(Entry(name = 'entry'))
+		self.sm.add_widget(Catcher(name = 'catcher'))
+		self.sm.add_widget(History(name = 'history'))
+		self.sm.add_widget(Output(name = 'output'))
+		self.sm.add_widget(Settings(name = 'settings'))
+		self.sm.add_widget(Carga(name = 'carga'))
+		self.sm.add_widget(EditCarga(name = 'edit_carga'))
+		self.sm.add_widget(PriceSetter(name = 'price_setter'))
+		self.sm.add_widget(PreRouteSetter(name = 'pre_route_setter'))
+		self.sm.add_widget(RouteSetter(name = 'route_setter'))
+		self.sm.add_widget(FontSetter(name = 'font_setter'))
+		self.sm.current = start
 		return self.sm
+
+	def on_start(self):
+		EventLoop.window.bind(on_keyboard=self.hook_keyboard)
+
+	def hook_keyboard(self, window, key, *args):
+		if key == 27:
+			self.sm.current = 'menu'
+  			return True
 
 	def on_pause(self):
 		return True
@@ -1595,102 +1078,361 @@ class MapaApp(App):
 	def on_resume(self):
 		pass
 
-class OVO:
 
-	E={'BRT1':0.0,'BRT2':0.0,'BRT3':0.0,'VRT1':0.0,'BRDZ':0.0,'VRDZ':0.0,'BRMD':0.0,'VRMD':0.0}
+class Ovo:
 
-	E_DZ={'BRT1_DZ':0.0,'BRT2_DZ':0.0,'BRT3_DZ':0.0,'VRT1_DZ':0.0,'BRDZ_DZ':0.0,'VRDZ_DZ':0.0,'BRMD_DZ':0.0,'VRMD_DZ':0.0}
+	def __init__(self, prime):
+		self.carga = getattr(DATA, '_load')
+		self.dict = {}
+		self.file = Writer()
+		self.total = 0.0
+		if isinstance(History.data, int):
+			self.index = History.data
+			self.edit_attr = getattr(DATA, DATA._current_day)
+			self.edit_dict = self.edit_attr[self.index]
+		else:
+			self.index = 'Ou não há History.data e Entry.nome. ou há apenas este.'
 
-	E_VLR={'BRT1_VLR':0.0,'BRT2_VLR':0.0,'BRT3_VLR':0.0,'VRT1_VLR':0.0,'BRDZ_VLR':0.0,'VRDZ_VLR':0.0,'BRMD_VLR':0.0,'VRMD_VLR':0.0}
+		self.builder(prime)
 
-	def __init__(self, dz):
-		self.dz=float(dz)
+	def builder(self, prime):
+		if Entry.nome:
+			self.dict['NOME'] = Entry.nome
+		elif History.data and self.index != 0:
+			self.dict['NOME'] = self.edit_dict['NOME']
+		elif not Entry.nome or self.index == 0:
+			self.dict['NOME'] = 'CARGA'
+			if self.index == 0:
+				self.dict['WEEK'] = self.edit_dict['WEEK']
+			else:
+				self.dict['WEEK'] = Rota.week
 
-class BRT1(OVO):
-	def __init__(self, dz):
-		OVO.__init__(self, dz)
-		self.valor=round(float(BRT1_VALOR), 1)
-		self.soma=round(self.valor*self.dz,2)
-		OVO.E['BRT1']=self.dz
-		OVO.E_DZ['BRT1_DZ']=self.valor
-		OVO.E_VLR['BRT1_VLR']=self.soma
+		for item in tipos:
+			if item in prime:
+				duzia = float(prime[item])
+				valor = float(prime[item + '_DZ'])
+				produto = duzia * valor
+				produto = round(produto, 2)
+				if self.dict['NOME'] == 'CARGA':
+					self.dict[item] = duzia * 30
+				else:
+					self.dict[item] = duzia
+				self.dict[item + '_DZ'] = valor
+				self.dict[item + '_VLR'] = produto
+				self.total += produto
+			elif self.dict['NOME'] == 'CARGA':
+				self.dict[item + '_DZ'] = float(prime[item + '_DZ'])
+		self.dict['TOTAL'] = self.total
 
-class BRT2(OVO):
-	def __init__(self, dz):
-		OVO.__init__(self, dz)
-		self.valor=round(float(BRT2_VALOR), 1)
-		self.soma=round(self.valor*self.dz,2)
-		OVO.E['BRT2']=self.dz
-		OVO.E_DZ['BRT2_DZ']=self.valor
-		OVO.E_VLR['BRT2_VLR']=self.soma
+	def load_plus(self):
+		for item in tipos:
+			if isinstance(History.data, int) and self.index != 0:
+				if item in self.edit_dict:
+					soma = self.carga[item] + self.edit_dict[item]
+					self.carga[item] = soma
+			else:
+				if item in self.dict:
+					soma = self.carga[item] + self.dict[item]
+					self.carga[item] = soma
+		self.file.replace('_load={.*}', '_load={}'.format(self.carga))
 
-class BRT3(OVO):
-	def __init__(self, dz):
-		OVO.__init__(self, dz)
-		self.valor=round(float(BRT3_VALOR), 1)
-		self.soma=round(self.valor*self.dz,2)
-		OVO.E['BRT3']=self.dz
-		OVO.E_DZ['BRT3_DZ']=self.valor
-		OVO.E_VLR['BRT3_VLR']=self.soma
+	def load_sub(self):
+		for item in tipos:
+			if (isinstance(History.data, int) and self.index != 0) or self.index != 0:
+				if item in self.dict:
+					sub = self.carga[item] - self.dict[item]
+					self.carga[item] = sub
+			elif isinstance(History.data, int) and self.index == 0:
+				if item in self.edit_dict:
+					sub = self.carga[item] - self.edit_dict[item]
+					self.carga[item] = sub
+		self.file.replace('_load={.*}', '_load={}'.format(self.carga))
 
-class VRT1(OVO):
-	def __init__(self, dz):
-		OVO.__init__(self, dz)
-		self.valor=round(float(VRT1_VALOR), 1)
-		self.soma=round(self.valor*self.dz,2)
-		OVO.E['VRT1']=self.dz
-		OVO.E_DZ['VRT1_DZ']=self.valor
-		OVO.E_VLR['VRT1_VLR']=self.soma
+	def load_write(self):
+		self.load_plus()
+		load_dict = {'NAME': 'SURPLUS LOAD'}
+		for item in tipos:
+			load_dict[item] = DATA._load[item]
+		self.file.append('\n{}={}\n'.format(DATA._current_day, [self.dict, load_dict]))
 
-class BRDZ(OVO):
-	def __init__(self, dz):
-		OVO.__init__(self, dz)
-		self.valor=round(float(BRDZ_VALOR), 1)
-		self.soma=round(self.valor*self.dz,2)
-		OVO.E['BRDZ']=self.dz
-		OVO.E_DZ['BRDZ_DZ']=self.valor
-		OVO.E_VLR['BRDZ_VLR']=self.soma
+	def client_edit_write(self, chasm = 0.0):
+		self.load_sub()
+		if chasm:
+			self.dict['CHASM'] = chasm
+		if Entry.nome:
+			Writer().client_remove()
+			attr = getattr(DATA, DATA._current_day)
+			attr.append(self.dict)
+			new = attr
+		elif isinstance(History.data, int):
+			self.load_plus()
+			self.edit_attr.remove(self.edit_dict)
+			self.edit_attr.insert(self.index, self.dict)
+			new = self.edit_attr
 
-class VRDZ(OVO):
-	def __init__(self, dz):
-		OVO.__init__(self, dz)
-		self.valor=round(float(VRDZ_VALOR), 1)
-		self.soma=round(self.valor*self.dz,2)
-		OVO.E['VRDZ']=self.dz
-		OVO.E_DZ['VRDZ_DZ']=self.valor
-		OVO.E_VLR['VRDZ_VLR']=self.soma
+		# atualização da carga no dict do dia da praça para gerar
+		# a carga restante no extrato
+		for item in tipos:
+			new[1][item] = DATA._load[item]
 
-class BRMD(OVO):
-	def __init__(self, dz):
-		OVO.__init__(self, dz)
-		self.valor=round(float(BRMD_VALOR), 1)
-		self.soma=round(self.valor*self.dz,2)
-		OVO.E['BRMD']=self.dz
-		OVO.E_DZ['BRMD_DZ']=self.valor
-		OVO.E_VLR['BRMD_VLR']=self.soma
+		self.file.replace('{}=\[.*\]'.format(DATA._current_day), '{}={}'.format(DATA._current_day, new))
 
-class VRMD(OVO):
-	def __init__(self, dz):
-		OVO.__init__(self, dz)
-		self.valor=round(float(VRMD_VALOR), 1)
-		self.soma=round(self.valor*self.dz,2)
-		OVO.E['VRMD']=self.dz
-		OVO.E_DZ['VRMD_DZ']=self.valor
-		OVO.E_VLR['VRMD_VLR']=self.soma
 
-def CALLP(TITLE, MSG):
-	POPUP=Popup()
-	BX=BoxLayout(orientation='vertical')
-	BT=Button(text='OK', background_color=(0, 0.8, 0, 1), size_hint=(1, 0.3))
-	BT.bind(on_press=POPUP.dismiss)
-	BX.add_widget(Label(text=MSG, size_hint=(1, 0.7), pos_hint={'top':1}, font_size=DATA._F))
-	BX.add_widget(BT)
-	POPUP.title=TITLE
-	POPUP.content=BX
-	POPUP.size_hint=(0.8, 0.5)
-	POPUP.pos_hint={'center_x': 0.5, 'center_y': 0.5}
-	POPUP.auto_dismiss=False
-	POPUP.open()
+class Extract:
+	"""Gerador de informações e de outputs"""
+
+	def __init__(self, day):
+		self.raw_day = str.strip(day, 'H')
+		self.human_day = str.replace(self.raw_day, '_', '/')
+		self.raw_dict = getattr(DATA, day)
+		self.load_dict = self.raw_dict[0]
+		self.surplus_load = self.raw_dict[1]
+		self.bought_dict = {
+				'BRT1': 0.0, 'VRT1': 0.0, 'BRT2': 0.0,
+				'BRT3': 0.0, 'BRDZ': 0.0, 'VRDZ': 0.0,
+				'BRMD': 0.0, 'VRMD': 0.0, 'TOTAL': 0.0
+				}
+		self.net_dict = {
+				'BRT1': 0.0, 'VRT1': 0.0, 'BRT2': 0.0,
+				'BRT3': 0.0, 'BRDZ': 0.0, 'VRDZ': 0.0,
+				'BRMD': 0.0, 'VRMD': 0.0, 'TOTAL': 0.0
+				}
+		self.profit_dict = {
+				'BRT1': 0.0, 'VRT1': 0.0, 'BRT2': 0.0,
+				'BRT3': 0.0, 'BRDZ': 0.0, 'VRDZ': 0.0,
+				'BRMD': 0.0, 'VRMD': 0.0, 'TOTAL': 0.0
+				}
+		self.worked_dict = {
+				'BRT1': 0.0, 'BRT1_VLR': 0.0, 'VRT1': 0.0, 'VRT1_VLR': 0.0,
+				'BRT2': 0.0, 'BRT2_VLR': 0.0, 'BRT3': 0.0, 'BRT3_VLR': 0.0,
+				'BRDZ': 0.0, 'BRDZ_VLR': 0.0, 'VRDZ': 0.0, 'VRDZ_VLR': 0.0,
+				'BRMD': 0.0, 'BRMD_VLR': 0.0, 'VRMD': 0.0, 'VRMD_VLR': 0.0,
+				'CHASM': 0.0, 'TOTAL': 0.0
+				}
+
+		self.worker()
+
+	def worker(self):
+		"""Transforma os dados de self.raw_dict para para gerar output em texto
+		e no app."""
+
+		# Soma a quantidade e o total vendido de cada tipo de ovo
+		for dict in self.raw_dict:
+			if 'NOME' in dict and dict['NOME'] != 'CARGA':
+				for key in self.worked_dict.keys():
+					if key in dict:
+						self.worked_dict[key] += dict[key]
+
+
+		# Calcula o que foi comprado em relação ao que foi vendido para gerar
+		# o balanço bruto
+		for item in tipos:
+			box_price = self.load_dict[item + '_DZ'] / 30
+			value = self.worked_dict[item] * round(box_price, 2)
+			self.bought_dict[item] = value
+			self.bought_dict['TOTAL'] += value
+
+		# Calcula o lucro bruto
+		for item in tipos:
+			value = self.worked_dict[item + '_VLR'] - self.bought_dict[item]
+			self.profit_dict[item] = value
+			self.profit_dict['TOTAL'] += value		# total lucrado sem os descontos
+
+		# Calcula o lucro líquido
+		for item in tipos:
+			if item in self.load_dict:
+				value = self.worked_dict[item + '_VLR'] - self.load_dict[item + '_VLR']
+				self.net_dict[item] = value
+				self.net_dict['TOTAL'] += value
+
+		self.surplus_load['TOTAL'] = 0.0
+		for item in tipos:
+			if item in self.surplus_load:
+				self.surplus_load['TOTAL'] += self.surplus_load[item]
+
+	def parser(self):
+		"""Gerador de lista com conteúdos para fornecer ao gerador de texto(self.builder)"""
+
+		contents = []
+		## DICT COM CARGA RESTANTE E RECONHECIMENTO DE FALSO PARA 0.0
+		for dict in self.raw_dict:
+			if 'NOME' in dict and dict['NOME'] == 'CARGA':
+				load_1 = ['CARGA COMPRADA\n']
+				load_2 = ['CARGA RESTANTE\n']
+				total_load_2 = 0
+				for item in tipos:
+					if item in dict:
+						current_box_rounded = round(self.surplus_load[item] / 30, 2)
+						phrase_1 = '{}: {}\t\t\tPREÇO: R$ {}\t\tSUBTOTAL: R$ {}\n'.format(
+														item, self.load_dict[item] / 30,
+														self.load_dict[item + '_DZ'],
+														self.load_dict[item + '_VLR'])
+						phrase_2 = '{}: {} CAIXAS\t\t\t{} DÚZIAS\n'.format(
+														item, current_box_rounded,
+														self.surplus_load[item])
+					else:
+						phrase_1 = '{}: -\t\t\tPREÇO: R$ {}\n'.format(
+														item,
+														self.load_dict[item + '_DZ'])
+						phrase_2 = '{}: -\n'.format(item)
+					load_1.append(phrase_1)
+					load_2.append(phrase_2)
+				load_1.append('TOTAL: R$ {}'.format(self.load_dict['TOTAL']))
+				load_2.append('TOTAL: {} CAIXAS\t\t\t{} DÚZIAS\n'.format(
+											round(self.surplus_load['TOTAL'] / 30, 2),
+											self.surplus_load['TOTAL']))
+				contents.append(load_1)
+				contents.append(load_2)
+			elif 'NOME' in dict:
+				client = ['{}\n'.format(dict['NOME'])]
+				if dict['TOTAL']:
+					for item in tipos:
+						if item in dict:
+							client.append(
+								'{}: {}\t\t\tPREÇO: R$ {}\t\tSUBTOTAL: R$ {}\n'.format(
+															item, dict[item],
+															dict[item + '_DZ'],
+															dict[item + '_VLR']))
+					if 'CHASM' in dict:
+						client.append(
+								'\t\t\t\t\t\t\t\tDESCONTO: R$ {}\nTOTAL: RS {}'.format(
+															dict['CHASM'], dict['TOTAL']))
+					else:
+						client.append('TOTAL: R$ {}'.format(dict['TOTAL']))
+				else:
+					client.append('-')
+
+				contents.append(client)
+
+		contents[-1].append('\n')
+
+		balance_1 = ['BALANÇO BRUTO\n']
+		balance_profit = 0
+		for item in tipos:
+			if self.worked_dict[item]:
+				part_1 = '{}: {}\t   COMPRADO: R$ {}\t  VENDIDO: R$ {}\t  '.format(
+													item, self.worked_dict[item],
+													self.bought_dict[item],
+													self.worked_dict[item + '_VLR'])
+				part_2 = 'LUCRO: R$ {}\n'.format(self.profit_dict[item])
+				balance_1.append(part_1 + part_2)
+			else:
+				phrase = '{}: -\n'.format(item)
+				balance_1.append(phrase)
+
+		if self.worked_dict['CHASM']:
+			balance_1.append('DESCONTO TOTAL: R$ {}\n'.format(self.worked_dict['CHASM']))
+		balance_1.append('LUCRO BRUTO: R$ {}, APROXIMADAMENTE.\n'.format(
+													self.worked_dict['TOTAL']
+													- self.bought_dict['TOTAL']))
+		contents.append(balance_1)
+
+		balance_2 = ['BALANÇO LÍQUIDO\n']
+		for item in tipos:
+			if item in self.load_dict:
+				part_1 = '{}: {}\t  COMPRADO: R$ {}\t  VENDIDO: R$ {}\t  '.format(
+													item, self.load_dict[item],
+													self.load_dict[item + '_VLR'],
+													self.worked_dict[item + '_VLR'])
+				part_2 = 'LUCRO: R$ {}\n'.format(self.net_dict[item])
+				balance_2.append(part_1 + part_2)
+			else:
+				phrase = '{}: -\n'.format(item)
+				balance_2.append(phrase)
+		balance_2.append('TOTAL COMPRADO: R$ {}\n'.format(self.load_dict['TOTAL']))
+		balance_2.append('TOTAL VENDIDO: R$ {}\n'.format(self.worked_dict['TOTAL']))
+		balance_2.append('LUCRO LÍQUIDO: R$ {}'.format(self.net_dict['TOTAL']))
+		contents.append(balance_2)
+
+		self.builder(contents)
+
+	def builder(self, parsed_contents):
+		"""Gerador de texto"""
+
+		text = 'EGGBERTO: EXTRATO - DIA {}.\n'.format(self.human_day)
+
+		for element in parsed_contents:
+			if isinstance(element, list):
+				text += '\n{}\n'.format('-' * 80)
+				for item in element:
+					text += item
+			else:
+				text += '\n{}\n'.format('-' * 80)
+				text += element
+
+		Writer().create_extract(text, self.raw_day)
+
+
+class Writer:
+
+	def open(self, option = 'r'):
+		self.file = open(d, option)
+
+	def append(self, content):
+		self.open('a')
+		self.file.write(content)
+		self.file.close()
+
+	def clean(self):
+		Writer().replace('_current_day=.*', '_current_day=None')
+		Writer().replace('_current_route=\[.*\]', '_current_route=[]')
+
+	def client_remove(self):
+		clientes = DATA._current_route
+		if Entry.nome in clientes:
+			clientes.remove(Entry.nome)
+			self.replace('_current_route=\[.*\]', '_current_route={}'.format(clientes))
+
+	def create_extract(self, content, day):
+		numbers_list = day.split('_')
+		for number in numbers_list:
+			if len(number) == 1:
+				numbers_list[numbers_list.index(number)] = '0' + number
+		new_file = open('EXTRATO{}.txt'.format(''.join(numbers_list)), 'w')
+		new_file.write(content)
+		new_file.close()
+
+	def day_writer(self, day):
+		day_func = {
+			1: DATA._tuesday,
+			2: DATA._wednesday,
+			3: DATA._thursday
+			}
+		attr = getattr(DATA, '_reported_list')
+		attr.insert(0, day)
+		self.replace('_current_route=\[\]', '_current_route={}'.format(day_func[Rota.week]))
+		self.replace('_current_day=None', "_current_day='{}'".format(day))
+		self.replace('_reported_list=\[.*\]', '_reported_list={}'.format(attr))
+
+	def remove(self, day):
+		reported_list = getattr(DATA, '_reported_list')
+		reported_list.remove(day)
+		self.replace('_reported_list=\[.*\]', '_reported_list={}'.format(reported_list))
+		self.replace('{}=\[.*\]'.format(day), '')
+
+	def replace(self, old, new):
+		self.open()
+		sub = re.sub(old, new, self.file.read())
+		self.file.close()
+		self.open('w')
+		self.file.write(sub)
+		self.file.close()
+
+
+def call_popup(title, msg):
+	popup = Popup()
+	bx = BoxLayout(orientation='vertical')
+	bt = Button(text='OK', background_color=(0, 0.8, 0, 1), size_hint=(1, 0.3))
+	bt.bind(on_press=popup.dismiss)
+	bx.add_widget(Label(text=msg, size_hint=(1, 0.7), pos_hint={'top':1}, font_size=DATA._font_size))
+	bx.add_widget(bt)
+	popup.title = title
+	popup.content = bx
+	popup.size_hint = (0.8, 0.5)
+	popup.pos_hint = {'center_x': 0.5, 'center_y': 0.5}
+	popup.auto_dismiss = False
+	popup.open()
+
 
 if __name__ == '__main__':
 	MapaApp().run()
